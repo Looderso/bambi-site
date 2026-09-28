@@ -1,17 +1,474 @@
 ---
+/*  The parts every bambi window has, and the gestures each takes. The pictures are the plugins' own,
+    drawn by their picture tools; the text names colours by what they mean, not by their hue. */
 import Page from '../layouts/Page.astro';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const img = (name: string) => `${base}/tutorial/${name}.webp`;
+
+const parts = [
+  ['header', 'the header'],
+  ['scene', 'the scene'],
+  ['matrix', 'the modulation matrix'],
+  ['source', "a source's page"],
+  ['panel', 'the panel and a value'],
+  ['regions', 'regions'],
+  ['presets', 'presets'],
+  ['link', 'the link'],
+  ['settings', 'settings'],
+  ['levels', 'levels and the footer'],
+];
 ---
 
-<Page title="tutorial">
+<Page title="tutorial" description="The parts of a bambi window, and how to use them.">
   <h1>tutorial</h1>
   <p class="sub label">the parts of a bambi window, and how to use them</p>
+
   <div class="prose">
-    <p>Being written: a walk through the window every bambi plugin shares, with pictures.</p>
+    <p class="lede">Every bambi plugin is laid out the same way, so what you learn in one works in the others.</p>
+    <p>
+      At the top is the header. Below it on the left is the scene, a picture of the sphere around you, and
+      under that the modulation matrix. On the right are the plugin's own tabs, and at the far right its
+      levels. This page walks through each part: what it is for, and what you can do with it.
+    </p>
   </div>
+
+  <figure>
+    <img src={img('window')} alt="An echo window: header, scene, matrix, the taps tab and the level column." width="2040" height="1200" />
+    <figcaption class="label">an echo window</figcaption>
+  </figure>
+
+  <nav class="contents" aria-label="on this page">
+    <ol>
+      {parts.map(([id, name]) => <li><a href={`#${id}`}>{name}</a></li>)}
+    </ol>
+  </nav>
+
+  <section id="header">
+    <h2>the header</h2>
+    <figure>
+      <img src={img('header')} alt="The header of an encoder window with five instance tabs." width="2040" height="88" />
+    </figure>
+    <div class="prose">
+      <p>From left to right:</p>
+      <ul>
+        <li>
+          <strong>The mark and the plugin's name.</strong> Clicking them takes the window back to its own
+          instance when it is showing another one.
+        </li>
+        <li>
+          <strong>Undo and redo</strong>, the two arrows. Every edit can be undone, including a preset load and a
+          drag in the scene.
+        </li>
+        <li>
+          <strong>The instances, as tabs.</strong> Every instance of this plugin in your project has a tab, named
+          after it. Click one and the whole window turns to that instance: the matrix, the tabs and undo all
+          edit it from here. The open tab is the black block. With many instances the tabs shrink, then scroll
+          with the mouse wheel.
+        </li>
+        <li>
+          <strong><code>‹ preset · name ›</code></strong>. The chevrons step through the presets, and the name
+          opens the preset browser. A <code>*</code> after the name means you have changed the sound since
+          loading it.
+        </li>
+        <li><strong>The link</strong>: which session this instance is in, and how many instances share it.</li>
+        <li><strong>Settings</strong>, the last glyph.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="scene">
+    <h2>the scene</h2>
+    <figure>
+      <img src={img('scene')} alt="The globe and the equirect side by side, with the energy picture on and the probe placed." width="1236" height="602" />
+    </figure>
+    <div class="prose">
+      <p>
+        The scene shows the sphere around the listener twice. On the left is the <strong>globe</strong>, a ball
+        you look at from outside. On the right is the <strong>equirect</strong>, the whole sphere unrolled flat:
+        left to right is all the way round, bottom to top is floor to ceiling. The letters along the top mark
+        back, left, front and right.
+      </p>
+      <ul>
+        <li><strong>Drag the globe</strong> to turn it. <code>top</code>, <code>front</code> and <code>side</code> snap it to a view.</li>
+        <li><strong><code>full</code></strong> gives the equirect the whole width.</li>
+        <li>
+          <strong><code>energy</code></strong> shows where the sound is. What came into the plugin is drawn in
+          orange, and what the plugin adds in blue. The picture is off when a window opens, because it is the
+          one thing in the window that costs processing.
+        </li>
+        <li>
+          <strong><code>regions always</code></strong> draws every region's outline. Turn it off and you see only
+          the region whose tab is open.
+        </li>
+        <li>
+          <strong>Click a direction</strong> in the echo or the reverb to place the <strong>probe</strong>, a small
+          orange dot. The plugin then draws what it would do to a sound from there: the echo's repeats as they
+          travel, or the reverb's reflections where they arrive. The probe is worked out from the settings, not
+          from the audio, so it answers even while nothing is playing.
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="matrix">
+    <h2>the modulation matrix</h2>
+    <figure>
+      <img src={img('matrix')} alt="The matrix: six feature columns, four target rows, three cells with depth." width="1236" height="510" />
+    </figure>
+    <div class="prose">
+      <p>
+        The matrix is how something moves by itself. Its <strong>columns are sources</strong>, things that change
+        over time. Its <strong>rows are targets</strong>, the parameters they move. A cell is how much one source
+        moves one target.
+      </p>
+      <p>The sources come in tabs:</p>
+      <ul>
+        <li>
+          <strong>features</strong> are measurements of the input: <code>level</code> (how loud),
+          <code>attack</code> (how sharp the onsets are), <code>tonal</code> (how sustained or pitched), and
+          <code>low</code>, <code>mid</code> and <code>high</code> (how much there is in each part of the
+          spectrum). Each reads zero in silence, so silence moves nothing.
+        </li>
+        <li><strong>sidechain</strong> has the same six, measured on the sidechain input instead.</li>
+        <li><strong>generators</strong> are three LFOs and three envelopes.</li>
+        <li><strong>region</strong>, in the encoder only, is how far the source is inside its region.</li>
+      </ul>
+      <p>
+        Under each source's name, the thin bar shows what it is sending right now, so you can see what a depth
+        would do before you set one. The thicker bar under that is the source's amount, which scales every cell
+        in its column.
+      </p>
+      <h3>making a row</h3>
+      <p>
+        There is always at least one row. To add another, <strong>click any value</strong> on the plugin's tabs.
+        Its row appears with a dashed outline, as a <em>provisional row</em>. Clicking another value replaces it,
+        and giving it any depth keeps it. Two clicks and a drag is the whole vocabulary:
+      </p>
+      <ol>
+        <li>Click the value you want to move, say <code>width</code>. A row appears.</li>
+        <li>Click a cell in it, say under <code>tonal</code>. It gets a depth of 0.50.</li>
+        <li>Drag the cell up or down to set how much. Now the sound widens as it rings.</li>
+      </ol>
+      <ul>
+        <li><strong>Drag a cell</strong> up for more and down for less. A negative depth moves the target the other way.</li>
+        <li><strong>Hold shift</strong> while dragging for fine steps.</li>
+        <li><strong>Click a cell</strong> to switch it between 0.50 and empty. <strong>Double-click</strong> it to empty it.</li>
+        <li>A <strong>dot after a row's name</strong> means that row has depth on another tab.</li>
+        <li><strong><code>global amount</code></strong>, at the bottom, scales all modulation at once.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="source" class="split">
+    <figure class="panel">
+      <img src={img('source')} alt="An LFO's page: its wave, its output, its timing, phase, amount and polarity." width="696" height="1116" />
+    </figure>
+    <div class="prose">
+      <h2>a source's page</h2>
+      <p>
+        <strong>Click a source's name</strong> at the head of its column, and its settings open as an extra tab on
+        the right, named for the source. <code>&lt;</code> and <code>&gt;</code> step to the neighbouring sources,
+        and <code>×</code> closes the page. Clicking the name again closes it too.
+      </p>
+      <p>Every source's page shows its live <code>output</code> near the top. After that it depends on the kind of source:</p>
+      <ul>
+        <li>
+          <strong>An LFO</strong> has its wave (<code>sine</code>, <code>triangle</code>, <code>saw</code>,
+          <code>s&amp;h</code>), its timing, <code>phase</code>, <code>amount</code> and <code>polarity</code>.
+          Timing is <code>free</code>, a <code>rate</code> in hertz, or <code>sync</code>, a <code>division</code>
+          of the bar. Both are shown, and the one not in use is greyed. <code>restart</code> ties the LFO to
+          playback, so it starts in the same place every time you press play; <code>continue</code> lets it run
+          on.
+        </li>
+        <li>
+          <strong>An envelope</strong> has two tabs. <code>shape</code> holds attack, decay, sustain and release:
+          drag the corners of the graph, or the middle of a line to curve it. <code>trigger</code> says what sets
+          it off: MIDI notes, or a feature crossing a threshold.
+        </li>
+        <li>
+          <strong>A feature</strong> has its amount, and <code>level</code> also has a <code>release</code>: how
+          quickly it falls when the sound stops.
+        </li>
+      </ul>
+      <p>
+        <code>polarity</code> sets where a source rests. At 0 it only pushes one way, from zero up. At 1 it swings
+        both ways, about zero.
+      </p>
+    </div>
+  </section>
+
+  <section id="panel" class="split">
+    <figure class="panel">
+      <img src={img('values')} alt="The encoder's source tab: boxes for trim, displace, speed, direction, mode, width and width range." width="696" height="1116" />
+    </figure>
+    <div class="prose">
+      <h2>the panel and a value</h2>
+      <p>
+        The right-hand side holds the plugin's own controls, in tabs organised by what each thing acts on. The
+        open tab is the black block. A long page scrolls under its tabs.
+      </p>
+      <p><strong>Every value is one box</strong>: its name, its number and a bar. The whole box is the control.</p>
+      <ul>
+        <li><strong>Drag</strong> anywhere in it, up for more and down for less. <strong>Hold shift</strong> for fine steps.</li>
+        <li>
+          <strong>Double-click</strong> to return it to its default. On an angle that means exactly zero, and it
+          also clears any turning a rate has added.
+        </li>
+        <li>
+          <strong>Click</strong> to give it a row in the matrix. A value that is a choice, like
+          <code>direction</code> or <code>mode</code>, steps to its next option instead.
+        </li>
+        <li>Values that go round, like angles, wrap: drag past one end and they come back in at the other.</li>
+      </ul>
+      <p>Three signs on a box:</p>
+      <ul>
+        <li>An <strong>underline</strong> under its name, in the plugin's own colour, means something in the matrix moves it.</li>
+        <li>A band in the plugin's own colour along the bar shows how far the modulation reaches.</li>
+        <li>
+          A small <strong>orange mark</strong> shows where the value actually is right now, when that differs from
+          what you set: an angle turned by its rate, a source carried along its path. The number and the fill
+          always stay what you set, which is what is saved and what automation records.
+        </li>
+      </ul>
+      <p>A greyed box is not in use right now. One click on the choice above it brings it back.</p>
+    </div>
+  </section>
+
+  <section id="regions">
+    <h2>regions</h2>
+    <figure>
+      <img src={img('regions')} alt="Echo's send tab: a spot region drawn in the scene with its handles, the kind row and its settings." width="2040" height="1200" />
+    </figure>
+    <div class="prose">
+      <p>
+        A region says <strong>where on the sphere</strong> something happens: which part of the field the echo
+        hears, or where the reverb's room comes back. Each plugin has a fixed set, each on a tab of its own: the
+        echo has a <code>send</code>, the reverb a <code>send</code> and a <code>return</code>. In the encoder the
+        region is a source in the matrix instead (below).
+      </p>
+      <p>
+        A region's tab opens with its kind: <code>everywhere</code>, <code>spot</code>, <code>band</code>,
+        <code>sectors</code>, <code>dots</code>, <code>clouds</code> or <code>custom</code>. Under it are that
+        kind's own settings, such as a spot's size or a band's elevation, and a <code>softness</code> for how
+        gently the edge fades. The kind is chosen once; its settings and the region's orientation can all be
+        automated and modulated.
+      </p>
+      <ul>
+        <li>
+          <strong><code>shape</code> and <code>transform</code></strong> split the tab. <code>shape</code> is the
+          kind and its settings. <code>transform</code> is <code>yaw</code>, <code>pitch</code> and
+          <code>roll</code>, each beside a rate that keeps it turning, then whether the region lets through what
+          is <code>inside</code> or what is <code>outside</code>, and how much.
+        </li>
+        <li>
+          <strong>In the scene</strong>, a region is drawn in ink: its edge where it is half open, and a light wash
+          where it fades. While its tab is open it has handles. Drag the white circle to aim it and the others to
+          roll it or move its edge; double-click a handle to reset it.
+        </li>
+        <li>
+          <strong><code>convert to custom</code></strong> freezes the shape into a grid of weights you can edit
+          one by one. The kind and its settings are kept underneath, so you can go back to them.
+        </li>
+        <li>
+          <strong><code>copy</code> and <code>paste</code></strong> carry a region to another instance, or to
+          another plugin. Paste a reverb's return into an echo's send, and the echo is fed exactly where the room
+          comes back. The line under the buttons says what the clipboard holds. A copy is a copy: nothing stays
+          connected afterwards.
+        </li>
+      </ul>
+    </div>
+    <figure>
+      <img src={img('region-source')} alt="The encoder with its region page open from the matrix's region tab." width="2040" height="1200" />
+      <figcaption class="label">in the encoder the region is a source: here, a spot the path passes through</figcaption>
+    </figure>
+    <div class="prose">
+      <p>
+        In the encoder, the region's value is how far the source is inside it: 1 inside, 0 outside, and in between
+        across the soft edge. Route it like any source to make a sound slow down, widen or fall quiet as it
+        passes through part of the room.
+      </p>
+    </div>
+  </section>
+
+  <section id="presets" class="split">
+    <figure class="panel">
+      <img src={img('presets')} alt="The preset browser open over the panel: search, factory and user presets, folders, and the four actions." width="800" height="1200" />
+    </figure>
+    <div class="prose">
+      <h2>presets</h2>
+      <p>
+        A preset is the <strong>whole sound</strong> of an instance: every parameter, the matrix, the regions, the
+        plugin's own settings. It does not include the instance's name or its place in the session.
+      </p>
+      <p>
+        Click the preset name in the header and the browser opens over the panel, so the scene and the matrix
+        stay in sight while you try things.
+      </p>
+      <ul>
+        <li>Type to <strong>search</strong>, straight away. The search matches folders as well as names.</li>
+        <li>
+          <strong>One click loads</strong>, and the browser stays open for the next. <kbd>↑</kbd> and <kbd>↓</kbd>
+          walk the list, <kbd>return</kbd> loads, <kbd>escape</kbd> clears the search and then closes.
+        </li>
+        <li>A load is one step of undo, so a preset you did not like is one undo away.</li>
+        <li>
+          <code>save</code>, <code>save as</code>, <code>rename</code> and <code>delete</code> are at the bottom. A
+          slash in a name makes a folder: saving as <code>drums/tight</code> files it under <code>drums</code>.
+        </li>
+        <li>Delete asks first, and moves the file to the trash.</li>
+      </ul>
+      <p>
+        <code>factory</code> presets are built into the plugin and cannot be changed. <code>user</code> presets are
+        files of your own, shared by every project.
+      </p>
+    </div>
+  </section>
+
+  <section id="link">
+    <h2>the link</h2>
+    <div class="prose">
+      <p>
+        Every bambi instance in a project joins one <strong>session</strong> by itself, with no setup. The session
+        is saved with the project and comes back when you reopen it. The header shows the session and how many
+        instances are in it.
+      </p>
+      <ul>
+        <li>
+          <strong>Every window can edit every instance</strong> of its plugin. Pick one from the header's tabs and
+          the whole window turns to it; undo acts on the instance shown.
+        </li>
+        <li>
+          <strong>Other instances appear in the scene</strong> in grey: in the encoder, every source and its path;
+          in every plugin, other instances' regions as dotted outlines. They are only drawn; nothing about them
+          reaches the sound.
+        </li>
+        <li>
+          <strong>The link carries edits, never sound.</strong> No instance's audio depends on another instance,
+          so freezing a track or bouncing stems gives the same result as the full mix.
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="settings">
+    <h2>settings</h2>
+    <figure>
+      <img src={img('settings')} alt="The reverb's settings page: its name, the session, the order, and the reverb's own quality settings." width="2040" height="1200" />
+    </figure>
+    <div class="prose">
+      <p>
+        The glyph at the end of the header opens settings over the window. On the left is what every instance
+        has: its <strong>name</strong>, which you can type (<kbd>return</kbd> or <kbd>escape</kbd> hands the
+        keyboard back to your host), the <strong>link</strong> session, and the ambisonic <strong>order</strong>,
+        which comes from how many channels the track has. On the right is what only this plugin has, such as the
+        reverb's quality while playing and while rendering, and what the host reports.
+      </p>
+    </div>
+  </section>
+
+  <section id="levels" class="split levels">
+    <figure class="column">
+      <img src={img('levels')} alt="The level column: dry and wet levels above the output meter." width="104" height="1116" />
+    </figure>
+    <div class="prose">
+      <h2>levels and the footer</h2>
+      <p>
+        The column at the far right holds the plugin's <strong>levels</strong>, in decibels: <code>dry</code> and
+        <code>wet</code> in the echo and the reverb, <code>gain</code> in the encoder. They are values like any
+        other: drag them, double-click for the default, click to give them a row in the matrix. Under them is the
+        <strong>output meter</strong>, marked <code>out</code>, which always shows this window's own instance.
+      </p>
+      <p>
+        Ducking needs no control of its own. Click <code>wet</code>, then set a negative depth under
+        <code>level</code>, or under the sidechain's <code>level</code>, and the effect gets out of the way while
+        the sound plays. <code>level</code>'s <code>release</code> sets how quickly it comes back.
+      </p>
+      <p>
+        The <strong>footer</strong>, under the panel, holds <code>rates continue</code> and a readout: the
+        instance's name, its order, and the share of one processor core it is using. With
+        <code>rates continue</code> off, as it starts, everything that turns at a rate (a path, a rotating
+        region) holds while the transport is stopped and starts from the same place every time you press play,
+        so a bounce sounds like what you heard. Switched on, they run all the time, and a bounce no longer
+        repeats exactly what you heard.
+      </p>
+    </div>
+  </section>
+  <figure>
+    <img src={img('footer')} alt="The bottom edge of the window: global amount, has depth on another tab, rates continue, and the readout." width="2040" height="72" />
+  </figure>
 </Page>
 
 <style>
   .sub {
     margin: 12px 0 var(--section);
+  }
+  section {
+    margin-top: var(--section);
+    scroll-margin-top: 16px;
+  }
+  figure {
+    margin: 0 0 24px;
+  }
+  figure img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border: var(--stroke-rule) solid var(--rule);
+  }
+  figcaption {
+    margin-top: 8px;
+    text-transform: none;
+  }
+  .contents ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 20px;
+  }
+  .contents a {
+    font-size: var(--size-label);
+    letter-spacing: var(--tracking-label);
+  }
+  kbd {
+    font-family: inherit;
+    font-size: 0.9em;
+    padding: 0 0.3em;
+    border: var(--stroke-rule) solid var(--rule);
+  }
+
+  /*  a panel picture beside its text, one above the other on a phone */
+  .split {
+    display: grid;
+    grid-template-columns: minmax(0, 348px) minmax(0, 1fr);
+    gap: 40px;
+    align-items: start;
+  }
+  .split.levels {
+    grid-template-columns: 52px minmax(0, 1fr);
+  }
+  .split > figure {
+    margin: 0;
+  }
+  .split .prose h2 {
+    margin-top: 0;
+  }
+  @media (max-width: 760px) {
+    .split,
+    .split.levels {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+    .split > figure {
+      order: 1; /* the heading and the text first, the picture after them */
+    }
+    .split > .panel {
+      max-width: 348px;
+    }
+    .split > .column {
+      width: 52px;
+    }
   }
 </style>

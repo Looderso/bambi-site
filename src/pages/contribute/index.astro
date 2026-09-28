@@ -4,32 +4,55 @@ import Page from '../../layouts/Page.astro';
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const guidelines = (await getCollection('guidelines')).sort((a, b) => a.data.order - b.data.order);
+const groups = [
+  { id: 'working', title: 'working on bambi', guidelines: guidelines.filter((g) => g.data.group === 'working') },
+  { id: 'design', title: 'how bambi is designed', guidelines: guidelines.filter((g) => g.data.group === 'design') },
+];
 ---
 
-<Page title="contribute">
+<Page title="contribute" description="How to build bambi, the rules its code is written by, and how it is designed.">
   <h1>contribute</h1>
-  <p class="sub label">how bambi is designed and built: the guidelines a change is held to</p>
-  <ul class="list">
-    {
-      guidelines.map((g) => (
-        <li>
-          <a href={`${base}/contribute/${g.id}`}>{g.data.title}</a>
-          <span>{g.data.summary}</span>
-        </li>
-      ))
-    }
-  </ul>
+  <p class="sub label">how to build bambi, the rules its code is written by, and the guidelines a change is held to</p>
+
+  <div class="prose intro">
+    <p>
+      bambi is free and open source, and <a href="https://github.com/Looderso/bambi">its code is on GitHub</a>.
+      The first list is how to work on it: how to build and check a change, and the rules the code is written by.
+      The second is how bambi is designed, one concept to a page, so a change fits what is already there.
+    </p>
+  </div>
+
+  {
+    groups.map((group) => (
+      <section>
+        <h2>{group.title}</h2>
+        <ul class="list">
+          {group.guidelines.map((g) => (
+            <li>
+              <a href={`${base}/contribute/${g.id}`}>{g.data.title}</a>
+              <span>{g.data.summary}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))
+  }
 </Page>
 
 <style>
   .sub {
     margin: 12px 0 var(--section);
   }
+  .intro {
+    margin-bottom: var(--section);
+  }
+  section {
+    margin-bottom: var(--section);
+  }
   .list {
     list-style: none;
     margin: 0;
     padding: 0;
-    border-top: var(--stroke-rule) solid var(--rule-strong);
   }
   li {
     display: grid;
