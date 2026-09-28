@@ -4,7 +4,10 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
 <footer class="footer">
   <div class="wrap row">
-    <span class="label">bambi · free and open source · gpl-3.0-or-later</span>
+    <span class="notice">
+      <span class="label">© 2026 lorenz häusler and the bambi contributors · gpl-3.0-or-later, plugins agplv3</span>
+      <span class="fine">VST is a registered trademark of Steinberg Media Technologies GmbH.</span>
+    </span>
     <span class="links">
       <a class="label" href="https://github.com/Looderso/bambi">source</a>
       <a class="label" href={`${base}/about`}>about</a>
@@ -25,6 +28,10 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     flex-wrap: wrap;
     min-height: 44px;
     padding-block: 10px;
+  }
+  .notice {
+    display: grid;
+    gap: 2px;
   }
   .links {
     display: flex;

@@ -122,6 +122,12 @@ p {
   color: var(--label);
 }
 
+/*  Fine print that keeps its capitals: a trademark notice is not a label. */
+.fine {
+  font-size: var(--size-small);
+  color: var(--label);
+}
+
 .lede {
   font-size: var(--size-lede);
   line-height: 1.4;
