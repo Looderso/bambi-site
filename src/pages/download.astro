@@ -1,20 +1,228 @@
 ---
+/*  The three builds, the visitor's system first. Without script the page lists them in a fixed order
+    and every link still works; with it, the visitor's system moves to the top and the links point at
+    the newest release, pre-releases included -- GitHub's `latest` skips a release marked as one. */
 import Page from '../layouts/Page.astro';
+
+const repo = 'https://github.com/Looderso/bambi';
+const releases = `${repo}/releases`;
+
+interface System {
+  id: 'macos' | 'windows' | 'linux';
+  name: string;
+  machines: string;
+  folders: { vst3: string; clap: string };
+  admin?: boolean;
+  unsigned?: string;
+  quarantine?: string;
+}
+
+const systems: System[] = [
+  {
+    id: 'macos',
+    name: 'macOS',
+    machines: 'apple silicon and intel',
+    folders: { vst3: '~/Library/Audio/Plug-Ins/VST3/', clap: '~/Library/Audio/Plug-Ins/CLAP/' },
+    unsigned: 'macOS blocks unsigned plugins that came from the internet, so remove the quarantine flag once, in Terminal:',
+    quarantine:
+      'xattr -dr com.apple.quarantine ~/Library/Audio/Plug-Ins/VST3/bambi*.vst3 ~/Library/Audio/Plug-Ins/CLAP/bambi*.clap',
+  },
+  {
+    id: 'windows',
+    name: 'Windows',
+    machines: 'x64',
+    folders: { vst3: 'C:\\Program Files\\Common Files\\VST3\\', clap: 'C:\\Program Files\\Common Files\\CLAP\\' },
+    admin: true,
+    unsigned: 'Windows may warn about them when you unpack the zip; the plugins themselves install and run normally.',
+  },
+  {
+    id: 'linux',
+    name: 'Linux',
+    machines: 'x86-64',
+    folders: { vst3: '~/.vst3/', clap: '~/.clap/' },
+  },
+];
+
+const zip = (id: string) => `${releases}/latest/download/bambi-${id}.zip`;
 ---
 
-<Page title="download">
+<Page title="download" description="bambi for macOS, Windows and Linux: VST3 and CLAP.">
   <h1>download</h1>
-  <p class="sub label">vst3 and clap · macos, windows and linux</p>
-  <div class="prose">
+  <p class="sub label">vst3 and clap · macos, windows and linux · free and open source</p>
+
+  <div class="prose alpha">
     <p>
-      There is no release yet. When the alpha is out, every build will be on the
-      <a href="https://github.com/Looderso/bambi/releases">releases page</a>, with notes on installing it.
+      bambi is in <strong>alpha</strong>: expect things to change between releases, and please{' '}
+      <a href={`${repo}/issues`}>report what breaks</a>. The builds are not signed yet, which on macOS and Windows
+      takes one extra step, below.
     </p>
+    <p class="label release" data-release hidden></p>
   </div>
+
+  <div class="systems" data-systems>
+    {
+      systems.map((s) => (
+        <section class="system" data-system={s.id}>
+          <h2>
+            {s.name}
+            <span class="here" hidden>
+              {' '}
+              · your system
+            </span>
+          </h2>
+          <p class="get">
+            <a class="button" href={zip(s.id)} data-zip={`bambi-${s.id}.zip`}>
+              download for {s.name}
+            </a>
+            <span class="label">{s.machines} · vst3 and clap</span>
+          </p>
+          <ol class="prose steps">
+            <li>
+              Unpack the zip and copy the plugins into your plugin folders
+              {s.admin ? ' (this needs administrator rights)' : ''}:
+              <table>
+                <tbody>
+                  <tr>
+                    <td>
+                      <code>VST3/*.vst3</code>
+                    </td>
+                    <td>
+                      <code>{s.folders.vst3}</code>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <code>CLAP/*.clap</code>
+                    </td>
+                    <td>
+                      <code>{s.folders.clap}</code>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              {s.id === 'macos' && (
+                <span class="fine">~/Library is hidden in Finder: choose Go › Go to Folder…, then type the path.</span>
+              )}
+            </li>
+            {s.unsigned && (
+              <li>
+                These alpha builds are not signed. {s.unsigned}
+                {s.quarantine && <pre><code>{s.quarantine}</code></pre>}
+              </li>
+            )}
+            <li>Restart your host and let it rescan its plugins.</li>
+          </ol>
+        </section>
+      ))
+    }
+  </div>
+
+  <section class="prose every">
+    <h2>every release</h2>
+    <p>
+      Every build is on the <a href={releases}>releases page</a>, with its notes and the complete source of that
+      release. The plugins are licensed under the GNU AGPLv3 and bambi's own code under the GPLv3; the notices of
+      every third-party component are in the zip.
+    </p>
+  </section>
 </Page>
+
+<script>
+  /*  The visitor's system first. Then the newest release, pre-releases included: GitHub's `latest`
+      skips a pre-release, so the static links are only the fallback. */
+  const systems = document.querySelector<HTMLElement>('[data-systems]');
+  const agent = ((navigator as any).userAgentData?.platform || navigator.userAgent || '').toLowerCase();
+  const mine = /mac/.test(agent) ? 'macos' : /win/.test(agent) ? 'windows' : /linux|x11/.test(agent) ? 'linux' : null;
+  const section = mine ? systems?.querySelector<HTMLElement>(`[data-system="${mine}"]`) : null;
+  if (systems && section) {
+    systems.prepend(section);
+    section.classList.add('mine');
+    section.querySelector<HTMLElement>('.here')?.removeAttribute('hidden');
+  }
+
+  const note = document.querySelector<HTMLElement>('[data-release]');
+  const say = (text: string) => {
+    if (!note) return;
+    note.textContent = text;
+    note.removeAttribute('hidden');
+  };
+  fetch('https://api.github.com/repos/Looderso/bambi/releases?per_page=10')
+    .then((r) => (r.ok ? r.json() : null))
+    .then((list: any[] | null) => {
+      if (!list) return; // the API refused, most likely its rate limit: the static links stand
+      const release = list.find((r) => !r.draft);
+      if (!release) return say('no release yet: the links work once the first alpha is out');
+      say(`newest: ${release.name || release.tag_name}${release.prerelease ? ' · pre-release' : ''}`);
+      for (const link of document.querySelectorAll<HTMLAnchorElement>('[data-zip]')) {
+        const asset = release.assets?.find((a: any) => a.name === link.dataset.zip);
+        if (asset) link.href = asset.browser_download_url;
+      }
+    })
+    .catch(() => {});
+</script>
 
 <style>
   .sub {
     margin: 12px 0 var(--section);
+  }
+  .alpha {
+    margin-bottom: var(--section);
+  }
+  .release {
+    text-transform: none;
+  }
+  .systems {
+    display: grid;
+    gap: var(--section);
+  }
+  .system h2 {
+    text-transform: none;
+  }
+  .system.mine h2 {
+    color: var(--text);
+    border-bottom-color: var(--rule-strong);
+  }
+  .get {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px 20px;
+    margin-bottom: 20px;
+  }
+  .button {
+    display: inline-block;
+    padding: 10px 16px;
+    border: var(--stroke-rule) solid var(--rule-strong);
+    color: var(--text);
+  }
+  .button:hover {
+    text-decoration: none;
+    background: var(--panel);
+  }
+  .mine .button {
+    background: var(--chosen);
+    color: var(--text-inverse);
+  }
+  .mine .button:hover {
+    background: var(--chosen);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .steps li {
+    margin-bottom: 14px;
+  }
+  .steps table {
+    margin: 8px 0 4px;
+  }
+  .steps pre {
+    margin: 8px 0 0;
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+  .steps .fine {
+    display: block;
+  }
+  .every {
+    margin-top: var(--section);
   }
 </style>
