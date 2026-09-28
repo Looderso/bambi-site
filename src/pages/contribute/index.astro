@@ -6,14 +6,14 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const guidelines = (await getCollection('guidelines')).sort((a, b) => a.data.order - b.data.order);
 ---
 
-<Page title="guidelines">
-  <h1>guidelines</h1>
-  <p class="sub label">how bambi is designed and built, one pattern at a time</p>
+<Page title="contribute">
+  <h1>contribute</h1>
+  <p class="sub label">how bambi is designed and built: the guidelines a change is held to</p>
   <ul class="list">
     {
       guidelines.map((g) => (
         <li>
-          <a href={`${base}/guidelines/${g.id}`}>{g.data.title}</a>
+          <a href={`${base}/contribute/${g.id}`}>{g.data.title}</a>
           <span>{g.data.summary}</span>
         </li>
       ))
