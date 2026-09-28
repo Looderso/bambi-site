@@ -45,6 +45,6 @@ delay lengths, is a setting and not a target.
 
 Anything the audio thread might need is allocated when the plugin is prepared, at its worst case. A buffer that
 grew on demand would grow at a moment the message thread's timing decides, which breaks
-[determinism](/bambi-site/contribute/determinism) as surely as it breaks the deadline.
+[determinism](/contribute/determinism) as surely as it breaks the deadline.
 
 Denormals are flushed for the length of each block by one scoped guard, the same one the render tools use.

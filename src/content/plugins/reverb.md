@@ -9,7 +9,7 @@ Reverb puts an ambisonic field in a room: early reflections from the room's wall
 each part of the field arrives from, and a diffuse tail after them. Whatever comes in, whether encoded sources,
 a recording or a whole mix, keeps its directions in the room.
 
-Its window is the one every bambi plugin has, described in the [tutorial](/bambi-site/tutorial). What is Reverb's
+Its window is the one every bambi plugin has, described in the [tutorial](/tutorial). What is Reverb's
 own is its three tabs.
 
 ## room
@@ -29,9 +29,9 @@ Double-click a room to bring its numbers back.
 ## send and return
 
 Two regions: which part of the field goes into the room, and where the room comes back. See
-[regions](/bambi-site/tutorial#regions).
+[regions](/tutorial#regions).
 
 ## what it builds on
 
 The image method for the reflections, Eyring's reverberation time, and feedback delay networks for the tail,
-all on the [foundations](/bambi-site/foundations) page.
+all on the [foundations](/foundations) page.

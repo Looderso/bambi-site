@@ -91,4 +91,4 @@ build-plugin/plugins/reverb/bambi-reverb-shot_artefacts/Release/bambi-reverb-sho
 
 A UI change is looked at this way in seconds rather than by loading a host. If the view you need has no mode,
 add one to the tool: a picture is always drawn by the plugin, never by hand. The pictures in the
-[tutorial](/bambi-site/tutorial) are made this way.
+[tutorial](/tutorial) are made this way.

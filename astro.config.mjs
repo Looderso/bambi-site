@@ -1,9 +1,8 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 
-//  Served from GitHub Pages under the repository's name. With a domain of its own, `base` goes.
+//  Served from GitHub Pages under its own domain, so from the root.
 export default defineConfig({
-  site: 'https://looderso.github.io',
-  base: '/bambi-site',
+  site: 'https://bambi.wiki',
   trailingSlash: 'ignore',
 });

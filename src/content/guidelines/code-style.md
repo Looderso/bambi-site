@@ -52,4 +52,4 @@ could be either. Milliseconds exist only at the interface; stored times are in s
 
 Every colour, type size, stroke, radius and spacing is a named role in `ui/include/bambi/ui/Theme.h`.
 `tools/check-style.sh` fails on a literal colour, type size or corner radius anywhere else in `ui/`, `editor/`
-or `plugins/`. Name the value in the theme and use the name. See [the look](/bambi-site/contribute/the-look).
+or `plugins/`. Name the value in the theme and use the name. See [the look](/contribute/the-look).

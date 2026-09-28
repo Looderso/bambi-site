@@ -42,4 +42,4 @@ tomorrow: the format grows by name. Numbers inside keys parse strictly: `"1x"` i
 ## what a preset holds
 
 A preset is the state without what makes an instance *this* instance: its identity, its name, and which input
-it is plugged into. See [presets](/bambi-site/contribute/presets).
+it is plugged into. See [presets](/contribute/presets).

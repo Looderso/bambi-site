@@ -9,7 +9,7 @@ Echo repeats an ambisonic field. Each of its four taps is a loop: every pass com
 further round an axis, and a little quieter and vaguer than the one before. A single sound walks round the
 room; a whole mix rotates, gathers or spreads as it repeats.
 
-Its window is the one every bambi plugin has, described in the [tutorial](/bambi-site/tutorial). What is Echo's own
+Its window is the one every bambi plugin has, described in the [tutorial](/tutorial). What is Echo's own
 is its two tabs.
 
 ## taps
@@ -27,8 +27,8 @@ A spin of 180° is a ping-pong: twice round is back where it started.
 
 ## send
 
-The region of the field the taps hear. By default it is `everywhere`; see [regions](/bambi-site/tutorial#regions).
+The region of the field the taps hear. By default it is `everywhere`; see [regions](/tutorial#regions).
 
 ## what it builds on
 
-The slide along an axis is the warp of Pomberger and Zotter, on the [foundations](/bambi-site/foundations) page.
+The slide along an axis is the warp of Pomberger and Zotter, on the [foundations](/foundations) page.

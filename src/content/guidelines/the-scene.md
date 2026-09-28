@@ -74,4 +74,4 @@ would do to a direction it is pointed at. That is why effects have a probe where
 
 Tests check what is computed, not what is drawn, and a defect in the drawing passes all of them. Look at the
 picture: the picture tools draw every view to a PNG. See
-[building and checking](/bambi-site/contribute/building).
+[building and checking](/contribute/building).

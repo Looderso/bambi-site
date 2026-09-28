@@ -9,7 +9,7 @@ The encoder places a mono or stereo track in the ambisonic field and moves it al
 sphere. How fast it travels can follow the input: silence parks the source, loud material moves it. It is the
 first plugin on a track: it takes one or two channels in and gives an ambisonic field out.
 
-Its window is the one every bambi plugin has, described in the [tutorial](/bambi-site/tutorial). What is the
+Its window is the one every bambi plugin has, described in the [tutorial](/tutorial). What is the
 encoder's own is its three tabs.
 
 ## trajectory
@@ -52,5 +52,5 @@ far side.
 
 ## what it builds on
 
-The encoding follows the ambisonics literature on the [foundations](/bambi-site/foundations) page: the spherical
+The encoding follows the ambisonics literature on the [foundations](/foundations) page: the spherical
 harmonics, ACN ordering and SN3D normalisation, and the max-rE weighting its width is drawn with.

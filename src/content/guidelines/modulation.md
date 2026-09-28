@@ -41,7 +41,7 @@ an angle is limited in how fast it may turn, and a value that is one turn is smo
 
 A target owns its **base value**, the parameter itself; a bias never competes for a cell.
 
-Not every parameter can be a target. See [the audio thread](/bambi-site/contribute/the-audio-thread) for the rule: its
+Not every parameter can be a target. See [the audio thread](/contribute/the-audio-thread) for the rule: its
 effect must be recomputable on the audio thread in bounded work.
 
 ## the clock is not a source
@@ -54,7 +54,7 @@ itself never passes through the matrix. Constant motion is a non-zero speed, nev
 Each source kind says why a render repeats. A feature is a function of the audio. A synced LFO set to restart
 is a function of the song position. A free LFO and every rate restart with the transport, so a render agrees
 from the same start point. A random source is seeded. The one exception is a musician's choice to let something
-**continue**, and the window says so. See [determinism](/bambi-site/contribute/determinism).
+**continue**, and the window says so. See [determinism](/contribute/determinism).
 
 ## the interface
 
