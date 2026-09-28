@@ -1,0 +1,25 @@
+---
+import Page from '../layouts/Page.astro';
+---
+
+<Page title="about">
+  <h1>about</h1>
+  <p class="sub label">free and open source</p>
+  <div class="prose">
+    <p>
+      bambi is an ambisonics plugin suite: an encoder, an echo and a reverb that share a core, a look, a
+      modulation matrix and a link between instances. It works in AmbiX (ACN ordering, SN3D normalisation) at
+      any order the host carries.
+    </p>
+    <p>
+      bambi's own code is GPL-3.0-or-later; plugin builds, which include JUCE, are distributed under AGPLv3.
+      The source is on <a href="https://github.com/Looderso/bambi">GitHub</a>.
+    </p>
+  </div>
+</Page>
+
+<style>
+  .sub {
+    margin: 12px 0 var(--section);
+  }
+</style>

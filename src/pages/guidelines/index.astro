@@ -1,0 +1,50 @@
+---
+import { getCollection } from 'astro:content';
+import Page from '../../layouts/Page.astro';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const guidelines = (await getCollection('guidelines')).sort((a, b) => a.data.order - b.data.order);
+---
+
+<Page title="guidelines">
+  <h1>guidelines</h1>
+  <p class="sub label">how bambi is designed and built, one pattern at a time</p>
+  <ul class="list">
+    {
+      guidelines.map((g) => (
+        <li>
+          <a href={`${base}/guidelines/${g.id}`}>{g.data.title}</a>
+          <span>{g.data.summary}</span>
+        </li>
+      ))
+    }
+  </ul>
+</Page>
+
+<style>
+  .sub {
+    margin: 12px 0 var(--section);
+  }
+  .list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: var(--stroke-rule) solid var(--rule-strong);
+  }
+  li {
+    display: grid;
+    grid-template-columns: minmax(0, 14rem) minmax(0, 1fr);
+    gap: var(--gap);
+    padding: 12px 0;
+    border-bottom: var(--stroke-rule) solid var(--sand-light);
+  }
+  li span {
+    color: var(--label);
+  }
+  @media (max-width: 600px) {
+    li {
+      grid-template-columns: 1fr;
+      gap: 4px;
+    }
+  }
+</style>

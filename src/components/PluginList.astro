@@ -1,0 +1,53 @@
+---
+/*  The three plugins, each under a rule in its own colour. */
+import { getCollection } from 'astro:content';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const plugins = (await getCollection('plugins')).sort((a, b) => a.data.order - b.data.order);
+---
+
+<ul class="plugins">
+  {
+    plugins.map((p) => (
+      <li style={`--identity: ${p.data.colour}`}>
+        <a href={`${base}/plugins/${p.id}`}>
+          <span class="name">{p.data.name}</span>
+          <span class="summary">{p.data.summary}</span>
+        </a>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .plugins {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: var(--gap);
+  }
+  a {
+    display: grid;
+    gap: 8px;
+    padding-top: 14px;
+    border-top: var(--stroke-identity) solid var(--identity);
+    color: var(--text);
+  }
+  a:hover {
+    text-decoration: none;
+  }
+  a:hover .name {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+  .name {
+    font-size: 22px;
+    letter-spacing: 0.02em;
+  }
+  .summary {
+    color: var(--label);
+    max-width: 30ch;
+  }
+</style>

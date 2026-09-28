@@ -1,0 +1,30 @@
+---
+import { getCollection, render } from 'astro:content';
+import Page from '../../layouts/Page.astro';
+
+export async function getStaticPaths() {
+  const plugins = await getCollection('plugins');
+  return plugins.map((plugin) => ({ params: { id: plugin.id }, props: { plugin } }));
+}
+
+const { plugin } = Astro.props;
+const { Content } = await render(plugin);
+---
+
+<Page title={plugin.data.name} description={plugin.data.summary} identity={plugin.data.colour}>
+  <p class="label">plugin</p>
+  <h1>{plugin.data.name}</h1>
+  <p class="lede summary">{plugin.data.summary}</p>
+  <div class="prose">
+    <Content />
+  </div>
+</Page>
+
+<style>
+  h1 {
+    margin: 8px 0 16px;
+  }
+  .summary {
+    margin-bottom: var(--section);
+  }
+</style>

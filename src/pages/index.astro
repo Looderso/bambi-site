@@ -1,0 +1,32 @@
+---
+import Page from '../layouts/Page.astro';
+import PluginList from '../components/PluginList.astro';
+---
+
+<Page>
+  <section class="intro">
+    <p class="label">an ambisonics plugin suite</p>
+    <h1 class="lede">Three plugins that place, repeat and reverberate sound in a full sphere, and share one look.</h1>
+    <p class="meta label">vst3 · clap · free and open source</p>
+  </section>
+
+  <section>
+    <h2>the plugins</h2>
+    <PluginList />
+  </section>
+</Page>
+
+<style>
+  .intro {
+    display: grid;
+    gap: 16px;
+    margin-bottom: var(--section);
+  }
+  .intro h1 {
+    font-size: var(--size-title);
+    max-width: 22ch;
+  }
+  .intro p {
+    margin: 0;
+  }
+</style>

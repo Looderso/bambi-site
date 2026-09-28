@@ -1,0 +1,31 @@
+---
+import { getCollection, render } from 'astro:content';
+import Page from '../../layouts/Page.astro';
+
+export async function getStaticPaths() {
+  const guidelines = await getCollection('guidelines');
+  return guidelines.map((guideline) => ({ params: { id: guideline.id }, props: { guideline } }));
+}
+
+const { guideline } = Astro.props;
+const { Content } = await render(guideline);
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<Page title={guideline.data.title} description={guideline.data.summary}>
+  <p class="label"><a href={`${base}/guidelines`}>guidelines</a></p>
+  <h1>{guideline.data.title}</h1>
+  <p class="lede summary">{guideline.data.summary}</p>
+  <div class="prose">
+    <Content />
+  </div>
+</Page>
+
+<style>
+  h1 {
+    margin: 8px 0 16px;
+  }
+  .summary {
+    margin-bottom: var(--section);
+  }
+</style>

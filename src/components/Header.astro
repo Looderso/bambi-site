@@ -1,0 +1,80 @@
+---
+/*  The wordmark, then the sections. The open section is a black block standing on the rule, as an
+    open tab is in the plugins. */
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const here = Astro.url.pathname.replace(base, '') || '/';
+
+const sections = [
+  { href: '/plugins', name: 'plugins' },
+  { href: '/guidelines', name: 'guidelines' },
+  { href: '/download', name: 'download' },
+  { href: '/about', name: 'about' },
+];
+const open = (href: string) => here === href || here.startsWith(href + '/');
+---
+
+<header class="header">
+  <div class="wrap bar">
+    <a class="wordmark" href={`${base}/`} aria-label="bambi, home">βambi</a>
+    <nav aria-label="sections">
+      <ul>
+        {
+          sections.map((s) => (
+            <li>
+              <a href={`${base}${s.href}`} class:list={{ open: open(s.href) }} aria-current={open(s.href) ? 'page' : undefined}>
+                {s.name}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .header {
+    border-bottom: var(--stroke-identity) solid var(--identity);
+  }
+  .bar {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--gap);
+    min-height: 56px;
+    flex-wrap: wrap;
+  }
+  .wordmark {
+    color: var(--text);
+    font-size: 19px;
+    letter-spacing: var(--tracking-wordmark);
+    align-self: center;
+    padding-block: 12px;
+  }
+  .wordmark:hover {
+    text-decoration: none;
+  }
+  ul {
+    display: flex;
+    gap: 4px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    flex-wrap: wrap;
+  }
+  nav a {
+    display: block;
+    color: var(--text);
+    font-size: var(--size-label);
+    letter-spacing: var(--tracking-label);
+    padding: 10px 10px 9px;
+  }
+  nav a:hover {
+    text-decoration: none;
+    background: var(--panel);
+  }
+  nav a.open {
+    background: var(--chosen);
+    color: var(--text-inverse);
+  }
+</style>

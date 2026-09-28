@@ -1,0 +1,190 @@
+/*  The plugins' look on the web: the palette of the plugins' Theme.h, black line work on a warm
+    off-white, lowercase labels, structure by rules and alignment, no rounding, no shadows. */
+
+:root {
+  /* palette, as the plugins draw it */
+  --off-white: #efede7;
+  --stone: #e5e2db;
+  --sand-light: #e1ddd4;
+  --sand: #d5d1c8;
+  --grey-light: #c8c4ba;
+  --grey-mid: #b7b2a8;
+  --silver: #a9a59c;
+  --grey-dark: #6f6b62;
+  --black: #1b1a17;
+  --blue: #5e8bae;
+  --orange: #d4873a;
+  --echo-green: #7cb27b;
+  --reverb-violet: #967bb2;
+
+  /* roles */
+  --ground: var(--off-white);
+  --panel: var(--stone);
+  --text: var(--black);
+  --label: var(--grey-dark);
+  --text-inverse: var(--off-white);
+  --rule: var(--grey-light);
+  --rule-strong: var(--black);
+  --chosen: var(--black);
+  --link: var(--blue);
+  --identity: var(--black); /* a plugin's page sets its own */
+
+  /* type */
+  --font: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --size-body: 16px;
+  --size-lede: 21px;
+  --size-title: 34px;
+  --size-label: 12px;
+  --size-small: 11px;
+  --tracking-label: 0.14em;
+  --tracking-wordmark: 0.3em;
+
+  /* space */
+  --gutter: 16px;
+  --measure: 68ch;
+  --page: 1040px;
+  --gap: 24px;
+  --section: 64px;
+
+  /* strokes */
+  --stroke-rule: 1px;
+  --stroke-identity: 2px;
+
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: var(--size-body);
+  line-height: 1.55;
+  font-variant-numeric: tabular-nums;
+}
+
+a {
+  color: var(--link);
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--link);
+  outline-offset: 2px;
+}
+
+h1,
+h2,
+h3 {
+  font-weight: 500;
+  line-height: 1.2;
+  margin: 0;
+  text-wrap: balance;
+}
+h1 {
+  font-size: var(--size-title);
+  letter-spacing: 0.01em;
+}
+h2 {
+  font-size: var(--size-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: lowercase;
+  color: var(--label);
+  padding-bottom: 6px;
+  border-bottom: var(--stroke-rule) solid var(--rule);
+  margin-bottom: 18px;
+}
+h3 {
+  font-size: 18px;
+}
+
+p {
+  margin: 0 0 1em;
+  max-width: var(--measure);
+}
+
+.label {
+  font-size: var(--size-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: lowercase;
+  color: var(--label);
+}
+
+.lede {
+  font-size: var(--size-lede);
+  line-height: 1.4;
+  max-width: 34ch;
+}
+
+.wrap {
+  max-width: var(--page);
+  margin: 0 auto;
+  padding-inline: var(--gutter);
+}
+
+/*  Prose written in Markdown: guidelines and a plugin's page. */
+.prose {
+  max-width: var(--measure);
+}
+.prose h2 {
+  margin-top: var(--section);
+}
+.prose h3 {
+  margin: 2em 0 0.5em;
+}
+.prose ul,
+.prose ol {
+  padding-left: 1.2em;
+  margin: 0 0 1em;
+}
+.prose li {
+  margin-bottom: 0.3em;
+}
+.prose code {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 0.9em;
+  background: var(--panel);
+  padding: 0.1em 0.3em;
+}
+.prose pre {
+  background: var(--panel);
+  padding: 14px 16px;
+  overflow-x: auto;
+}
+.prose pre code {
+  background: none;
+  padding: 0;
+}
+.prose table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 0 0 1.5em;
+  display: block;
+  overflow-x: auto;
+}
+.prose th,
+.prose td {
+  text-align: left;
+  padding: 6px 12px 6px 0;
+  border-bottom: var(--stroke-rule) solid var(--sand-light);
+  vertical-align: top;
+}
+.prose th {
+  font-weight: 500;
+  font-size: var(--size-label);
+  letter-spacing: var(--tracking-label);
+  color: var(--label);
+  border-bottom-color: var(--rule-strong);
+}

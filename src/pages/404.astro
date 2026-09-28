@@ -1,0 +1,15 @@
+---
+import Page from '../layouts/Page.astro';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<Page title="not found">
+  <h1>not found</h1>
+  <p class="label sub">nothing lives at this address. <a href={`${base}/`}>back to the start</a></p>
+</Page>
+
+<style>
+  .sub {
+    margin-top: 12px;
+  }
+</style>
