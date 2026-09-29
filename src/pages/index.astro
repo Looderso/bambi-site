@@ -1,18 +1,67 @@
 ---
+/*  The front page says what bambi is for and where to go next. The plugins themselves are on their
+    own page; this one points there rather than repeating it. */
 import Page from '../layouts/Page.astro';
-import PluginList from '../components/PluginList.astro';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+const ideas = [
+  {
+    title: 'moved by the music',
+    text: 'A sound can travel, turn or open up because of what it plays: silence parks it, a hit nudges it, a held note lets it drift. The music does the automation.',
+  },
+  {
+    title: 'shaped by ear',
+    text: 'Every control is a value you drag while you listen, and the sphere shows where the sound is and what the plugin does to it. Nothing needs to be worked out first.',
+  },
+  {
+    title: 'learned once',
+    text: 'Every plugin has the same window, the same matrix and the same gestures. Knowing one is knowing how to use the next.',
+  },
+];
+
+const next = [
+  { href: '/download', name: 'download', text: 'VST3 and CLAP for macOS, Windows and Linux. Free, and in alpha.' },
+  { href: '/tutorial', name: 'tutorial', text: 'The parts of the window, and what each is for.' },
+  { href: '/plugins', name: 'plugins', text: 'An encoder, an echo and a reverb, and what each one does.' },
+  { href: '/contribute', name: 'contribute', text: 'How to build bambi, and the rules its code is written by.' },
+];
 ---
 
 <Page>
   <section class="intro">
     <p class="label">an ambisonics plugin suite</p>
-    <h1 class="lede">An encoder that moves sound along paths you draw, an echo whose repeats turn through the field, and a reverb that puts the whole field in a room.</h1>
+    <h1>Sound all around the listener, shaped by ear and moved by the music itself.</h1>
     <p class="meta label">vst3 · clap · free and open source</p>
   </section>
 
+  <figure class="window">
+    <img src={`${base}/tutorial/window.webp`} alt="A bambi window: the sphere with the sound's energy on it, the modulation matrix, and the plugin's controls." width="2040" height="1200" />
+  </figure>
+
+  <section class="ideas">
+    {
+      ideas.map((idea) => (
+        <div>
+          <h2>{idea.title}</h2>
+          <p>{idea.text}</p>
+        </div>
+      ))
+    }
+  </section>
+
   <section>
-    <h2>the plugins</h2>
-    <PluginList />
+    <h2>where to go</h2>
+    <ul class="next">
+      {
+        next.map((n) => (
+          <li>
+            <a href={`${base}${n.href}`}>{n.name}</a>
+            <span>{n.text}</span>
+          </li>
+        ))
+      }
+    </ul>
   </section>
 </Page>
 
@@ -23,10 +72,48 @@ import PluginList from '../components/PluginList.astro';
     margin-bottom: var(--section);
   }
   .intro h1 {
-    font-size: var(--size-title);
     max-width: 22ch;
   }
   .intro p {
     margin: 0;
+  }
+  .window {
+    margin: 0 0 var(--section);
+  }
+  .window img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border: var(--stroke-rule) solid var(--rule);
+  }
+  .ideas {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: var(--gap);
+    margin-bottom: var(--section);
+  }
+  .ideas p {
+    margin: 0;
+  }
+  .next {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .next li {
+    display: grid;
+    grid-template-columns: minmax(0, 14rem) minmax(0, 1fr);
+    gap: var(--gap);
+    padding: 12px 0;
+    border-bottom: var(--stroke-rule) solid var(--sand-light);
+  }
+  .next span {
+    color: var(--label);
+  }
+  @media (max-width: 600px) {
+    .next li {
+      grid-template-columns: 1fr;
+      gap: 4px;
+    }
   }
 </style>
