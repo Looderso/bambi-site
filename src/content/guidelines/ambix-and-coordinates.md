@@ -40,7 +40,7 @@ Milliseconds likewise exist only at the interface. Inside, every time is in seco
 
 ## rotations
 
-An orientation is three angles, **yaw · pitch · roll**, the same rotation for a trajectory's placement and for
-a region. Each angle is one full turn and wraps: dragged past 180° it comes back in at −180°. Each has a rate
+An orientation is three angles, **yaw · pitch · roll**, the same rotation for everything that has an
+orientation. Each angle is one full turn and wraps: dragged past 180° it comes back in at −180°. Each has a rate
 beside it that keeps it turning. The number is always what was set; the turn a rate has added is shown beside
 it, and double-clicking the angle clears both.

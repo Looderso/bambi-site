@@ -15,7 +15,7 @@ core/         the engines, modulation, state and the link bus: C++20, no JUCE
 host/         the shared plugin processor: buses, parameters, state handoff, the link
 ui/           the shared interface: theme, controls, scene, matrix, header, preset browser
 editor/       where ui meets host: the window every plugin runs
-plugins/      encoder, echo, reverb: each plugin's processor, panel, check suite and picture tool
+plugins/      one folder per plugin: its processor, panel, check suite and picture tool
 tools/        render, bench and inspection tools, and the repository's checks
 tests/        golden scenarios and the conformance suite
 third_party/  vendored dependencies, and JUCE as a submodule
@@ -36,7 +36,7 @@ header includes a platform header, and there are no intrinsics or architecture f
 | 1 | `dsp`, `path`, `region` |
 | 2 | `patch`: parameters, state, undo |
 | 3 | `mod`: the modulation matrix |
-| 4 | `link`, `scene`, `encode`, `echo`, `reverb` |
+| 4 | `link`, `scene`, and one folder per plugin's engine |
 
 A folder may use its own layer and anything below. `tools/check-layers.sh` fails on an include that runs
 upward; when it does, move the type down rather than adding the include. Tests may reach anywhere.
@@ -47,8 +47,7 @@ upward; when it does, move the type down rather than adding the include. Tests m
 calls into shared layers. A third thing on a plugin's list is the signal to ask whether it belongs in a shared
 layer instead.
 
-Each engine lives in the core, in its own library (`bambi-encode`, `bambi-echo`, `bambi-reverb`), and a plugin
-links only its own.
+Each engine lives in the core, in a folder and library of its own, and a plugin links only its own.
 
 ## extract on second use
 

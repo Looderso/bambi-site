@@ -16,14 +16,14 @@ A panel has one kind or the other.
 
 | | a kind | a starting point |
 |---|---|---|
-| examples | a trajectory's shape, a region's kind | a room, an echo pattern |
+| example | a region's kind | a named set of values for a whole panel |
 | choosing it | shows that kind's own settings; those settings *are* the kind | writes every setting of its panel |
 | after an edit | the kind stays chosen: its settings were edited, it was not left | the entry stays marked as where you came from |
 | double-click | — | brings its values back |
 
 ## custom
 
-Where a second representation exists — nodes for a trajectory, weights for a region — the row ends in
+Where a second representation exists — a region's weights, a path's nodes — the row ends in
 `custom`. It is greyed until one exists, and reached only through **convert to custom**, a button under the
 kind's settings:
 
@@ -33,7 +33,7 @@ kind's settings:
 - converting again replaces the custom. It is one undoable edit, so nothing asks; a line under the button says
   what will be replaced.
 
-A room or a pattern has no second representation and never has a `custom` entry.
+A starting point has no second representation and never has a `custom` entry.
 
 ## the component
 

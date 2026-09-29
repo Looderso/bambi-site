@@ -7,23 +7,23 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
 const ideas = [
   {
-    title: 'moved by the music',
-    text: 'A sound can travel, turn or open up because of what it plays: silence parks it, a hit nudges it, a held note lets it drift. The music does the automation.',
+    title: 'driven by the signal',
+    text: 'Level, attack, tonality and three bands of the input, measured with no lookahead, drive any parameter through one modulation matrix, beside LFOs and envelopes.',
   },
   {
-    title: 'shaped by ear',
-    text: 'Every control is a value you drag while you listen, and the sphere shows where the sound is and what the plugin does to it. Nothing needs to be worked out first.',
+    title: 'interpretable',
+    text: 'The sphere shows what arrives and what the plugin adds, and a probe shows what it would do to any direction. Every value is set, modulated and read in the same box.',
   },
   {
-    title: 'learned once',
-    text: 'Every plugin has the same window, the same matrix and the same gestures. Knowing one is knowing how to use the next.',
+    title: 'one system',
+    text: 'Every plugin shares the window, the matrix, regions, presets and undo, and every instance in a project can be edited from any window.',
   },
 ];
 
 const next = [
   { href: '/download', name: 'download', text: 'VST3 and CLAP for macOS, Windows and Linux. Free, and in alpha.' },
   { href: '/tutorial', name: 'tutorial', text: 'The parts of the window, and what each is for.' },
-  { href: '/plugins', name: 'plugins', text: 'An encoder, an echo and a reverb, and what each one does.' },
+  { href: '/plugins', name: 'plugins', text: 'What each plugin does.' },
   { href: '/contribute', name: 'contribute', text: 'How to build bambi, and the rules its code is written by.' },
 ];
 ---
@@ -31,8 +31,8 @@ const next = [
 <Page>
   <section class="intro">
     <p class="label">an ambisonics plugin suite</p>
-    <h1>Sound all around the listener, shaped by ear and moved by the music itself.</h1>
-    <p class="meta label">vst3 · clap · free and open source</p>
+    <h1>Intuitive yet powerful spatialization.</h1>
+    <p class="meta label">ambix at any order · vst3 · clap · free and open source</p>
   </section>
 
   <figure class="window">

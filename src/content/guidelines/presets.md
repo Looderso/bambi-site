@@ -14,7 +14,7 @@ regions, and the plugin's own state. It is the saved state without what makes an
 |---|---|
 | the instance's identity: session, id, name | a preset is loaded into an instance |
 | which preset it came from | that belongs to the session, not the sound |
-| the encoder's input mode | it says what is plugged in, not how it sounds |
+| a source plugin's input mode | it says what is plugged in, not how it sounds |
 | how the scene is looked at | that is never state |
 
 The format is the state's, so it is as tolerant: read by name, a missing key at its default, an unknown one

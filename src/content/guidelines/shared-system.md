@@ -6,7 +6,7 @@ order: 20
 ---
 
 bambi is several plugins built as one program. A slider, a matrix and an undo stack are written once and used
-by every plugin; a plugin that redrew them would be three codebases wearing a family name. The boundary between
+by every plugin; a plugin that redrew them would be one more codebase wearing a family name. The boundary between
 shared and owned is not what looks similar, but **what would have to change in two places if it changed at
 all.**
 
@@ -14,11 +14,8 @@ all.**
 
 Exactly two things: **its engine** and **its parameter set**.
 
-| plugin | takes | gives | engine |
-|---|---|---|---|
-| encoder | a mono or stereo track | an ambisonic field | places a source on the sphere along a path, moved by the input's own features |
-| echo | an ambisonic field | an ambisonic field | four loops fed by one send region, each turned, slid and blurred a little further every pass |
-| reverb | an ambisonic field | an ambisonic field | one room: early reflections read from the direction each part of the field arrives from, and a tail |
+A plugin is one of two kinds. A **source plugin** takes a mono or stereo track and places it in the field. A
+**field effect** takes an ambisonic field and gives one back. What each plugin does is on its own page.
 
 ## what is shared
 
@@ -50,12 +47,12 @@ each plugin's. See [modulation](/contribute/modulation) and [features](/contribu
 ## repeating patterns are one component
 
 If the same interaction appears in two places, it is one component or it is a defect. The choice between free
-and synced timing appears in the LFOs and in Echo's taps: it is one control, drawn one way, with one behaviour,
-and only its labels follow what the number means. A plugin that needs something close to an existing component
+and synced timing appears wherever a time can follow the host's tempo: it is one control, drawn one way, with
+one behaviour, and only its labels follow what the number means. A plugin that needs something close to an existing component
 extends that component.
 
 ## chaining instead of modules
 
-The plugins do not contain each other. An echo of a room is a Reverb followed by an Echo on the same track;
-a hole in the field, a spotlight or a tremolo by direction is a region, applied wherever it is wanted. A dry
+The plugins do not contain each other. Two effects combined are two plugins in a row on the track; a hole in
+the field, a spotlight or a tremolo by direction is a region, applied wherever it is wanted. A dry
 path is the host's. Keeping each plugin to one engine is what keeps each one small enough to understand.

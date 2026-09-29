@@ -5,8 +5,8 @@ group: design
 order: 24
 ---
 
-A region says **where** on the sphere something happens: which part of the field an echo hears, where a room
-comes back, where a source slows down.
+A region says **where** on the sphere something happens: which part of the field an effect hears, where its
+result comes back, where a source slows down.
 
 ## what a region is
 
@@ -40,18 +40,18 @@ A region is exactly its weights, with nothing clipped after them. Clipping would
 The cost of being linear is ringing: at a sharp edge the gain overshoots a little above 1 and below 0. Softness
 and a higher order reduce it. The finest edge an order can draw is roughly 180° / (N + 1), 45° at third order.
 
-In the encoder a region is evaluated directly at the source's direction, with no projection, so there it is
-exact: no ringing, no order ceiling, and always between 0 and 1.
+In a source plugin a region is evaluated directly at the source's direction, with no projection, so there it
+is exact: no ringing, no order ceiling, and always between 0 and 1.
 
 ## where a region acts
 
-| plugin | regions |
-|---|---|
-| encoder | one, as a modulation source: its value at the source's direction |
-| echo | one: the send, which part of the field the taps hear |
-| reverb | two: the send, what enters the room, and the return, where the room comes back |
+Each plugin has a fixed set of region slots, each named by its role:
 
-A **send** is a region on the way in; a **return** is one on the way out. There is no routing between several
+| role | where it acts |
+|---|---|
+| **send** | on the way in: which part of the field enters the effect |
+| **return** | on the way out: where the effect's result goes back into the field |
+| **source** | in a source plugin: a modulation source, the region's value at the source's direction | There is no routing between several
 sends and returns: once signals sum inside an engine, a send can no longer be traced to a return, and a
 routing matrix would promise what it cannot do.
 

@@ -23,7 +23,7 @@ bambi's to maintain and is written to go upstream.
 
 ## one rule for every plugin
 
-- **The main input is fixed.** Mono or stereo for the encoder; the field, (N+1)² channels, for an effect.
+- **The main input is fixed.** Mono or stereo for a source plugin; the field, (N+1)² channels, for a field effect.
 - **The main output is ambisonic**, at the highest order that fits the channel count. Channels beyond it are
   silent.
 - **The sidechain is a real aux bus**, never a wide main bus read past its first pair. For an effect it comes

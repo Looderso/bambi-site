@@ -16,7 +16,7 @@ whole matrix; everything below is what each part promises.
 | **feature** | a measurement of the input; see [features](/contribute/features) | 0 to 1 |
 | **LFO** | a wave in time, free or synced | −1 to 1, reshaped by its polarity |
 | **envelope** | a shape set off by a MIDI note or by a feature crossing a threshold | 0 to 1, reshaped by its polarity |
-| **region** (encoder) | how far the source is inside the encoder's region | exactly 0 to 1 |
+| **region** | in a source plugin: how far the source is inside the plugin's region | exactly 0 to 1 |
 
 Every source is normalised where it enters, so a depth of 1 means the same in every cell: this source at full
 deflection covers the target's full span.
