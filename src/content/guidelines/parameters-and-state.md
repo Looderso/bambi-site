@@ -2,7 +2,7 @@
 title: parameters and state
 summary: "Keys are forever: append, never rename, never remove. Everything else is read by name."
 group: working
-order: 10
+order: 8
 ---
 
 A host saves automation and sessions by a parameter's key. A key that changes breaks every project that used
@@ -37,7 +37,7 @@ saved.
 
 State is read **by name**. A missing key takes its default, an unknown one is ignored, and a value that is not
 valid loads as something that can be evaluated. A document made today opens after a parameter is added
-tomorrow: the format grows by name. Numbers inside keys parse strictly: `"1x"` is not slot 1.
+tomorrow: the format grows by name.
 
 ## what a preset holds
 

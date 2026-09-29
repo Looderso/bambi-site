@@ -1,62 +1,45 @@
 ---
 title: the working rules
-summary: "Seven rules every change is held to, whoever makes it."
+summary: "The rules every change is held to, whoever makes it."
 group: working
 order: 2
 ---
 
-These are rules, not preferences. Each exists because breaking it has cost something real, and each has a
-page of its own below where there is more to say.
+These are rules, not preferences. Most have a page of their own with the detail.
 
 ## 1. avoid the build circle
 
-Anything that can be decided without compiling a plugin is decided without compiling a plugin. The core
-carries no JUCE, builds in about a second and runs its tests on every save. That short loop is the project's
-central discipline: a question answered in the core is answered in seconds, the same question answered in a
-host costs minutes and a restart. So the musical logic lives in the core, and the plugin is a thin layer over
+Anything that can be decided without compiling a plugin is decided without compiling a plugin. The musical
+logic lives in the core, which carries no JUCE and runs its tests on every save; the plugin is a thin layer over
 it. See [where code lives](/contribute/where-code-lives).
 
-## 2. prototype in the browser, port the findings
+## 2. prototype first, port the findings
 
-A question about feel, sound or interaction is settled in a small, self-contained HTML prototype before any C++
-is written: it is fast, disposable and visible. What ports is the finding, the numbers and the behaviour. The
-prototype's code does not.
+A question about feel, sound or interaction is settled in a small, self-contained browser prototype before any
+C++ is written. What ports is the finding: the numbers and the behaviour, never the prototype's code. A
+prototype settles sound and behaviour; how things look is settled by the built interface and the theme.
 
 ## 3. design each thing once
 
-The shared component is the reference. **A copy of a shared component is a defect.** If a plugin needs a
-component to behave differently, the component grows an option, or the difference is argued and recorded.
-The standing example is the choice between free timing and timing synced to the host: it appears in the LFOs,
-in Echo's taps and in its offsets, and it is one control with one interaction, not three. See
-[the shared system](/contribute/shared-system).
+The shared component is the reference, and **a copy of it is a defect.** If a plugin needs different behaviour,
+the component grows an option. No plugin is the reference for the others, not even the first one built: the
+suite is uniform, and where two plugins genuinely differ, the component and the interaction stay the same and
+only the labels change. See [the shared system](/contribute/shared-system).
 
 ## 4. measure, do not assert
 
-Every number about cost comes from a run, in a Release build. A Debug build gives an entirely wrong picture of
-what costs what. Cost is reported as a share of one core at 128 samples and 48 kHz. See
-[measuring](/contribute/measuring).
+A claim about cost comes from a run, in a Release build, reported as a share of one core at 128 samples and
+48 kHz. A number that was not run is marked as an estimate, with what it was estimated from.
 
 ## 5. tests are mutation-checked
 
-A test that still passes when the code under it is broken is not a test. Every test names the mistake it
-catches, and it has been seen to fail against that mistake. See [tests](/contribute/tests).
+A test that still passes when the code under it is broken is not a test. See [tests and checks](/contribute/tests).
 
 ## 6. nothing on the audio thread allocates, frees or locks
 
-The audio thread computes and nothing else. State reaches it as a finished snapshot, adopted by pointer; what
-it produces leaves the same way. See [the audio thread](/contribute/the-audio-thread).
+And a bounce matches what was heard. See [the audio thread](/contribute/the-audio-thread).
 
-## 7. a bounce matches what was heard
+## 7. discuss before building
 
-An offline render equals the realtime playback in every sample, at every block size. Nothing depends on another
-instance's live value, because a host freezes and bounces tracks one at a time. See
-[determinism](/contribute/determinism).
-
-## and in the code itself
-
-- **Comments say what the code does**: units, invariants, which thread, a reason a reader needs now. Never a
-  history, a ticket, or who decided. Comment only what the code cannot say for itself. See
-  [code style](/contribute/code-style).
-- **One concept, one place.** A value's range and default live once, in the plugin's parameter list; a colour
-  lives once, in the theme file. A second copy drifts.
-- **Unused code is removed**, not kept for later.
+A change to the design, to how something behaves for a musician, or to a plugin's parameter keys starts as an
+issue, not as code. See [making a change](/contribute/making-a-change).

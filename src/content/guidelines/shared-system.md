@@ -27,15 +27,15 @@ link bus and the scene's geometry. Every plugin's musical behaviour is here, tes
 
 **The infrastructure.**
 
-- **Undo and redo**, over the whole document, in the header of every window.
+- **Undo and redo.** Every edit is one named undo step, whatever made it: a drag, a preset load, a region
+  pasted, an edit arriving from another window over the link. Host parameters change inside gestures, so the
+  host records them as automation and undoes them as its own.
 - **State and parameters**: each plugin has its own key list, built with one shared pattern, and blocks that
   every plugin has are stamped from one definition. See [parameters and state](/contribute/parameters-and-state).
 - **The link**: one bus, one session per project, every kind of instance on it. Definitions travel; values
   that drive audio do not.
 - **Regions**: the concept, the code and the parameter layout. A region itself belongs to one plugin. See
   [regions](/contribute/regions).
-- **Ducking**, which is a row in the shared matrix and not a module. See
-  [detection and ducking](/contribute/detection-and-ducking).
 - **Presets**: one browser and one file format. See [presets](/contribute/presets).
 
 **The window.** One component library, with one file for the look. The layout is the same in every plugin:
@@ -44,14 +44,15 @@ header, the settings page, the scene, the probe and the region editor are each o
 [the look](/contribute/the-look).
 
 **The modulation matrix.** The component and the workflow are shared; the targets each plugin offers are its
-own. The generators, three LFOs and three envelopes, are in every plugin. See
-[modulation](/contribute/modulation).
+own. The generators, three LFOs and three envelopes, are in every plugin; the features are
+each plugin's. See [modulation](/contribute/modulation) and [features](/contribute/features).
 
 ## repeating patterns are one component
 
 If the same interaction appears in two places, it is one component or it is a defect. The choice between free
-and synced timing appears in the LFOs, in Echo's tap period and in its offset: it is one control, drawn one way,
-with one behaviour. A new plugin that needs something close to an existing component extends that component.
+and synced timing appears in the LFOs and in Echo's taps: it is one control, drawn one way, with one behaviour,
+and only its labels follow what the number means. A plugin that needs something close to an existing component
+extends that component.
 
 ## chaining instead of modules
 

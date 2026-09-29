@@ -13,7 +13,7 @@ whole matrix; everything below is what each part promises.
 
 | kind | what it is | range |
 |---|---|---|
-| **feature** | a measurement of the input | 0 to 1 |
+| **feature** | a measurement of the input; see [features](/contribute/features) | 0 to 1 |
 | **LFO** | a wave in time, free or synced | −1 to 1, reshaped by its polarity |
 | **envelope** | a shape set off by a MIDI note or by a feature crossing a threshold | 0 to 1, reshaped by its polarity |
 | **region** (encoder) | how far the source is inside the encoder's region | exactly 0 to 1 |
@@ -41,8 +41,8 @@ an angle is limited in how fast it may turn, and a value that is one turn is smo
 
 A target owns its **base value**, the parameter itself; a bias never competes for a cell.
 
-Not every parameter can be a target. See [the audio thread](/contribute/the-audio-thread) for the rule: its
-effect must be recomputable on the audio thread in bounded work.
+Not every parameter can be a target: its effect must be recomputed on the audio thread in bounded work. See
+[the audio thread](/contribute/the-audio-thread).
 
 ## the clock is not a source
 
@@ -51,10 +51,7 @@ itself never passes through the matrix. Constant motion is a non-zero speed, nev
 
 ## determinism
 
-Each source kind says why a render repeats. A feature is a function of the audio. A synced LFO set to restart
-is a function of the song position. A free LFO and every rate restart with the transport, so a render agrees
-from the same start point. A random source is seeded. The one exception is a musician's choice to let something
-**continue**, and the window says so. See [determinism](/contribute/determinism).
+Every source kind says why a render repeats; see [the audio thread](/contribute/the-audio-thread).
 
 ## the interface
 

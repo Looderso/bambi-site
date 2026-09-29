@@ -7,9 +7,8 @@ order: 25
 
 ## one component, several projections
 
-The scene is one component. A projection is a pair of functions, from a direction to a point on the screen and
-back. Drawing, hit-testing, dragging and hover are written once against that pair, so a new view costs about
-fifteen lines.
+The scene is one component. Drawing, hit-testing, dragging and hover are written once against a projection, so a
+new view is a new projection and nothing else.
 
 | view | what it is | editable |
 |---|---|---|
@@ -21,13 +20,11 @@ has a seam to special-case.
 
 ## interaction
 
-- **A drag and a click are told apart by movement**, 4 pixels of slop, never by where the press was.
+- **A drag and a click are told apart by movement**, never by where the press was.
 - **A view that turns keeps dragging for the camera.** A flat view has no camera, so a press can place and
   drag in one gesture. The difference follows from the camera; forcing the two to match makes both worse.
 - **Nothing is dragged that is not free to move.** An encoder's source is on its path, so dragging it turns the
   view instead.
-- **A held handle is re-applied every frame**, not only when the pointer moves, so a region turning under a
-  rate does not slip out from under a still pointer.
 
 ## the colours
 
@@ -44,11 +41,8 @@ These are roles in the theme, separate from the controls' colours. Changing one 
 
 ## the energy picture
 
-Every plugin can show **energy by direction**, drawn through the same projections as everything else. It is
-the one thing in a window that costs, so it is **off when a window opens**, and while it is off the audio thread
-gathers nothing. The audio thread hands over a small per-block summary of the field and never draws.
-
-A window can show another instance's energy: it asks, and that instance gathers only while someone is asking.
+Every plugin can show **energy by direction**. It is **off when a window opens**, and while it is off the audio
+thread gathers nothing; when it is on, the audio thread hands over a small summary of the field and never draws.
 
 ## regions in the scene
 
@@ -69,9 +63,3 @@ It is an indicator of what would happen, not a measurement, and the measured ene
 
 A field effect cannot know where its sources are; it only sees a field. What it can always answer is what it
 would do to a direction it is pointed at. That is why effects have a probe where the encoder has a source.
-
-## what the tests cannot see
-
-Tests check what is computed, not what is drawn, and a defect in the drawing passes all of them. Look at the
-picture: the picture tools draw every view to a PNG. See
-[building and checking](/contribute/building).

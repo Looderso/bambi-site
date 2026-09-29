@@ -21,7 +21,7 @@ breathe with the music.
 `convert to custom` turns the path into nodes you edit on the sphere:
 
 - **drag a node** to move it, and its handles to bend the curve; **alt-drag** a handle to make a corner;
-- **click the curve** to add a node exactly there;
+- **click the curve** to add a node there;
 - **shift-click a node** to delete it.
 
 The kind you converted from is kept, so you can go back to it.

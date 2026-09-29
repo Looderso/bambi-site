@@ -2,7 +2,7 @@
 title: code style
 summary: "Formatted by one file, commented for the reader, and nothing kept that nothing uses."
 group: working
-order: 8
+order: 5
 ---
 
 ## formatting
@@ -36,8 +36,8 @@ no numbers or references either.
 
 ## naming
 
-Degrees exist at the interface and in the parameters; radians everywhere inside. A name says which, where it
-could be either. Milliseconds exist only at the interface; stored times are in seconds.
+Degrees and milliseconds exist at the interface and in the parameters; inside, angles are radians and times are
+seconds. Where a value could be either, its name says which. See [AmbiX and coordinates](/contribute/ambix-and-coordinates).
 
 ## what stays
 

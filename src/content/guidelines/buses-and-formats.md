@@ -26,8 +26,8 @@ bambi's to maintain and is written to go upstream.
 - **The main input is fixed.** Mono or stereo for the encoder; the field, (N+1)² channels, for an effect.
 - **The main output is ambisonic**, at the highest order that fits the channel count. Channels beyond it are
   silent.
-- **The sidechain is a real aux bus.** Never a wide main bus read past its first pair: a host that sent a
-  sidechain into channels 3 and 4 of a wide main input would have it land inside the signal.
+- **The sidechain is a real aux bus**, never a wide main bus read past its first pair. For an effect it comes
+  after the field.
 
 A new plugin joins by declaring its buses. The checks are the same for all of them.
 
@@ -41,21 +41,6 @@ A new plugin joins by declaring its buses. The checks are the same for all of th
 4. unused output channels are silent;
 5. renders are bit-identical at block sizes 1 to 1024;
 6. an offline bounce equals realtime in every sample.
-
-## in a host
-
-What a host actually does, found by running the plugins in one:
-
-- **Hosts often give a track only even channel counts.** An order that needs an odd count then runs with a
-  spare, silent channel: 10 channels are 2nd order and one unused.
-- **A host may size the sidechain bus to the track's width**, and route a send to its first pair. Refusing a
-  wide main input is what makes that pair the sidechain.
-- **An effect's sidechain comes after the field**: at 3rd order, after the first 16 channels. Route to the
-  channels after the field, and in some hosts map them onto the sidechain pins.
-- **A host's own parameter slider may not reach an exact value.** Exact entry belongs in the plugin's own
-  window, which is one reason every value is a box you can drag finely.
-- **Offline and realtime renders, with automation on every plugin, null to silence.** A loop's jump back is
-  treated as a locate, and a host that splits its block at the loop's end gives every pass the same start.
 
 The settings page shows what the host negotiated: the sample rate, the channels in, out and on the sidechain,
 and the transport.
