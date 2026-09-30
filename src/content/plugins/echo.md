@@ -1,7 +1,7 @@
 ---
 name: echo
 summary: "Four echoes that turn through the field as they repeat."
-colour: "#7cb27b"
+colour: "#6f9a74"
 order: 2
 ---
 
