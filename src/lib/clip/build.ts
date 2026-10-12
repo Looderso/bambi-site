@@ -18,6 +18,11 @@ export interface ClipSettings {
 
 const build = (g: Geometry, grip: Grip, fit: Fit) => kindOf(grip.kind).build(g, grip.values, fit);
 
+/** The headphone grip alone, as the clip holds it: for a test print. */
+export function headphoneGrip(g: Geometry, s: Pick<ClipSettings, 'headphones' | 'fit'>) {
+  return build(g, s.headphones, s.fit);
+}
+
 /** The tracker grip alone, facing +y with its attachment face on y = 0: for a test print, and for the clip. */
 export function trackerGrip(g: Geometry, s: Pick<ClipSettings, 'tracker' | 'fit'>) {
   const t = build(g, s.tracker, s.fit);

@@ -73,6 +73,9 @@ const printHints = {
                 </div>
               ))}
               <p class="hint" data-hint-line />
+              <button type="button" class="button" data-export={end.id}>
+                {end.id === 'tracker' ? 'tracker grip' : 'headphone grip'} · stl
+              </button>
             </section>
           ))
         }
@@ -98,17 +101,11 @@ const printHints = {
       </section>
 
       <section class="export">
-        <div class="buttons">
-          <button type="button" class="button main" data-export="clip">export clip · stl</button>
-          <button type="button" class="button" data-export="test">test grip · stl</button>
-        </div>
+        <button type="button" class="button main" data-export="clip">export clip · stl</button>
         <p class="hint">
-          The test grip is the tracker's end alone: print it first to check the fit. Print lying flat as exported, with no
-          supports. The file's name and the page's address keep the settings.
-        </p>
-        <p class="fine">
-          Exported models are <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>: print, share and change
-          them, with credit to bambi.wiki.
+          Print flat as exported, with no supports; check a fit with one end's grip first. The file's name and the page's
+          address keep the settings. Models are <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>, with
+          credit to bambi.wiki.
         </p>
       </section>
     </form>
@@ -121,7 +118,7 @@ const printHints = {
   import * as THREE from 'three';
   import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
   import { kindOf, kinds, presets, presetsFor } from '../../lib/clip/grips';
-  import { airpodGhost, clip, trackerGrip, type ClipSettings } from '../../lib/clip/build';
+  import { airpodGhost, clip, headphoneGrip, trackerGrip, type ClipSettings } from '../../lib/clip/build';
   import { binaryStl } from '../../lib/clip/stl';
   import type { End, Geometry } from '../../lib/clip/types';
 
@@ -279,7 +276,7 @@ const printHints = {
     }
   }
 
-  function download(name: string, solid: any) {
+  function download(name: string, solid: any, ends: End[] = endsOf) {
     const s = settings();
     const header = 'bambi.wiki tracker clip, CC BY 4.0';
     const blob = new Blob([binaryStl(solid.getMesh(), header)], { type: 'model/stl' });
@@ -287,7 +284,8 @@ const printHints = {
     const describe = (end: End) =>
       `${state[end].kind}-` + kindOf(state[end].kind).measures.map((m) => `${m.key}${s[end].values[m.key]}`).join('-');
     a.href = URL.createObjectURL(blob);
-    a.download = `bambi-${name}_${describe('tracker')}_${describe('headphones')}_tol${s.fit.tolerance}-wall${s.fit.wall}-gap${s.reach}.stl`;
+    const gap = ends.length === 2 ? `-gap${s.reach}` : '';
+    a.download = `bambi-${name}_${ends.map(describe).join('_')}_tol${s.fit.tolerance}-wall${s.fit.wall}${gap}.stl`;
     a.click();
     setTimeout(() => URL.revokeObjectURL(a.href), 1000);
   }
@@ -303,7 +301,8 @@ const printHints = {
       }
     }
     if (b.dataset.export === 'clip') return download('tracker-clip', clip(g, settings()));
-    if (b.dataset.export === 'test') return download('test-grip', trackerGrip(g, settings()).solid);
+    if (b.dataset.export === 'tracker') return download('tracker-grip', trackerGrip(g, settings()).solid, ['tracker']);
+    if (b.dataset.export === 'headphones') return download('headphone-grip', headphoneGrip(g, settings()).solid, ['headphones']);
     showForm();
     remember();
     rebuild();
@@ -373,7 +372,7 @@ const printHints = {
     top: calc(var(--header) + 16px);
   }
   .form section {
-    margin-bottom: 28px;
+    margin-bottom: 20px;
   }
   .form {
     padding-top: 6px;
@@ -487,16 +486,14 @@ const printHints = {
   }
   .hint[data-hint-line] {
     min-height: 1.5em;
-    margin: 8px 0 0;
+    margin: 4px 0;
   }
   .export {
     display: grid;
     gap: 10px;
   }
-  .buttons {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
+  [data-end] .button {
+    width: 100%;
   }
   .button {
     font: inherit;
