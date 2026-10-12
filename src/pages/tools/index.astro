@@ -1,12 +1,14 @@
 ---
 import Page from '../../layouts/Page.astro';
+import Cards from '../../components/Cards.astro';
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const tools = [
   {
-    href: '/tools/tracker-clip',
-    name: 'tracker clip',
+    href: `${base}/tools/tracker-clip`,
+    title: 'tracker clip',
     text: 'A printable clip that holds a head tracker, or an AirPod, on the headphones you listen on.',
+    kind: 'printable',
   },
 ];
 ---
@@ -14,42 +16,11 @@ const tools = [
 <Page title="tools" description="Small tools around working with bambi.">
   <h1>tools</h1>
   <p class="sub label">small things around working with bambi</p>
-  <ul class="list">
-    {
-      tools.map((t) => (
-        <li>
-          <a href={`${base}${t.href}`}>{t.name}</a>
-          <span>{t.text}</span>
-        </li>
-      ))
-    }
-  </ul>
+  <Cards items={tools} />
 </Page>
 
 <style>
   .sub {
     margin: 12px 0 var(--section);
-  }
-  .list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    border-top: var(--stroke-rule) solid var(--rule-strong);
-  }
-  li {
-    display: grid;
-    grid-template-columns: minmax(0, 14rem) minmax(0, 1fr);
-    gap: var(--gap);
-    padding: 12px 0;
-    border-bottom: var(--stroke-rule) solid var(--sand-light);
-  }
-  li span {
-    color: var(--label);
-  }
-  @media (max-width: 600px) {
-    li {
-      grid-template-columns: 1fr;
-      gap: 4px;
-    }
   }
 </style>

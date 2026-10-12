@@ -1,13 +1,19 @@
 ---
 import { getCollection } from 'astro:content';
 import Page from '../../layouts/Page.astro';
+import Cards from '../../components/Cards.astro';
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const guidelines = (await getCollection('guidelines')).sort((a, b) => a.data.order - b.data.order);
 const groups = [
-  { id: 'working', title: 'working on bambi', guidelines: guidelines.filter((g) => g.data.group === 'working') },
-  { id: 'design', title: 'how bambi is designed', guidelines: guidelines.filter((g) => g.data.group === 'design') },
-];
+  { id: 'working', title: 'working on bambi' },
+  { id: 'design', title: 'how bambi is designed' },
+].map((group) => ({
+  ...group,
+  items: guidelines
+    .filter((g) => g.data.group === group.id)
+    .map((g) => ({ href: `${base}/contribute/${g.id}`, title: g.data.title, text: g.data.summary })),
+}));
 ---
 
 <Page title="contribute" description="How to build bambi, the rules its code is written by, and how it is designed.">
@@ -18,7 +24,8 @@ const groups = [
     <p>
       bambi is free and open source, and <a href="https://github.com/Looderso/bambi">its code is on GitHub</a>.
       The first list is how to work on it: how to build and check a change, and the rules the code is written by.
-      The second is how bambi is designed, one concept to a page, so a change fits what is already there.
+      The second is how bambi is designed, one concept to a page, so a change fits what is already there. Each
+      page leads to the next, so either list can be read in order.
     </p>
   </div>
 
@@ -26,14 +33,7 @@ const groups = [
     groups.map((group) => (
       <section>
         <h2>{group.title}</h2>
-        <ul class="list">
-          {group.guidelines.map((g) => (
-            <li>
-              <a href={`${base}/contribute/${g.id}`}>{g.data.title}</a>
-              <span>{g.data.summary}</span>
-            </li>
-          ))}
-        </ul>
+        <Cards items={group.items} style="row" />
       </section>
     ))
   }
@@ -48,26 +48,5 @@ const groups = [
   }
   section {
     margin-bottom: var(--section);
-  }
-  .list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-  li {
-    display: grid;
-    grid-template-columns: minmax(0, 14rem) minmax(0, 1fr);
-    gap: var(--gap);
-    padding: 12px 0;
-    border-bottom: var(--stroke-rule) solid var(--sand-light);
-  }
-  li span {
-    color: var(--label);
-  }
-  @media (max-width: 600px) {
-    li {
-      grid-template-columns: 1fr;
-      gap: 4px;
-    }
   }
 </style>

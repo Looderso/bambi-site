@@ -78,4 +78,4 @@ The golden audio hashes belong to one toolchain, Apple clang on arm64. Other sys
 
 Each plugin has a picture tool, built beside it under `build-plugin/plugins/`, that draws its real editor to a
 PNG with no host. `tools/verify.sh` runs every one in every view it knows, which is also the list of views. If
-the view you need has no mode, add one to the tool. The pictures in the [tutorial](/tutorial) are drawn this way.
+the view you need has no mode, add one to the tool. The pictures in the [tutorial](/tutorial/the-window) are drawn this way.

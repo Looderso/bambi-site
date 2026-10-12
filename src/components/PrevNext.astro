@@ -1,0 +1,65 @@
+---
+/*  Previous and next at the end of a page that is read in order: a guideline, a tutorial. */
+interface Link {
+  href: string;
+  title: string;
+}
+interface Props {
+  previous?: Link;
+  next?: Link;
+}
+const { previous, next } = Astro.props;
+---
+
+{
+  (previous || next) && (
+    <nav class="prevnext" aria-label="previous and next">
+      {previous ? (
+        <a href={previous.href}>
+          <span class="label">← previous</span>
+          <span>{previous.title}</span>
+        </a>
+      ) : (
+        <span />
+      )}
+      {next && (
+        <a href={next.href} class="next">
+          <span class="label">next →</span>
+          <span>{next.title}</span>
+        </a>
+      )}
+    </nav>
+  )
+}
+
+<style>
+  .prevnext {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-top: var(--section);
+    border-top: var(--stroke-rule) solid var(--rule-strong);
+    padding-top: 14px;
+  }
+  a {
+    display: grid;
+    gap: 2px;
+    color: var(--text);
+    padding: 8px 10px;
+  }
+  a:hover {
+    background: var(--panel);
+    text-decoration: none;
+  }
+  .next {
+    text-align: right;
+  }
+  .label {
+    font-size: var(--size-small);
+  }
+  @media (max-width: 640px) {
+    .prevnext {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -32,6 +32,21 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
       <slot />
     </main>
     <Footer />
+    <script>
+      /*  Every code block in prose gets a copy button. */
+      for (const pre of document.querySelectorAll<HTMLElement>('.prose pre')) {
+        const button = document.createElement('button');
+        button.className = 'copy';
+        button.type = 'button';
+        button.textContent = 'copy';
+        button.addEventListener('click', async () => {
+          await navigator.clipboard.writeText(pre.querySelector('code')?.textContent ?? '');
+          button.textContent = 'copied';
+          setTimeout(() => (button.textContent = 'copy'), 1500);
+        });
+        pre.append(button);
+      }
+    </script>
   </body>
 </html>
 

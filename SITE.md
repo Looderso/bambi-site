@@ -19,7 +19,7 @@ The header lists them in this order. Each is a label on this repository's issues
 | section | address | for | source |
 |---|---|---|---|
 | **plugins** | `/plugins`, `/plugins/<plugin>` | what each plugin does, its tabs, a few things to try | `src/content/plugins/*.md` |
-| **tutorial** | `/tutorial`, `/tutorial/<topic>` | how to use bambi, step by step, with pictures | `src/content/tutorials/*` |
+| **tutorial** | `/tutorial`, `/tutorial/<topic>` | how to use bambi, step by step, with pictures | `src/pages/tutorial/<id>.astro`, listed in `src/lib/tutorials.ts` |
 | **tools** | `/tools`, `/tools/<tool>` | small things around working with bambi that run in the browser | `src/pages/tools/`, `src/lib/<tool>/` |
 | **foundations** | `/foundations` | the research and software bambi builds on, credited | `src/pages/foundations.astro` |
 | **contribute** | `/contribute`, `/contribute/<guideline>` | how to work on bambi, and how it is designed | `src/content/guidelines/*.md` |
@@ -92,8 +92,11 @@ rather than boxes, no rounding, no shadows.
 
 - **A plugin:** a Markdown file in `src/content/plugins/` with its `name`, `summary`, `colour` and `order`. It
   appears on `/plugins` and on its own page.
-- **A tutorial:** a file in `src/content/tutorials/`. If it needs pictures, add their shots and crops to
-  `scripts/tutorial-pictures.sh`.
+- **A tutorial:** a page in `src/pages/tutorial/`, and an entry in `src/lib/tutorials.ts` that puts it on
+  `/tutorial` in its group and gives it its previous and next. If it needs pictures, add their shots and crops
+  to `scripts/tutorial-pictures.sh`.
+- **A list of pages to go to** uses `src/components/Cards.astro`: tiles for a few entries that each deserve
+  weight, rows for a longer list read in order. A page read in order ends with `PrevNext.astro`.
 - **A guideline:** a Markdown file in `src/content/guidelines/` with its `title`, `summary`, `group` and
   `order`. It appears on `/contribute` in its group.
 - **A tool:** its code in `src/lib/<tool>/`, its page in `src/pages/tools/`, and an entry in the list in

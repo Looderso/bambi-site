@@ -5,6 +5,7 @@
 import Page from '../layouts/Page.astro';
 
 const repo = 'https://github.com/Looderso/bambi';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const releases = `${repo}/releases`;
 
 interface System {
@@ -54,7 +55,8 @@ const zip = (id: string) => `${releases}/latest/download/bambi-${id}.zip`;
     <p>
       bambi is in <strong>alpha</strong>: expect things to change between releases, and please{' '}
       <a href={`${repo}/issues`}>report what breaks</a>. The builds are not signed yet, which on macOS and Windows
-      takes one extra step, below.
+      takes one extra step, below. Which hosts bambi has been tried in, and what does not work yet, is on the
+      <a href={`${base}/status`}>status</a> page.
     </p>
     <p class="label release" data-release hidden></p>
   </div>

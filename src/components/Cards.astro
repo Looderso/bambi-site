@@ -1,0 +1,150 @@
+---
+/*  A list of pages to go to, drawn as the plugins draw their controls. `tile` is a value box: a rule
+    outline, a small label above, the title and a grey summary; for a few entries that each deserve weight.
+    `row` is a strip row: title and summary on one line, a bar down the left edge where the pointer is; for a
+    longer list read in order. A `colour` is a plugin's own, worn on a tile's top rule and a row's bar. */
+interface Item {
+  href: string;
+  title: string;
+  text: string;
+  kind?: string;
+  colour?: string;
+}
+interface Props {
+  items: Item[];
+  style?: 'tile' | 'row';
+}
+const { items, style = 'tile' } = Astro.props;
+---
+
+<ul class:list={['cards', style]}>
+  {
+    items.map((item) => (
+      <li style={item.colour ? `--card: ${item.colour}` : undefined} class:list={{ coloured: !!item.colour }}>
+        <a href={item.href}>
+          {item.kind && <span class="kind">{item.kind}</span>}
+          <span class="title">{item.title}</span>
+          <span class="text">{item.text}</span>
+          <span class="go" aria-hidden="true">
+            →
+          </span>
+        </a>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .cards {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  a {
+    color: var(--text);
+  }
+  a:hover {
+    text-decoration: none;
+  }
+  .text {
+    color: var(--label);
+  }
+  .go {
+    color: var(--label);
+  }
+  a:hover .go {
+    color: var(--text);
+  }
+
+  .tile {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 14px;
+  }
+  .tile a {
+    position: relative;
+    display: grid;
+    align-content: start;
+    gap: 6px;
+    height: 100%;
+    padding: 12px 14px 14px;
+    border: var(--stroke-rule) solid var(--rule);
+  }
+  .tile a:hover {
+    background: var(--panel);
+    border-color: var(--rule-strong);
+  }
+  .tile .coloured a {
+    border-top: var(--stroke-identity) solid var(--card);
+    padding-top: 11px;
+  }
+  .tile .kind {
+    font-size: var(--size-small);
+    letter-spacing: var(--tracking-label);
+    text-transform: lowercase;
+    color: var(--label);
+    padding-right: 20px;
+  }
+  .tile .title {
+    font-size: 18px;
+    line-height: 1.25;
+  }
+  .tile .text {
+    font-size: 14px;
+    line-height: 1.45;
+  }
+  .tile .go {
+    position: absolute;
+    right: 12px;
+    top: 10px;
+    font-size: 13px;
+  }
+
+  .row {
+    border-top: var(--stroke-rule) solid var(--rule-strong);
+  }
+  .row li {
+    border-bottom: var(--stroke-rule) solid var(--sand-light);
+  }
+  .row a {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 15rem) minmax(0, 1fr) 24px;
+    gap: var(--gap);
+    align-items: baseline;
+    padding: 12px 0 12px 14px;
+  }
+  .row a::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+  }
+  .row a:hover {
+    background: var(--panel);
+  }
+  .row a:hover::before {
+    background: var(--card, var(--chosen));
+  }
+  .row .kind {
+    display: none;
+  }
+  .row .go {
+    text-align: right;
+  }
+  @media (max-width: 640px) {
+    .row a {
+      grid-template-columns: minmax(0, 1fr) 20px;
+      gap: 2px 12px;
+    }
+    .row .go {
+      grid-column: 2;
+      grid-row: 1;
+    }
+    .row .text {
+      grid-column: 1;
+    }
+  }
+</style>

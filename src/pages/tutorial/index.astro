@@ -1,0 +1,46 @@
+---
+/*  The tutorials, in their groups: what every plugin shares first, then one plugin or one setup at a time. */
+import { getCollection } from 'astro:content';
+import Page from '../../layouts/Page.astro';
+import Cards from '../../components/Cards.astro';
+import { tutorials } from '../../lib/tutorials';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const plugins = await getCollection('plugins');
+const colourOf = (id?: string) => plugins.find((p) => p.id === id)?.data.colour;
+const groups = (['every plugin', 'one plugin or setup'] as const)
+  .map((title) => ({
+    title,
+    items: tutorials
+      .filter((t) => t.group === title)
+      .map((t) => ({ href: `${base}/tutorial/${t.id}`, title: t.title, text: t.summary, kind: t.kind, colour: colourOf(t.plugin) })),
+  }))
+  .filter((g) => g.items.length > 0);
+---
+
+<Page title="tutorial" description="How to use bambi, step by step.">
+  <h1>tutorial</h1>
+  <p class="sub label">how to use bambi, step by step</p>
+  {
+    groups.map((g) => (
+      <section>
+        <h2>{g.title}</h2>
+        <Cards items={g.items} />
+      </section>
+    ))
+  }
+</Page>
+
+<script>
+  /*  An address from before the tutorials were a section -- /tutorial#regions -- still reaches its part. */
+  if (location.hash.length > 1) location.replace(`${location.pathname.replace(/\/$/, '')}/the-window${location.hash}`);
+</script>
+
+<style>
+  .sub {
+    margin: 12px 0 var(--section);
+  }
+  section + section {
+    margin-top: 40px;
+  }
+</style>

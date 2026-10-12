@@ -1,0 +1,240 @@
+---
+/*  Where bambi stands: what it has been tried in, what does not work yet, what is planned, and where to ask.
+    Everything that changes from one release to the next lives here, and only here. A row is added when it
+    has been tried; nothing is listed that has not been. */
+import Page from '../layouts/Page.astro';
+
+const issues = 'https://github.com/Looderso/bambi/issues';
+
+type Mark = 'heard' | 'checked' | 'none' | 'never';
+interface Row {
+  what: string;
+  cells: { mark: Mark; text: string }[]; // macOS, Windows, Linux
+}
+const tested: Row[] = [
+  {
+    what: 'every plugin, automatically',
+    cells: [
+      { mark: 'checked', text: 'built and checked' },
+      { mark: 'checked', text: 'built and checked' },
+      { mark: 'checked', text: 'built and checked' },
+    ],
+  },
+  {
+    what: 'REAPER',
+    cells: [
+      { mark: 'heard', text: 'vst3 and clap' },
+      { mark: 'none', text: 'not yet' },
+      { mark: 'none', text: 'not yet' },
+    ],
+  },
+  {
+    what: 'Ableton Live',
+    cells: [
+      { mark: 'none', text: 'not yet' },
+      { mark: 'none', text: 'not yet' },
+      { mark: 'never', text: 'no Linux version' },
+    ],
+  },
+  {
+    what: 'Logic Pro',
+    cells: [
+      { mark: 'never', text: 'needs Audio Units' },
+      { mark: 'never', text: '' },
+      { mark: 'never', text: '' },
+    ],
+  },
+];
+
+const gaps = [
+  {
+    what: 'signing',
+    text: 'The builds are not signed yet. macOS needs one extra step before a host will load them, and Windows may warn when the zip is unpacked; the download page has both.',
+  },
+  {
+    what: 'Logic Pro',
+    text: 'bambi is VST3 and CLAP. Logic only loads Audio Units, so it cannot load bambi yet.',
+  },
+  {
+    what: 'names over CLAP',
+    text: 'In REAPER, an instance loaded as CLAP shows its id instead of its track’s name; as VST3 it shows the name. Everything else works the same.',
+  },
+];
+
+const planned = [{ what: 'Logic Pro', text: 'An Audio Units build, as a step of its own after the first release.' }];
+---
+
+<Page title="status" description="Where bambi has been tested, what does not work yet, what is planned, and where to ask.">
+  <h1>status</h1>
+  <p class="sub label">where bambi has been tried, what does not work yet, and what is planned</p>
+
+  <section>
+    <h2>tested</h2>
+    <div class="table">
+      <table class="matrix">
+        <thead>
+          <tr><th></th><th>macOS</th><th>Windows</th><th>Linux</th></tr>
+        </thead>
+        <tbody>
+          {
+            tested.map((row) => (
+              <tr>
+                <td>{row.what}</td>
+                {row.cells.map((c) => (
+                  <td>
+                    <span class:list={['mark', c.mark]} />
+                    {c.text}
+                  </td>
+                ))}
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+    <p class="legend">
+      <span><span class="mark heard"></span>used and listened to in the host</span>
+      <span><span class="mark checked"></span>built and checked automatically on every change, not listened to</span>
+      <span><span class="mark none"></span>not tried yet</span>
+    </p>
+    <p class="note">
+      Tried bambi in a host that is not here? <a href={`${issues}/new?template=report.yml`}>Tell us how it went</a>, and it
+      joins the table.
+    </p>
+  </section>
+
+  <section>
+    <h2>known gaps</h2>
+    <ul class="rows">{gaps.map((g) => <li><span class="label">{g.what}</span><span>{g.text}</span></li>)}</ul>
+  </section>
+
+  <section>
+    <h2>planned</h2>
+    <ul class="rows">{planned.map((p) => <li><span class="label">{p.what}</span><span>{p.text}</span></li>)}</ul>
+  </section>
+
+  <section>
+    <h2>ask for something</h2>
+    <p>Found a problem, or missing something? Both go to GitHub, where everything else is planned too.</p>
+    <div class="ask">
+      <a class="button main" href={`${issues}/new?template=report.yml`}>report a problem</a>
+      <a class="button" href={`${issues}/new?template=feature.yml`}>suggest a feature</a>
+    </div>
+  </section>
+</Page>
+
+<style>
+  .sub {
+    margin: 12px 0 var(--section);
+  }
+  section + section {
+    margin-top: 48px;
+  }
+  .table {
+    overflow-x: auto;
+  }
+  .matrix {
+    border-collapse: collapse;
+    width: 100%;
+    max-width: 720px;
+  }
+  .matrix th,
+  .matrix td {
+    text-align: left;
+    padding: 9px 16px 9px 0;
+    border-bottom: var(--stroke-rule) solid var(--sand-light);
+    font-weight: 400;
+    white-space: nowrap;
+  }
+  .matrix th {
+    font-size: var(--size-label);
+    letter-spacing: var(--tracking-label);
+    color: var(--label);
+    border-bottom-color: var(--rule-strong);
+  }
+  .matrix td:first-child {
+    white-space: normal;
+  }
+  .mark {
+    display: inline-block;
+    width: 11px;
+    height: 11px;
+    margin-right: 8px;
+    vertical-align: -1px;
+  }
+  .mark.heard {
+    background: var(--chosen);
+  }
+  .mark.checked {
+    border: 1.5px solid var(--chosen);
+  }
+  .mark.none {
+    height: 0;
+    border-top: 1.5px solid var(--grey-mid);
+    vertical-align: 3px;
+  }
+  .mark.never {
+    width: 0;
+    margin: 0;
+  }
+  td:has(.never) {
+    color: var(--label);
+  }
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 22px;
+    margin: 12px 0 0;
+    max-width: none;
+  }
+  .legend > span {
+    font-size: 13px;
+    color: var(--label);
+  }
+  .note {
+    margin-top: 16px;
+  }
+  .rows {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .rows li {
+    display: grid;
+    grid-template-columns: 10rem minmax(0, 1fr);
+    gap: var(--gap);
+    padding: 10px 0;
+    border-bottom: var(--stroke-rule) solid var(--sand-light);
+  }
+  .rows .label {
+    padding-top: 3px;
+  }
+  .rows span:last-child {
+    max-width: var(--measure);
+  }
+  .ask {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .button {
+    display: inline-block;
+    padding: 10px 16px;
+    border: var(--stroke-rule) solid var(--rule-strong);
+    color: var(--text);
+  }
+  .button:hover {
+    background: var(--panel);
+    text-decoration: none;
+  }
+  .button.main {
+    background: var(--chosen);
+    color: var(--text-inverse);
+  }
+  @media (max-width: 640px) {
+    .rows li {
+      grid-template-columns: 1fr;
+      gap: 2px;
+    }
+  }
+</style>

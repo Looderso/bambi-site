@@ -9,7 +9,7 @@ The encoder places a mono or stereo track in the ambisonic field and moves it al
 sphere. How fast it travels can follow the input: silence parks the source, loud material moves it. It is the
 first plugin on a track: it takes one or two channels in and gives an ambisonic field out.
 
-Its window is the one every bambi plugin has, described in the [tutorial](/tutorial). What is the
+Its window is the one every bambi plugin has, described in the [tutorial](/tutorial/the-window). What is the
 encoder's own is its three tabs.
 
 ## trajectory

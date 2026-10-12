@@ -169,9 +169,28 @@ p {
   padding: 0.1em 0.3em;
 }
 .prose pre {
+  position: relative;
   background: var(--panel);
   padding: 14px 16px;
   overflow-x: auto;
+}
+/*  a code block's copy button, added by the page's script */
+.prose pre .copy {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  font: inherit;
+  font-family: var(--font);
+  font-size: var(--size-small);
+  letter-spacing: var(--tracking-label);
+  color: var(--label);
+  background: var(--panel);
+  border: 0;
+  padding: 4px 6px;
+  cursor: pointer;
+}
+.prose pre .copy:hover {
+  color: var(--text);
 }
 .prose pre code {
   background: none;
