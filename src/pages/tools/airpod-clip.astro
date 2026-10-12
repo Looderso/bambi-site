@@ -27,57 +27,61 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
       <section>
         <h2>headphones</h2>
-        <div class="segments wrap" data-presets>
+        <div class="segments" data-presets>
           {presets.map((p) => <button type="button" data-preset={p.id}>{p.name}</button>)}
         </div>
         {
           kinds.map((k) => (
             <div class="kind" data-kind={k.id} hidden>
-              <figure class="figure label" set:html={k.figure} />
-              {k.measures.map((m) => (
-                <label class="value">
-                  <span class="label">{m.label}</span>
-                  <span class="field">
-                    <input type="number" inputmode="decimal" name={`${k.id}.${m.key}`} min={m.min} max={m.max} step={m.step} />
-                    <span class="unit">{m.unit}</span>
-                  </span>
-                  {m.hint && <span class="hint">{m.hint}</span>}
-                </label>
-              ))}
+              <figure class="figure" set:html={k.figure} />
+              <div class="values">
+                {k.measures.map((m) => (
+                  <label class="value">
+                    <span class="label">{m.label}</span>
+                    <span class="field">
+                      <input type="number" inputmode="decimal" name={`${k.id}.${m.key}`} min={m.min} max={m.max} step={m.step} data-hint={m.hint} title={m.hint} />
+                      <span class="unit">{m.unit}</span>
+                    </span>
+                  </label>
+                ))}
+              </div>
             </div>
           ))
         }
+        <p class="hint" data-hint-line></p>
       </section>
 
       <section>
         <h2>print</h2>
-        <label class="value">
-          <span class="label">tolerance</span>
-          <span class="field"><input type="number" inputmode="decimal" name="tolerance" min="0" max="0.8" step="0.05" /><span class="unit">mm</span></span>
-          <span class="hint">clearance on every fitting surface; raise it if parts are too tight</span>
-        </label>
-        <label class="value">
-          <span class="label">wall</span>
-          <span class="field"><input type="number" inputmode="decimal" name="wall" min="0.8" max="4" step="0.1" /><span class="unit">mm</span></span>
-          <span class="hint">thicker is stiffer, thinner snaps on more easily</span>
-        </label>
-        <label class="value">
-          <span class="label">gap</span>
-          <span class="field"><input type="number" inputmode="decimal" name="reach" min="1" max="30" step="0.5" /><span class="unit">mm</span></span>
-          <span class="hint">between the headphones and the AirPod</span>
-        </label>
+        <div class="values three">
+          <label class="value">
+            <span class="label">tolerance</span>
+            <span class="field"><input type="number" inputmode="decimal" name="tolerance" min="0" max="0.8" step="0.05" data-hint="clearance on every fitting surface; raise it if parts are too tight" title="clearance on every fitting surface; raise it if parts are too tight" /><span class="unit">mm</span></span>
+          </label>
+          <label class="value">
+            <span class="label">wall</span>
+            <span class="field"><input type="number" inputmode="decimal" name="wall" min="0.8" max="4" step="0.1" data-hint="thicker is stiffer, thinner snaps on more easily" title="thicker is stiffer, thinner snaps on more easily" /><span class="unit">mm</span></span>
+          </label>
+          <label class="value">
+            <span class="label">gap</span>
+            <span class="field"><input type="number" inputmode="decimal" name="reach" min="1" max="30" step="0.5" data-hint="between the headphones and the AirPod" title="between the headphones and the AirPod" /><span class="unit">mm</span></span>
+          </label>
+        </div>
+        <p class="hint" data-hint-line></p>
       </section>
 
       <section class="export">
-        <button type="button" class="button main" data-export="clip">export clip · stl</button>
-        <button type="button" class="button" data-export="claw">export test claw · stl</button>
+        <div class="buttons">
+          <button type="button" class="button main" data-export="clip">export clip · stl</button>
+          <button type="button" class="button" data-export="claw">test claw · stl</button>
+        </div>
         <p class="hint">
-          The test claw is the AirPod side alone: print it first to check the fit. Print as exported, lying flat, with no
-          supports. The settings are in the file's name, and the page's address keeps them too.
+          Print the test claw first to check the fit. Print lying flat as exported, with no supports. The file's name
+          and the page's address keep the settings.
         </p>
         <p class="fine">
-          Exported models are licensed <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>: print, share
-          and change them, with credit to bambi.wiki.
+          Exported models are <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>: print, share and
+          change them, with credit to bambi.wiki.
         </p>
       </section>
     </form>
@@ -182,7 +186,9 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
   function resize() {
     const w = holder.clientWidth;
     const h = Math.max(320, Math.min(560, w * 0.8));
-    renderer.setSize(w, h);
+    //  the drawing buffer only: the canvas's width is its column's, so it can shrink with it
+    renderer.setSize(w, h, false);
+    renderer.domElement.style.height = `${h}px`;
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
   }
@@ -274,6 +280,15 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     rebuild();
   });
 
+  //  a field's hint on its section's one line, while the field has the pointer or the keyboard
+  const hint = (e: Event) => {
+    const input = (e.target as HTMLElement).closest<HTMLInputElement>('input[data-hint]');
+    if (!input) return;
+    const line = input.closest('section')?.querySelector<HTMLElement>('[data-hint-line]');
+    if (line) line.textContent = e.type === 'focusout' || e.type === 'mouseout' ? '' : (input.dataset.hint ?? '');
+  };
+  for (const type of ['focusin', 'focusout', 'mouseover', 'mouseout']) form.addEventListener(type, hint);
+
   showForm();
   resize();
   (Module as any)({ locateFile: () => wasmUrl }).then((w: any) => {
@@ -288,20 +303,23 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     margin: 8px 0 16px;
   }
   .summary {
-    margin-bottom: var(--section);
+    margin-bottom: 40px;
   }
   .tool {
     display: grid;
-    grid-template-columns: minmax(0, 340px) minmax(0, 1fr);
-    gap: 40px;
+    grid-template-columns: minmax(0, 400px) minmax(0, 1fr);
+    gap: 32px;
     align-items: start;
   }
   .form section {
-    margin-bottom: 36px;
+    margin-bottom: 28px;
+  }
+  .form h2 {
+    margin-bottom: 10px;
   }
   .segments {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(124px, 1fr));
   }
   .segments button {
     font: inherit;
@@ -310,7 +328,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     color: var(--text);
     background: none;
     border: 0;
-    padding: 9px 8px;
+    padding: 8px 6px;
     cursor: pointer;
   }
   .segments button:hover {
@@ -320,35 +338,52 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     background: var(--chosen);
     color: var(--text-inverse);
   }
+  .kind[hidden] {
+    display: none;
+  }
+  .kind {
+    display: grid;
+    grid-template-columns: 150px minmax(0, 1fr);
+    gap: 16px;
+    align-items: center;
+    margin-top: 14px;
+  }
   .figure {
-    margin: 20px 0 8px;
+    margin: 0;
     color: var(--text);
   }
   .figure :global(svg) {
+    display: block;
     width: 100%;
-    max-width: 280px;
     height: auto;
-    font-size: 9px;
-    letter-spacing: 0.08em;
+    font-size: 15px;
+    letter-spacing: 0.04em;
   }
   .figure :global(text) {
     fill: var(--label);
   }
+  .values {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px 12px;
+  }
+  .values.three {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
   .value {
     display: grid;
-    gap: 4px;
-    padding: 10px 0;
-    border-bottom: var(--stroke-rule) solid var(--sand-light);
+    gap: 3px;
   }
   .field {
     display: flex;
     align-items: baseline;
-    gap: 8px;
+    gap: 6px;
   }
   .field input {
     font: inherit;
-    font-size: 18px;
-    width: 7em;
+    font-size: 16px;
+    width: 100%;
+    min-width: 0;
     padding: 4px 6px;
     background: var(--panel);
     color: var(--text);
@@ -364,13 +399,23 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     color: var(--label);
     font-size: var(--size-small);
   }
+  .hint[data-hint-line] {
+    min-height: 1.5em;
+    margin: 8px 0 0;
+  }
   .export {
     display: grid;
     gap: 10px;
   }
+  .buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
   .button {
     font: inherit;
-    padding: 10px 16px;
+    font-size: 14px;
+    padding: 9px 10px;
     background: none;
     color: var(--text);
     border: var(--stroke-rule) solid var(--rule-strong);

@@ -20,7 +20,7 @@ export const airpods: AirPodModel[] = [
   {
     id: 'pro-3',
     name: 'AirPods Pro 3',
-    stem: { width: 6.45, depth: 7.75, length: 15 },
+    stem: { width: 6.35, depth: 7.65, length: 15 },
     grip: { length: 9, snap: 0.6 },
     body: { radius: 10 },
   },

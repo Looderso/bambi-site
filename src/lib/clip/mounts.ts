@@ -19,7 +19,7 @@ const band: MountKind = {
     { key: 'lip', label: 'lip', min: 0.5, max: 10, ...len, hint: 'how far the clip reaches round the inside face' },
     { key: 'length', label: 'clip length', min: 5, max: 40, ...len, hint: 'along the band' },
   ],
-  figure: `<svg viewBox="0 0 240 110"><rect x="40" y="35" width="120" height="30" fill="none" stroke="currentColor" stroke-dasharray="3 3"/>
+  figure: `<svg viewBox="0 0 280 110"><rect x="40" y="35" width="120" height="30" fill="none" stroke="currentColor" stroke-dasharray="3 3"/>
 <path d="M60 75 H32 V25 H168 V75 H140" fill="none" stroke="currentColor" stroke-width="3"/>
 <text x="100" y="18" text-anchor="middle">band width</text><text x="176" y="54">thickness</text><text x="100" y="95" text-anchor="middle">lip ↔ inside</text></svg>`,
   build(g, v, fit: Fit) {
@@ -43,7 +43,7 @@ const round: MountKind = {
     { key: 'opening', label: 'opening', min: 40, max: 160, unit: '°', step: 1, hint: 'smaller holds tighter, larger snaps on more easily' },
     { key: 'length', label: 'clip length', min: 5, max: 40, ...len, hint: 'along the rod' },
   ],
-  figure: `<svg viewBox="0 0 240 110"><circle cx="100" cy="55" r="26" fill="none" stroke="currentColor" stroke-dasharray="3 3"/>
+  figure: `<svg viewBox="0 0 280 110"><circle cx="100" cy="55" r="26" fill="none" stroke="currentColor" stroke-dasharray="3 3"/>
 <path d="M82 85 A34 34 0 1 1 118 85" fill="none" stroke="currentColor" stroke-width="3"/>
 <text x="100" y="59" text-anchor="middle">diameter</text><text x="100" y="104" text-anchor="middle">opening</text></svg>`,
   build(g, v, fit) {
@@ -69,7 +69,7 @@ const slit: MountKind = {
     { key: 'overhang', label: 'overhang', min: 1, max: 15, ...len, hint: 'how far the tab reaches past the slit behind the band' },
     { key: 'length', label: 'tab length', min: 5, max: 40, ...len, hint: 'along the slit; slide it in from the slit’s end' },
   ],
-  figure: `<svg viewBox="0 0 240 110"><rect x="20" y="45" width="65" height="18" fill="none" stroke="currentColor" stroke-dasharray="3 3"/><rect x="115" y="45" width="65" height="18" fill="none" stroke="currentColor" stroke-dasharray="3 3"/>
+  figure: `<svg viewBox="0 0 280 110"><rect x="20" y="45" width="65" height="18" fill="none" stroke="currentColor" stroke-dasharray="3 3"/><rect x="115" y="45" width="65" height="18" fill="none" stroke="currentColor" stroke-dasharray="3 3"/>
 <path d="M60 30 H140 M90 30 V70 M110 30 V70 M70 70 H130" fill="none" stroke="currentColor" stroke-width="3"/>
 <text x="100" y="20" text-anchor="middle">slit width</text><text x="186" y="58">thickness</text><text x="100" y="90" text-anchor="middle">overhang</text></svg>`,
   build(g, v, fit) {
@@ -91,7 +91,7 @@ const pad: MountKind = {
     { key: 'height', label: 'pad height', min: 5, max: 60, ...len },
     { key: 'thickness', label: 'pad thickness', min: 1, max: 6, ...len, hint: 'stuck to the headphones with double-sided tape' },
   ],
-  figure: `<svg viewBox="0 0 240 110"><rect x="40" y="40" width="120" height="16" fill="none" stroke="currentColor" stroke-width="3"/>
+  figure: `<svg viewBox="0 0 280 110"><rect x="40" y="40" width="120" height="16" fill="none" stroke="currentColor" stroke-width="3"/>
 <path d="M40 70 H160" stroke="currentColor" stroke-dasharray="3 3"/><text x="100" y="30" text-anchor="middle">pad width</text><text x="100" y="90" text-anchor="middle">tape</text></svg>`,
   build(g, v) {
     return { solid: slab(g, v.width, v.thickness, 0).extrude(v.height), height: v.height, width: v.width };
