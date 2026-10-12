@@ -5,9 +5,8 @@ export interface AirPodModel {
   id: string;
   name: string;
   stem: {
-    width: number; // across the stem, side to side
-    depth: number; // through the stem, front to back
-    corner: number; // the radius its cross-section's corners round off with
+    width: number; // the oval's width, side to side as seen looking at the ear
+    depth: number; // the oval's depth, towards the head
     length: number; // from where it leaves the body to its tip
   };
   grip: {
@@ -21,7 +20,7 @@ export const airpods: AirPodModel[] = [
   {
     id: 'pro-3',
     name: 'AirPods Pro 3',
-    stem: { width: 5.6, depth: 6.4, corner: 2.4, length: 15 },
+    stem: { width: 6.45, depth: 7.75, length: 15 },
     grip: { length: 9, snap: 0.6 },
     body: { radius: 10 },
   },

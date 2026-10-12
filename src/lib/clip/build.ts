@@ -12,10 +12,10 @@ export interface ClipSettings {
   reach: number; // the gap the bridge leaves between the headphones and the AirPod
 }
 
-/** The cross-section of the stem, centred on the origin. */
+/** The stem's oval cross-section, centred on the origin, grown evenly by `grow` on every side. */
 function stem(g: Geometry, a: AirPodModel, grow: number) {
-  const r = Math.min(a.stem.corner, a.stem.width / 2, a.stem.depth / 2);
-  return g.CrossSection.square([a.stem.width - 2 * r, a.stem.depth - 2 * r], true).offset(r + grow, 'Round', 2, 48);
+  const oval = g.CrossSection.circle(1, 128).scale([a.stem.width / 2, a.stem.depth / 2]);
+  return grow > 0 ? oval.offset(grow, 'Round', 2, 128) : oval;
 }
 
 /** The claw alone, with its back on y = 0 and the stem's centre at y = its returned `centre`. */
