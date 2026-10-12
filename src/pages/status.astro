@@ -1,5 +1,6 @@
 ---
-/*  Where bambi stands: what it has been tried in, what does not work yet, what is planned, and where to ask.
+/*  Where bambi stands: what it has been tried in, what does not work yet, and where to ask. What is planned
+    joins once it is decided.
     Everything that changes from one release to the next lives here, and only here. A row is added when it
     has been tried; nothing is listed that has not been. */
 import Page from '../layouts/Page.astro';
@@ -61,12 +62,11 @@ const gaps = [
   },
 ];
 
-const planned = [{ what: 'Logic Pro', text: 'An Audio Units build, as a step of its own after the first release.' }];
 ---
 
-<Page title="status" description="Where bambi has been tested, what does not work yet, what is planned, and where to ask.">
+<Page title="status" description="Where bambi has been tested, what does not work yet, and where to ask.">
   <h1>status</h1>
-  <p class="sub label">where bambi has been tried, what does not work yet, and what is planned</p>
+  <p class="sub label">where bambi has been tried, and what does not work yet</p>
 
   <section>
     <h2>tested</h2>
@@ -109,13 +109,8 @@ const planned = [{ what: 'Logic Pro', text: 'An Audio Units build, as a step of 
   </section>
 
   <section>
-    <h2>planned</h2>
-    <ul class="rows">{planned.map((p) => <li><span class="label">{p.what}</span><span>{p.text}</span></li>)}</ul>
-  </section>
-
-  <section>
     <h2>ask for something</h2>
-    <p>Found a problem, or missing something? Both go to GitHub, where everything else is planned too.</p>
+    <p>Found a problem, or missing something? Both go to GitHub, where what comes next is planned in the open.</p>
     <div class="ask">
       <a class="button main" href={`${issues}/new?template=report.yml`}>report a problem</a>
       <a class="button" href={`${issues}/new?template=feature.yml`}>suggest a feature</a>

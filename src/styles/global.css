@@ -171,7 +171,7 @@ p {
 .prose pre {
   position: relative;
   background: var(--panel);
-  padding: 14px 16px;
+  padding: 14px 64px 14px 16px; /* room on the right for the copy button */
   overflow-x: auto;
 }
 /*  a code block's copy button, added by the page's script */

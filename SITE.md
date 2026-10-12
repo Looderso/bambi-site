@@ -30,7 +30,7 @@ Two pages are not in the header:
 
 - **the front page** (`/`): what bambi is for, a picture of a window, and where to go next. It repeats no
   section; it points to them.
-- **status** (`/status`): where bambi has been tested, its known gaps, what is planned, and where to ask for
+- **status** (`/status`): where bambi has been tested, its known gaps, what is planned once it is decided, and where to ask for
   something. Linked from the front page, the download page and the footer.
 
 ### What goes where

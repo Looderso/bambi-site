@@ -2,6 +2,7 @@
 /*  The front page says what bambi is for and where to go next. The plugins themselves are on their
     own page; this one points there rather than repeating it. */
 import Page from '../layouts/Page.astro';
+import Cards from '../components/Cards.astro';
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
@@ -22,7 +23,7 @@ const ideas = [
 
 const next = [
   { href: '/download', name: 'download', text: 'VST3 and CLAP for macOS, Windows and Linux. Free, and in alpha.' },
-  { href: '/status', name: 'status', text: 'Where bambi has been tested, what does not work yet, and what is planned.' },
+  { href: '/status', name: 'status', text: 'Where bambi has been tested, and what does not work yet.' },
   { href: '/tutorial', name: 'tutorial', text: 'How to use bambi, starting with the window every plugin shares.' },
   { href: '/plugins', name: 'plugins', text: 'What each plugin does.' },
   { href: '/contribute', name: 'contribute', text: 'How to build bambi, and the rules its code is written by.' },
@@ -53,16 +54,7 @@ const next = [
 
   <section>
     <h2>where to go</h2>
-    <ul class="next">
-      {
-        next.map((n) => (
-          <li>
-            <a href={`${base}${n.href}`}>{n.name}</a>
-            <span>{n.text}</span>
-          </li>
-        ))
-      }
-    </ul>
+    <Cards items={next.map((n) => ({ href: `${base}${n.href}`, title: n.name, text: n.text }))} style="row" />
   </section>
 </Page>
 
@@ -95,26 +87,5 @@ const next = [
   }
   .ideas p {
     margin: 0;
-  }
-  .next {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-  .next li {
-    display: grid;
-    grid-template-columns: minmax(0, 14rem) minmax(0, 1fr);
-    gap: var(--gap);
-    padding: 12px 0;
-    border-bottom: var(--stroke-rule) solid var(--sand-light);
-  }
-  .next span {
-    color: var(--label);
-  }
-  @media (max-width: 600px) {
-    .next li {
-      grid-template-columns: 1fr;
-      gap: 4px;
-    }
   }
 </style>

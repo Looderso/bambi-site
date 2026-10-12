@@ -9,10 +9,11 @@ export async function getStaticPaths() {
 
 const { plugin } = Astro.props;
 const { Content } = await render(plugin);
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
 
 <Page title={plugin.data.name} description={plugin.data.summary} identity={plugin.data.colour}>
-  <p class="label">plugin</p>
+  <p class="label"><a href={`${base}/plugins`}>plugins</a></p>
   <h1>{plugin.data.name}</h1>
   <p class="lede summary">{plugin.data.summary}</p>
   <div class="prose">

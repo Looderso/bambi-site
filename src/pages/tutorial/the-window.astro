@@ -413,7 +413,13 @@ const parts = [
     [...document.querySelectorAll<HTMLAnchorElement>('[data-contents] a')].map((a) => [a.dataset.part, a]),
   );
   const mark = (id?: string) => {
+    if (!id) return; // between two parts: the last one stays marked
     for (const [part, a] of links) a.classList.toggle('here', part === id);
+    //  on a narrow screen the row scrolls sideways: keep the marked part in it
+    const a = links.get(id)!;
+    const row = a.closest('ol')!;
+    if (a.offsetLeft < row.scrollLeft || a.offsetLeft + a.offsetWidth > row.scrollLeft + row.clientWidth)
+      row.scrollLeft = a.offsetLeft - 8;
   };
   const seen = new Set<string>();
   const observer = new IntersectionObserver(
@@ -436,6 +442,7 @@ const parts = [
   }
   section {
     margin-top: var(--section);
+    scroll-margin-top: 40px; /* below the contents row, as well as the header */
   }
   figure {
     margin: 0 0 24px;
@@ -453,16 +460,30 @@ const parts = [
     margin-top: 8px;
     text-transform: none;
   }
+  /*  the contents stay under the header, a second row of tabs: one line, scrolling sideways when narrow */
+  .contents {
+    position: sticky;
+    top: calc(var(--header) + var(--stroke-identity));
+    z-index: 5;
+    background: var(--ground);
+    border-bottom: var(--stroke-rule) solid var(--rule);
+    margin-bottom: 8px;
+  }
   .contents ol {
     list-style: none;
     margin: 0;
     padding: 0;
     display: flex;
-    flex-wrap: wrap;
     gap: 2px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .contents ol::-webkit-scrollbar {
+    display: none;
   }
   .contents a {
     display: block;
+    white-space: nowrap;
     color: var(--text);
     font-size: var(--size-label);
     letter-spacing: var(--tracking-label);
