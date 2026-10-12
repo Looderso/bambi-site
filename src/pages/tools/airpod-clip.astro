@@ -10,13 +10,18 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
 
 <Page title="airpod clip" description="A printable clip that holds an AirPod on your headphones, for head tracking.">
-  <p class="label"><a href={`${base}/tools`}>tools</a></p>
-  <h1>airpod clip</h1>
-  <p class="lede summary">
-    Head tracking needs only the left AirPod. This clip holds it on the headphones you listen on.
-  </p>
-
   <div class="tool">
+    <div class="look">
+      <p class="label"><a href={`${base}/tools`}>tools</a></p>
+      <h1>airpod clip</h1>
+      <p class="lede summary">
+        Head tracking needs only the left AirPod. This clip holds it on the headphones you listen on.
+      </p>
+      <div class="preview" data-preview>
+        <p class="label status" data-status>loading the model…</p>
+      </div>
+    </div>
+
     <form class="form" data-form>
       <section>
         <h2>airpod</h2>
@@ -85,10 +90,6 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
         </p>
       </section>
     </form>
-
-    <div class="preview" data-preview>
-      <p class="label status" data-status>loading the model…</p>
-    </div>
   </div>
 </Page>
 
@@ -185,7 +186,9 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
   function resize() {
     const w = holder.clientWidth;
-    const h = Math.max(320, Math.min(560, w * 0.8));
+    //  as tall as the screen leaves below the title, and no taller than it is wide
+    const below = window.innerHeight - (holder.getBoundingClientRect().top + window.scrollY) - 24;
+    const h = Math.round(Math.max(320, Math.min(w, below)));
     //  the drawing buffer only: the canvas's width is its column's, so it can shrink with it
     renderer.setSize(w, h, false);
     renderer.domElement.style.height = `${h}px`;
@@ -193,6 +196,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     camera.updateProjectionMatrix();
   }
   new ResizeObserver(resize).observe(holder);
+  window.addEventListener('resize', resize);
   renderer.setAnimationLoop(() => {
     controls.update();
     renderer.render(scene, camera);
@@ -303,16 +307,23 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     margin: 8px 0 16px;
   }
   .summary {
-    margin-bottom: 40px;
+    margin-bottom: 24px;
   }
   .tool {
     display: grid;
-    grid-template-columns: minmax(0, 400px) minmax(0, 1fr);
-    gap: 32px;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 400px);
+    gap: 40px;
     align-items: start;
+  }
+  .look {
+    position: sticky;
+    top: 16px;
   }
   .form section {
     margin-bottom: 28px;
+  }
+  .form {
+    padding-top: 6px;
   }
   .form h2 {
     margin-bottom: 10px;
@@ -432,8 +443,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     margin: 0;
   }
   .preview {
-    position: sticky;
-    top: 16px;
+    position: relative;
     border: var(--stroke-rule) solid var(--rule);
     min-height: 320px;
   }
@@ -451,10 +461,8 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     .tool {
       grid-template-columns: 1fr;
     }
-    .preview {
-      position: relative;
-      top: 0;
-      order: -1;
+    .look {
+      position: static;
     }
   }
 </style>
