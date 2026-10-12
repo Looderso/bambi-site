@@ -1,92 +1,99 @@
 ---
-/*  The AirPod clip: an AirPod generation and a headphone mount in, a printable STL out. Everything runs in
-    the visitor's browser; the page holds the form, the preview and the export, and the model is in
-    src/lib/clip. */
+/*  The tracker clip: a grip for the head tracker, a grip for the headphones, a printable STL out. Both
+    grips come from one library and are chosen from presets, then edited. Everything runs in the visitor's
+    browser; the model is in src/lib/clip. */
 import Page from '../../layouts/Page.astro';
-import { airpods } from '../../lib/clip/airpods';
-import { kinds, presets } from '../../lib/clip/mounts';
+import { kinds, presetsFor } from '../../lib/clip/grips';
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const ends = [
+  { id: 'tracker', title: 'tracker' },
+  { id: 'headphones', title: 'headphones' },
+] as const;
+const printHints = {
+  tolerance: 'clearance on every fitting surface; raise it if parts are too tight',
+  wall: 'thicker is stiffer, thinner snaps on more easily',
+  reach: 'between the two grips',
+};
 ---
 
-<Page title="airpod clip" description="A printable clip that holds an AirPod on your headphones, for head tracking." wide>
+<Page title="tracker clip" description="A printable clip that holds a head tracker on your headphones." wide>
   <div class="tool">
     <div class="look">
       <p class="label"><a href={`${base}/tools`}>tools</a></p>
-      <h1>airpod clip</h1>
-      <p class="lede summary">
-        Head tracking needs only the left AirPod. This clip holds it on the headphones you listen on.
-      </p>
+      <h1>tracker clip</h1>
+      <p class="lede summary">A clip that holds a head tracker on the headphones you listen on, an AirPod included.</p>
       <div class="preview" data-preview>
         <p class="label status" data-status>loading the model…</p>
       </div>
     </div>
 
     <form class="form" data-form>
-      <section>
-        <h2>airpod</h2>
-        <div class="segments" data-airpods>
-          {airpods.map((a) => <button type="button" data-airpod={a.id}>{a.name}</button>)}
-        </div>
-      </section>
-
-      <section>
-        <h2>headphones</h2>
-        <div class="segments" data-presets>
-          {presets.map((p) => <button type="button" data-preset={p.id}>{p.name}</button>)}
-        </div>
+      <div class="ends">
         {
-          kinds.map((k) => (
-            <div class="kind" data-kind={k.id} hidden>
-              <figure class="figure" set:html={k.figure} />
-              <div class="values">
-                {k.measures.map((m) => (
-                  <label class="value">
-                    <span class="label">{m.label}</span>
-                    <span class="field">
-                      <input type="number" inputmode="decimal" name={`${k.id}.${m.key}`} min={m.min} max={m.max} step={m.step} data-hint={m.hint} title={m.hint} />
-                      <span class="unit">{m.unit}</span>
-                    </span>
-                  </label>
+          ends.map((end) => (
+            <section data-end={end.id}>
+              <h2>{end.title}</h2>
+              <div class="segments">
+                {presetsFor(end.id).map((p) => (
+                  <button type="button" data-preset={p.id}>
+                    {p.name}
+                  </button>
                 ))}
               </div>
-            </div>
+              {kinds.map((k) => (
+                <div class="kind" data-kind={k.id} hidden>
+                  <figure class="figure" set:html={k.figure} />
+                  <div class="values">
+                    {k.measures.map((m) => (
+                      <label class="value">
+                        <span class="label">{m.label}</span>
+                        <span class="field">
+                          <input type="number" inputmode="decimal" name={`${end.id}.${m.key}`} min={m.min} max={m.max} step={m.step} data-hint={m.hint} title={m.hint} />
+                          <span class="unit">{m.unit}</span>
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              ))}
+              <p class="hint" data-hint-line />
+            </section>
           ))
         }
-        <p class="hint" data-hint-line></p>
-      </section>
+      </div>
 
       <section>
         <h2>print</h2>
         <div class="values three">
           <label class="value">
             <span class="label">tolerance</span>
-            <span class="field"><input type="number" inputmode="decimal" name="tolerance" min="0" max="0.8" step="0.05" data-hint="clearance on every fitting surface; raise it if parts are too tight" title="clearance on every fitting surface; raise it if parts are too tight" /><span class="unit">mm</span></span>
+            <span class="field"><input type="number" inputmode="decimal" name="tolerance" min="0" max="0.8" step="0.05" data-hint={printHints.tolerance} title={printHints.tolerance} /><span class="unit">mm</span></span>
           </label>
           <label class="value">
             <span class="label">wall</span>
-            <span class="field"><input type="number" inputmode="decimal" name="wall" min="0.8" max="4" step="0.1" data-hint="thicker is stiffer, thinner snaps on more easily" title="thicker is stiffer, thinner snaps on more easily" /><span class="unit">mm</span></span>
+            <span class="field"><input type="number" inputmode="decimal" name="wall" min="0.8" max="4" step="0.1" data-hint={printHints.wall} title={printHints.wall} /><span class="unit">mm</span></span>
           </label>
           <label class="value">
             <span class="label">gap</span>
-            <span class="field"><input type="number" inputmode="decimal" name="reach" min="1" max="30" step="0.5" data-hint="between the headphones and the AirPod" title="between the headphones and the AirPod" /><span class="unit">mm</span></span>
+            <span class="field"><input type="number" inputmode="decimal" name="reach" min="1" max="30" step="0.5" data-hint={printHints.reach} title={printHints.reach} /><span class="unit">mm</span></span>
           </label>
         </div>
-        <p class="hint" data-hint-line></p>
+        <p class="hint" data-hint-line />
       </section>
 
       <section class="export">
         <div class="buttons">
           <button type="button" class="button main" data-export="clip">export clip · stl</button>
-          <button type="button" class="button" data-export="claw">test claw · stl</button>
+          <button type="button" class="button" data-export="test">test grip · stl</button>
         </div>
         <p class="hint">
-          Print the test claw first to check the fit. Print lying flat as exported, with no supports. The file's name
-          and the page's address keep the settings.
+          The test grip is the tracker's end alone: print it first to check the fit. Print lying flat as exported, with no
+          supports. The file's name and the page's address keep the settings.
         </p>
         <p class="fine">
-          Exported models are <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>: print, share and
-          change them, with credit to bambi.wiki.
+          Exported models are <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>: print, share and change
+          them, with credit to bambi.wiki.
         </p>
       </section>
     </form>
@@ -98,63 +105,65 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
   import wasmUrl from 'manifold-3d/manifold.wasm?url';
   import * as THREE from 'three';
   import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-  import { airpods, withOverrides } from '../../lib/clip/airpods';
-  import { kinds, presets, kindOf } from '../../lib/clip/mounts';
-  import { clip, claw, ghost, type ClipSettings } from '../../lib/clip/build';
+  import { kindOf, presets, presetsFor } from '../../lib/clip/grips';
+  import { airpodGhost, clip, trackerGrip, type ClipSettings } from '../../lib/clip/build';
   import { binaryStl } from '../../lib/clip/stl';
-  import type { Geometry } from '../../lib/clip/types';
+  import type { End, Geometry } from '../../lib/clip/types';
 
   const form = document.querySelector<HTMLFormElement>('[data-form]')!;
   const status = document.querySelector<HTMLElement>('[data-status]')!;
   const params = new URLSearchParams(location.search);
+  const endsOf: End[] = ['tracker', 'headphones'];
 
-  //  the state the form shows, and the address keeps
+  //  each end: which preset it came from, which kind it is, and its values; the address keeps all of it
+  type EndState = { preset: string; kind: string; values: Record<string, number> };
+  const fromAddress = (end: End): EndState => {
+    const p = presetsFor(end).find((x) => x.id === params.get(`${end}.preset`)) ?? presetsFor(end)[0];
+    const values: Record<string, number> = { ...p.values };
+    for (const m of kindOf(p.kind).measures) {
+      const n = Number(params.get(`${end}.${m.key}`));
+      if (params.has(`${end}.${m.key}`) && Number.isFinite(n)) values[m.key] = n;
+    }
+    return { preset: p.id, kind: p.kind, values };
+  };
   const state = {
-    airpod: params.get('airpod') ?? airpods[0].id,
-    preset: params.get('preset') ?? presets[0].id,
-    kind: params.get('kind') ?? presets[0].kind,
-    values: {} as Record<string, number>,
+    tracker: fromAddress('tracker'),
+    headphones: fromAddress('headphones'),
     tolerance: Number(params.get('tolerance') ?? 0.2),
     wall: Number(params.get('wall') ?? 1.6),
     reach: Number(params.get('reach') ?? 4),
   };
-  const preset = presets.find((p) => p.id === state.preset) ?? presets[0];
-  if (!kinds.some((k) => k.id === state.kind)) state.kind = preset.kind;
-  state.values = { ...(preset.kind === state.kind ? preset.values : {}) };
-  for (const m of kindOf(state.kind).measures) {
-    const n = Number(params.get(m.key));
-    if (params.has(m.key) && Number.isFinite(n)) state.values[m.key] = n;
-    state.values[m.key] ??= m.min;
-  }
 
   const settings = (): ClipSettings => ({
-    airpod: withOverrides(airpods.find((a) => a.id === state.airpod) ?? airpods[0], params),
-    mount: state.kind,
-    values: state.values,
+    tracker: { kind: state.tracker.kind, values: state.tracker.values },
+    headphones: { kind: state.headphones.kind, values: state.headphones.values },
     fit: { tolerance: state.tolerance, wall: state.wall },
     reach: state.reach,
   });
 
   function remember() {
     const q = new URLSearchParams();
-    q.set('airpod', state.airpod);
-    q.set('preset', state.preset);
-    q.set('kind', state.kind);
-    for (const [k, v] of Object.entries(state.values)) q.set(k, String(v));
-    q.set('tolerance', String(state.tolerance));
-    q.set('wall', String(state.wall));
-    q.set('reach', String(state.reach));
-    for (const [k, v] of params) if (k.startsWith('stem.') || k.startsWith('grip.')) q.set(k, v);
+    for (const end of endsOf) {
+      q.set(`${end}.preset`, state[end].preset);
+      for (const [k, v] of Object.entries(state[end].values)) q.set(`${end}.${k}`, String(v));
+    }
+    for (const key of ['tolerance', 'wall', 'reach'] as const) q.set(key, String(state[key]));
     history.replaceState(null, '', `${location.pathname}?${q}`);
   }
 
   function showForm() {
-    for (const b of form.querySelectorAll<HTMLButtonElement>('[data-airpod]')) b.classList.toggle('chosen', b.dataset.airpod === state.airpod);
-    for (const b of form.querySelectorAll<HTMLButtonElement>('[data-preset]')) b.classList.toggle('chosen', b.dataset.preset === state.preset);
-    for (const k of form.querySelectorAll<HTMLElement>('[data-kind]')) k.hidden = k.dataset.kind !== state.kind;
-    for (const m of kindOf(state.kind).measures) {
-      const input = form.querySelector<HTMLInputElement>(`input[name="${state.kind}.${m.key}"]`);
-      if (input) input.value = String(state.values[m.key]);
+    for (const end of endsOf) {
+      const section = form.querySelector<HTMLElement>(`[data-end="${end}"]`)!;
+      for (const b of section.querySelectorAll<HTMLButtonElement>('[data-preset]')) b.classList.toggle('chosen', b.dataset.preset === state[end].preset);
+      for (const k of section.querySelectorAll<HTMLElement>('[data-kind]')) {
+        const shown = k.dataset.kind === state[end].kind;
+        k.hidden = !shown;
+        if (!shown) continue;
+        for (const m of kindOf(state[end].kind).measures) {
+          const input = k.querySelector<HTMLInputElement>(`input[name="${end}.${m.key}"]`);
+          if (input) input.value = String(state[end].values[m.key]);
+        }
+      }
     }
     for (const key of ['tolerance', 'wall', 'reach'] as const) form.querySelector<HTMLInputElement>(`input[name="${key}"]`)!.value = String(state[key]);
   }
@@ -205,7 +214,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
   function meshOf(solid: any, material: THREE.Material) {
     const m = solid.getMesh();
     const geometry = new THREE.BufferGeometry();
-    const positions = new Float32Array((m.triVerts.length) * 3);
+    const positions = new Float32Array(m.triVerts.length * 3);
     for (let i = 0; i < m.triVerts.length; ++i)
       for (let k = 0; k < 3; ++k) positions[3 * i + k] = m.vertProperties[m.triVerts[i] * m.numProp + k];
     geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
@@ -227,6 +236,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     camera.position.copy(sphere.center).addScaledVector(away, distance);
     framed = true;
   }
+
   function rebuild() {
     for (const m of shown) {
       scene.remove(m);
@@ -235,24 +245,26 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     shown = [];
     try {
       const s = settings();
-      const solid = clip(g, s);
-      shown = [meshOf(solid, clipMaterial), meshOf(ghost(g, s), ghostMaterial)];
+      shown = [meshOf(clip(g, s), clipMaterial)];
+      const ghost = presets.find((p) => p.id === state.tracker.preset)?.ghost;
+      if (ghost === 'airpod' && state.tracker.kind === 'oval') shown.push(meshOf(airpodGhost(g, s), ghostMaterial));
       for (const m of shown) scene.add(m);
       if (!framed) frame();
       status.textContent = '';
-    } catch (e) {
+    } catch {
       status.textContent = 'these measurements do not make a solid clip';
     }
   }
 
   function download(name: string, solid: any) {
     const s = settings();
-    const header = `bambi.wiki airpod clip, CC BY 4.0`;
+    const header = 'bambi.wiki tracker clip, CC BY 4.0';
     const blob = new Blob([binaryStl(solid.getMesh(), header)], { type: 'model/stl' });
     const a = document.createElement('a');
-    const values = kindOf(s.mount).measures.map((m) => `${m.key}${s.values[m.key]}`).join('-');
+    const describe = (end: End) =>
+      `${state[end].kind}-` + kindOf(state[end].kind).measures.map((m) => `${m.key}${s[end].values[m.key]}`).join('-');
     a.href = URL.createObjectURL(blob);
-    a.download = `bambi-${name}_${s.airpod.id}_${s.mount}-${values}_tol${s.fit.tolerance}-wall${s.fit.wall}-gap${s.reach}.stl`;
+    a.download = `bambi-${name}_${describe('tracker')}_${describe('headphones')}_tol${s.fit.tolerance}-wall${s.fit.wall}-gap${s.reach}.stl`;
     a.click();
     setTimeout(() => URL.revokeObjectURL(a.href), 1000);
   }
@@ -260,16 +272,13 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
   form.addEventListener('click', (e) => {
     const b = (e.target as HTMLElement).closest('button');
     if (!b) return;
-    if (b.dataset.airpod) state.airpod = b.dataset.airpod;
     if (b.dataset.preset) {
       const p = presets.find((x) => x.id === b.dataset.preset)!;
-      state.preset = p.id;
-      state.kind = p.kind;
-      state.values = { ...p.values };
+      state[p.end] = { preset: p.id, kind: p.kind, values: { ...p.values } };
       framed = false;
     }
-    if (b.dataset.export === 'clip') return download('airpod-clip', clip(g, settings()));
-    if (b.dataset.export === 'claw') return download('airpod-claw', claw(g, settings().airpod, settings().fit).solid);
+    if (b.dataset.export === 'clip') return download('tracker-clip', clip(g, settings()));
+    if (b.dataset.export === 'test') return download('test-grip', trackerGrip(g, settings()).solid);
     showForm();
     remember();
     rebuild();
@@ -279,7 +288,10 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     const n = Number(input.value);
     if (!input.name || !Number.isFinite(n) || input.value === '') return;
     if (input.name === 'tolerance' || input.name === 'wall' || input.name === 'reach') state[input.name] = n;
-    else state.values[input.name.split('.')[1]] = n;
+    else {
+      const [end, key] = input.name.split('.') as [End, string];
+      state[end].values[key] = n;
+    }
     remember();
     rebuild();
   });
@@ -311,7 +323,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
   }
   .tool {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 480px);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 720px);
     gap: 40px;
     align-items: start;
   }
@@ -349,14 +361,17 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     background: var(--chosen);
     color: var(--text-inverse);
   }
+  .ends {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 28px;
+  }
   .kind[hidden] {
     display: none;
   }
   .kind {
     display: grid;
-    grid-template-columns: 220px minmax(0, 1fr);
-    gap: 16px;
-    align-items: center;
+    gap: 12px;
     margin-top: 14px;
   }
   .figure {
@@ -366,6 +381,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
   .figure :global(svg) {
     display: block;
     width: 100%;
+    max-width: 260px;
     height: auto;
     font-size: 15px;
     letter-spacing: 0.04em;
@@ -457,8 +473,16 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     margin: 12px;
     text-transform: none;
   }
-  @media (max-width: 760px) {
+  @media (max-width: 1100px) {
     .tool {
+      grid-template-columns: 1fr;
+    }
+    .look {
+      position: static;
+    }
+  }
+  @media (max-width: 640px) {
+    .ends {
       grid-template-columns: 1fr;
     }
     .look {

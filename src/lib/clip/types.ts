@@ -1,7 +1,8 @@
-/*  The clip is three parts joined at one point: the AirPod's claw, a bridge, and a mount that holds the
-    headphones. Every part is a cross-section extruded upwards from the print bed (z = 0), so the clip prints
-    lying flat, with no supports. In the plan the bridge runs along +y: a mount's attachment face lies on y = 0
-    with the mount below it (y < 0), and the claw's back sits where the bridge ends. Millimetres throughout. */
+/*  The clip is two grips joined by a bridge: one holds the head tracker, the other the headphones. Every
+    part is a cross-section extruded upwards from the print bed (z = 0), so the clip prints lying flat, with
+    no supports. Each grip is built in the same plan: its attachment face on y = 0, the grip itself below it
+    (y < 0), and whatever it holds is pushed in from the far side. The headphone grip is used as built; the
+    tracker grip is mirrored onto the other end of the bridge. Millimetres throughout. */
 import type { CrossSection, Manifold } from 'manifold-3d/manifold';
 
 export type Geometry = { CrossSection: typeof CrossSection; Manifold: typeof Manifold };
@@ -17,27 +18,31 @@ export interface Measure {
   hint?: string;
 }
 
-/** How tight a printed fit is, and how thick its walls: shared by every part. */
+/** How tight a printed fit is, and how thick its walls: shared by both grips. */
 export interface Fit {
   tolerance: number; // clearance added to every surface that meets something, per side
   wall: number;
 }
 
-/** A kind of mount: what it asks for, and how it is built from the answers. */
-export interface MountKind {
+/** A kind of grip: what it asks for, and how it is built from the answers. */
+export interface GripKind {
   id: string;
   name: string;
   measures: Measure[];
-  /** A schematic of the cross-section, in SVG, with each measure labelled by its key. */
+  /** A schematic of the cross-section, in SVG, with its measures labelled. */
   figure: string;
-  /** The mount in its own plan: attachment face on y = 0, extruded from z = 0 to the returned height. */
   build(g: Geometry, v: Record<string, number>, fit: Fit): { solid: Manifold; height: number; width: number };
 }
 
-/** A starting point: a kind of mount with values filled in. Choosing one copies its values; the user edits from there. */
-export interface MountPreset {
+export type End = 'tracker' | 'headphones';
+
+/** A starting point: a kind of grip with values filled in, offered on one end. Choosing one copies its values. */
+export interface GripPreset {
   id: string;
   name: string;
+  end: End;
   kind: string;
   values: Record<string, number>;
+  /** For a preset that holds a known device: a rough solid of it for the preview, never exported. */
+  ghost?: 'airpod';
 }

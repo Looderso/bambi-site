@@ -5,4 +5,8 @@ import { defineConfig } from 'astro/config';
 export default defineConfig({
   site: 'https://bambi.wiki',
   trailingSlash: 'ignore',
+  //  addresses that moved, kept working
+  redirects: {
+    '/tools/airpod-clip': '/tools/tracker-clip',
+  },
 });

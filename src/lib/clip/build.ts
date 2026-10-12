@@ -1,53 +1,46 @@
-/*  The clip assembled: the mount, a bridge from its attachment face, and the claw on the bridge's end. */
+/*  The clip assembled: the headphone grip, a bridge from its attachment face, and the tracker grip mirrored
+    onto the bridge's other end, so that whatever each holds is pushed in from outside. */
 import type { Manifold } from 'manifold-3d/manifold';
-import type { AirPodModel } from './airpods';
-import { kindOf } from './mounts';
+import { kindOf } from './grips';
 import type { Fit, Geometry } from './types';
 
-export interface ClipSettings {
-  airpod: AirPodModel;
-  mount: string; // a kind's id
+export interface Grip {
+  kind: string;
   values: Record<string, number>;
+}
+
+export interface ClipSettings {
+  tracker: Grip;
+  headphones: Grip;
   fit: Fit;
-  reach: number; // the gap the bridge leaves between the headphones and the AirPod
+  reach: number; // the gap the bridge leaves between the two grips
 }
 
-/** The stem's oval cross-section, centred on the origin, grown evenly by `grow` on every side. */
-function stem(g: Geometry, a: AirPodModel, grow: number) {
-  const oval = g.CrossSection.circle(1, 128).scale([a.stem.width / 2, a.stem.depth / 2]);
-  return grow > 0 ? oval.offset(grow, 'Round', 2, 128) : oval;
-}
+const build = (g: Geometry, grip: Grip, fit: Fit) => kindOf(grip.kind).build(g, grip.values, fit);
 
-/** The claw alone, with its back on y = 0 and the stem's centre at y = its returned `centre`. */
-export function claw(g: Geometry, a: AirPodModel, fit: Fit): { solid: Manifold; centre: number; width: number } {
-  const inside = stem(g, a, fit.tolerance);
-  const outside = stem(g, a, fit.tolerance + fit.wall);
-  //  the opening faces away from the headphones (+y), narrower than the stem by the snap on each side
-  const opening = Math.max(0.8, a.stem.width - 2 * a.grip.snap);
-  const reachOut = a.stem.depth / 2 + fit.tolerance + fit.wall + 1;
-  const section = outside
-    .subtract(inside)
-    .subtract(g.CrossSection.square([opening, reachOut], false).translate(-opening / 2, 0));
-  const centre = a.stem.depth / 2 + fit.tolerance + fit.wall;
-  return { solid: section.translate(0, centre).extrude(a.grip.length), centre, width: a.stem.width + 2 * (fit.tolerance + fit.wall) };
+/** The tracker grip alone, facing +y with its attachment face on y = 0: for a test print, and for the clip. */
+export function trackerGrip(g: Geometry, s: Pick<ClipSettings, 'tracker' | 'fit'>) {
+  const t = build(g, s.tracker, s.fit);
+  return { ...t, solid: t.solid.mirror([0, 1, 0]) };
 }
 
 export function clip(g: Geometry, s: ClipSettings): Manifold {
-  const mount = kindOf(s.mount).build(g, s.values, s.fit);
-  const c = claw(g, s.airpod, s.fit);
-  const overlap = 0.5; // into each part, so the union is one solid
-  const height = Math.min(mount.height, s.airpod.grip.length);
-  const bridgeWidth = Math.min(c.width, mount.width, 8);
+  const headphones = build(g, s.headphones, s.fit);
+  const tracker = trackerGrip(g, s);
+  const overlap = 0.5; // into each grip, so the union is one solid
+  const height = Math.min(headphones.height, tracker.height);
+  const bridgeWidth = Math.min(tracker.width, headphones.width, 8);
   const bridge = g.Manifold.cube([bridgeWidth, s.reach + 2 * overlap, height]).translate([-bridgeWidth / 2, -overlap, 0]);
-  return g.Manifold.union([mount.solid, bridge, c.solid.translate([0, s.reach, 0])]);
+  return g.Manifold.union([headphones.solid, bridge, tracker.solid.translate([0, s.reach, 0])]);
 }
 
-/** The AirPod as a rough solid, where the claw holds it: for the preview, never exported. */
-export function ghost(g: Geometry, s: ClipSettings): Manifold {
-  const a = s.airpod;
-  const c = claw(g, a, s.fit);
-  const below = a.stem.length - a.grip.length;
-  const st = stem(g, a, 0).extrude(a.stem.length).translate([0, 0, -below]);
-  const body = g.Manifold.sphere(a.body.radius, 48).translate([0, a.body.radius * 0.35, a.grip.length + a.body.radius * 0.8]);
-  return g.Manifold.union([st, body]).translate([0, s.reach + c.centre, 0]);
+/** An AirPod in the oval grip, as a rough solid: stem down, body above. For the preview, never exported. */
+export function airpodGhost(g: Geometry, s: ClipSettings): Manifold {
+  const v = s.tracker.values;
+  const stemLength = 15;
+  const body = 10;
+  const centre = s.reach + v.depth / 2 + s.fit.tolerance + s.fit.wall;
+  const stem = g.CrossSection.circle(1, 64).scale([v.width / 2, v.depth / 2]).extrude(stemLength).translate([0, 0, v.length - stemLength]);
+  const bud = g.Manifold.sphere(body, 48).translate([0, body * 0.35, v.length + body * 0.8]);
+  return g.Manifold.union([stem, bud]).translate([0, centre, 0]);
 }
