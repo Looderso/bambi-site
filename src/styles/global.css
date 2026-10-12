@@ -43,6 +43,7 @@
   --gutter: 16px;
   --measure: 68ch;
   --page: 1040px;
+  --page-wide: 1360px; /* a tool's page, where a picture works beside a form */
   --gap: 24px;
   --section: 64px;
 

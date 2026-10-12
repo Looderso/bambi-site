@@ -9,7 +9,7 @@ import { kinds, presets } from '../../lib/clip/mounts';
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
 
-<Page title="airpod clip" description="A printable clip that holds an AirPod on your headphones, for head tracking.">
+<Page title="airpod clip" description="A printable clip that holds an AirPod on your headphones, for head tracking." wide>
   <div class="tool">
     <div class="look">
       <p class="label"><a href={`${base}/tools`}>tools</a></p>
@@ -311,7 +311,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
   }
   .tool {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 400px);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 480px);
     gap: 40px;
     align-items: start;
   }
@@ -354,7 +354,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
   }
   .kind {
     display: grid;
-    grid-template-columns: 150px minmax(0, 1fr);
+    grid-template-columns: 220px minmax(0, 1fr);
     gap: 16px;
     align-items: center;
     margin-top: 14px;
