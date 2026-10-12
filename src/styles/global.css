@@ -44,6 +44,7 @@
   --measure: 68ch;
   --page: 1040px;
   --page-wide: 1360px; /* a tool's page, where a picture works beside a form */
+  --header: 44px; /* the header's and the footer's height; the header stays on screen */
   --gap: 24px;
   --section: 64px;
 
@@ -60,6 +61,8 @@
 
 html {
   -webkit-text-size-adjust: 100%;
+  /* a link to a heading lands below the header, not under it */
+  scroll-padding-top: calc(var(--header) + 16px);
 }
 
 body {
