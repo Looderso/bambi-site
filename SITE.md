@@ -14,7 +14,7 @@ npx astro build    # must pass before a push
 
 ## Sections
 
-The header lists them in this order. Each is a label on this repository's issues.
+The header lists them in this order.
 
 | section | address | for | source |
 |---|---|---|---|
@@ -30,8 +30,8 @@ Two pages are not in the header:
 
 - **the front page** (`/`): what bambi is for, a picture of a window, and where to go next. It repeats no
   section; it points to them.
-- **status** (`/status`): where bambi has been tested, its known gaps, what is planned once it is decided, and where to ask for
-  something. Linked from the front page, the download page and the footer.
+- **status** (`/status`): where bambi has been tested, its known gaps, what is planned once it is decided,
+  and where to ask for something. Linked from the front page, the download page and the footer.
 
 ### What goes where
 
@@ -44,7 +44,8 @@ Two pages are not in the header:
 - **A guideline** is a rule a change is held to, or how part of bambi is designed, in two groups: *working on
   bambi* and *how bambi is designed*. It states rules, not the findings that led to them.
 - **status** holds everything that changes with each release: what has been tried where, what does not work
-  yet, what is planned. Other pages state how bambi is, and leave what is not done yet to status.
+  yet, and what is planned once it is decided. Other pages state how bambi is, and leave what is not done yet
+  to status. A host joins its table only once bambi has been tried in it.
 
 ## Rules for the text
 
@@ -67,7 +68,14 @@ rather than boxes, no rounding, no shadows.
 
 - **Colours, sizes and spacing are variables** in `src/styles/global.css`. A page uses the variables and the
   shared classes (`label`, `fine`, `prose`, `lede`), never a literal colour.
-- **Chosen is a black block with light text**: the open section in the header, a chosen option in a tool.
+- **Chosen is a black block with light text**: the open section in the header, the part being read in a
+  page's contents, a chosen option in a tool.
+- **A page opens the same way**: a small label linking back to its section (on a page inside one), the title,
+  then a grey line or a lede saying what the page is.
+- **A list of pages to go to is cards** (`src/components/Cards.astro`): tiles for a few entries that each
+  deserve weight, rows for a longer list read in order. A plugin's card wears its colour.
+- **A long page keeps its contents under the header**, as a second row of tabs that marks the part being read.
+- **Code is ink on the panel colour**, with no highlighting, and every block in prose has a copy button.
 - **Every page uses `src/layouts/Page.astro`**: `title` and `description` for the browser, `identity` for a
   plugin's own colour on its rules, `wide` for a tool's page, which needs the wider measure.
 - **The header stays on screen.** Anything else that stays on screen sits below it (`var(--header)`).
@@ -95,8 +103,7 @@ rather than boxes, no rounding, no shadows.
 - **A tutorial:** a page in `src/pages/tutorial/`, and an entry in `src/lib/tutorials.ts` that puts it on
   `/tutorial` in its group and gives it its previous and next. If it needs pictures, add their shots and crops
   to `scripts/tutorial-pictures.sh`.
-- **A list of pages to go to** uses `src/components/Cards.astro`: tiles for a few entries that each deserve
-  weight, rows for a longer list read in order. A page read in order ends with `PrevNext.astro`.
+- **A page read in order** — a guideline, a tutorial — ends with `src/components/PrevNext.astro`.
 - **A guideline:** a Markdown file in `src/content/guidelines/` with its `title`, `summary`, `group` and
   `order`. It appears on `/contribute` in its group.
 - **A tool:** its code in `src/lib/<tool>/`, its page in `src/pages/tools/`, and an entry in the list in
@@ -106,5 +113,15 @@ rather than boxes, no rounding, no shadows.
 
 ## Issues
 
-Each section above is a label; work that spans the whole site, such as the look or the build, takes `site`.
+An issue takes the label of the part it is about:
+
+| label | for |
+|---|---|
+| `plugins` | the plugin pages |
+| `tutorial` | the tutorials and their pictures |
+| `tools` | the tools page and every tool |
+| `contribute` | the guidelines |
+| `status` | the status page |
+| `site` | everything else: the front page, download, about, foundations, the look, the build |
+
 Bugs in the plugins themselves belong in the [bambi repository](https://github.com/Looderso/bambi/issues).
