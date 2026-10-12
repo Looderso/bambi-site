@@ -105,7 +105,7 @@ const round: GripKind = {
     { key: 'opening', label: 'opening', min: 40, max: 160, unit: '°', step: 1, hint: 'smaller holds tighter, larger snaps on more easily' },
     { key: 'length', label: 'clip length', min: 5, max: 40, ...len, hint: 'along the rod' },
   ],
-  figure: svg(`<circle cx="140" cy="54" r="24" ${dashed}/><path d="M122 84 A32 32 0 1 1 158 84" ${solid}/>
+  figure: svg(`<circle cx="140" cy="54" r="24" ${dashed}/><path d="M122.1 80.5 A32 32 0 1 1 157.9 80.5" ${solid}/>
 <text x="180" y="40">diameter</text><text x="140" y="112" text-anchor="middle">opening</text>`),
   build(g, v, fit) {
     const inner = v.diameter / 2 + fit.tolerance;
