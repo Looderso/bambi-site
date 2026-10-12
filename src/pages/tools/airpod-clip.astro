@@ -1,0 +1,415 @@
+---
+/*  The AirPod clip: an AirPod generation and a headphone mount in, a printable STL out. Everything runs in
+    the visitor's browser; the page holds the form, the preview and the export, and the model is in
+    src/lib/clip. */
+import Page from '../../layouts/Page.astro';
+import { airpods } from '../../lib/clip/airpods';
+import { kinds, presets } from '../../lib/clip/mounts';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<Page title="airpod clip" description="A printable clip that holds an AirPod on your headphones, for head tracking.">
+  <p class="label"><a href={`${base}/tools`}>tools</a></p>
+  <h1>airpod clip</h1>
+  <p class="lede summary">
+    Head tracking needs only the left AirPod. This clip holds it on the headphones you listen on.
+  </p>
+
+  <div class="tool">
+    <form class="form" data-form>
+      <section>
+        <h2>airpod</h2>
+        <div class="segments" data-airpods>
+          {airpods.map((a) => <button type="button" data-airpod={a.id}>{a.name}</button>)}
+        </div>
+      </section>
+
+      <section>
+        <h2>headphones</h2>
+        <div class="segments wrap" data-presets>
+          {presets.map((p) => <button type="button" data-preset={p.id}>{p.name}</button>)}
+        </div>
+        {
+          kinds.map((k) => (
+            <div class="kind" data-kind={k.id} hidden>
+              <figure class="figure label" set:html={k.figure} />
+              {k.measures.map((m) => (
+                <label class="value">
+                  <span class="label">{m.label}</span>
+                  <span class="field">
+                    <input type="number" inputmode="decimal" name={`${k.id}.${m.key}`} min={m.min} max={m.max} step={m.step} />
+                    <span class="unit">{m.unit}</span>
+                  </span>
+                  {m.hint && <span class="hint">{m.hint}</span>}
+                </label>
+              ))}
+            </div>
+          ))
+        }
+      </section>
+
+      <section>
+        <h2>print</h2>
+        <label class="value">
+          <span class="label">tolerance</span>
+          <span class="field"><input type="number" inputmode="decimal" name="tolerance" min="0" max="0.8" step="0.05" /><span class="unit">mm</span></span>
+          <span class="hint">clearance on every fitting surface; raise it if parts are too tight</span>
+        </label>
+        <label class="value">
+          <span class="label">wall</span>
+          <span class="field"><input type="number" inputmode="decimal" name="wall" min="0.8" max="4" step="0.1" /><span class="unit">mm</span></span>
+          <span class="hint">thicker is stiffer, thinner snaps on more easily</span>
+        </label>
+        <label class="value">
+          <span class="label">gap</span>
+          <span class="field"><input type="number" inputmode="decimal" name="reach" min="1" max="30" step="0.5" /><span class="unit">mm</span></span>
+          <span class="hint">between the headphones and the AirPod</span>
+        </label>
+      </section>
+
+      <section class="export">
+        <button type="button" class="button main" data-export="clip">export clip · stl</button>
+        <button type="button" class="button" data-export="claw">export test claw · stl</button>
+        <p class="hint">
+          The test claw is the AirPod side alone: print it first to check the fit. Print as exported, lying flat, with no
+          supports. The settings are in the file's name, and the page's address keeps them too.
+        </p>
+        <p class="fine">
+          Exported models are licensed <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>: print, share
+          and change them, with credit to bambi.wiki.
+        </p>
+      </section>
+    </form>
+
+    <div class="preview" data-preview>
+      <p class="label status" data-status>loading the model…</p>
+    </div>
+  </div>
+</Page>
+
+<script>
+  import Module from 'manifold-3d/manifold.js';
+  import wasmUrl from 'manifold-3d/manifold.wasm?url';
+  import * as THREE from 'three';
+  import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+  import { airpods, withOverrides } from '../../lib/clip/airpods';
+  import { kinds, presets, kindOf } from '../../lib/clip/mounts';
+  import { clip, claw, ghost, type ClipSettings } from '../../lib/clip/build';
+  import { binaryStl } from '../../lib/clip/stl';
+  import type { Geometry } from '../../lib/clip/types';
+
+  const form = document.querySelector<HTMLFormElement>('[data-form]')!;
+  const status = document.querySelector<HTMLElement>('[data-status]')!;
+  const params = new URLSearchParams(location.search);
+
+  //  the state the form shows, and the address keeps
+  const state = {
+    airpod: params.get('airpod') ?? airpods[0].id,
+    preset: params.get('preset') ?? presets[0].id,
+    kind: params.get('kind') ?? presets[0].kind,
+    values: {} as Record<string, number>,
+    tolerance: Number(params.get('tolerance') ?? 0.2),
+    wall: Number(params.get('wall') ?? 1.6),
+    reach: Number(params.get('reach') ?? 4),
+  };
+  const preset = presets.find((p) => p.id === state.preset) ?? presets[0];
+  if (!kinds.some((k) => k.id === state.kind)) state.kind = preset.kind;
+  state.values = { ...(preset.kind === state.kind ? preset.values : {}) };
+  for (const m of kindOf(state.kind).measures) {
+    const n = Number(params.get(m.key));
+    if (params.has(m.key) && Number.isFinite(n)) state.values[m.key] = n;
+    state.values[m.key] ??= m.min;
+  }
+
+  const settings = (): ClipSettings => ({
+    airpod: withOverrides(airpods.find((a) => a.id === state.airpod) ?? airpods[0], params),
+    mount: state.kind,
+    values: state.values,
+    fit: { tolerance: state.tolerance, wall: state.wall },
+    reach: state.reach,
+  });
+
+  function remember() {
+    const q = new URLSearchParams();
+    q.set('airpod', state.airpod);
+    q.set('preset', state.preset);
+    q.set('kind', state.kind);
+    for (const [k, v] of Object.entries(state.values)) q.set(k, String(v));
+    q.set('tolerance', String(state.tolerance));
+    q.set('wall', String(state.wall));
+    q.set('reach', String(state.reach));
+    for (const [k, v] of params) if (k.startsWith('stem.') || k.startsWith('grip.')) q.set(k, v);
+    history.replaceState(null, '', `${location.pathname}?${q}`);
+  }
+
+  function showForm() {
+    for (const b of form.querySelectorAll<HTMLButtonElement>('[data-airpod]')) b.classList.toggle('chosen', b.dataset.airpod === state.airpod);
+    for (const b of form.querySelectorAll<HTMLButtonElement>('[data-preset]')) b.classList.toggle('chosen', b.dataset.preset === state.preset);
+    for (const k of form.querySelectorAll<HTMLElement>('[data-kind]')) k.hidden = k.dataset.kind !== state.kind;
+    for (const m of kindOf(state.kind).measures) {
+      const input = form.querySelector<HTMLInputElement>(`input[name="${state.kind}.${m.key}"]`);
+      if (input) input.value = String(state.values[m.key]);
+    }
+    for (const key of ['tolerance', 'wall', 'reach'] as const) form.querySelector<HTMLInputElement>(`input[name="${key}"]`)!.value = String(state[key]);
+  }
+
+  //  the preview: z is up, as on the print bed
+  const holder = document.querySelector<HTMLElement>('[data-preview]')!;
+  const css = getComputedStyle(document.documentElement);
+  const colour = (name: string) => new THREE.Color(css.getPropertyValue(name).trim());
+  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  holder.prepend(renderer.domElement);
+  const scene = new THREE.Scene();
+  scene.background = colour('--panel');
+  const camera = new THREE.PerspectiveCamera(35, 1, 1, 2000);
+  camera.up.set(0, 0, 1);
+  camera.position.set(70, -90, 60);
+  const controls = new OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
+  scene.add(new THREE.HemisphereLight(0xffffff, 0x888888, 2.2));
+  const sun = new THREE.DirectionalLight(0xffffff, 1.6);
+  sun.position.set(40, -60, 100);
+  scene.add(sun);
+  const bed = new THREE.GridHelper(120, 24, colour('--grey-mid'), colour('--grey-light'));
+  bed.rotation.x = Math.PI / 2;
+  scene.add(bed);
+  const clipMaterial = new THREE.MeshStandardMaterial({ color: colour('--grey-dark'), roughness: 0.7, flatShading: true });
+  const ghostMaterial = new THREE.MeshStandardMaterial({ color: colour('--off-white'), roughness: 0.4, transparent: true, opacity: 0.45 });
+  let shown: THREE.Mesh[] = [];
+
+  function resize() {
+    const w = holder.clientWidth;
+    const h = Math.max(320, Math.min(560, w * 0.8));
+    renderer.setSize(w, h);
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+  }
+  new ResizeObserver(resize).observe(holder);
+  renderer.setAnimationLoop(() => {
+    controls.update();
+    renderer.render(scene, camera);
+  });
+
+  function meshOf(solid: any, material: THREE.Material) {
+    const m = solid.getMesh();
+    const geometry = new THREE.BufferGeometry();
+    const positions = new Float32Array((m.triVerts.length) * 3);
+    for (let i = 0; i < m.triVerts.length; ++i)
+      for (let k = 0; k < 3; ++k) positions[3 * i + k] = m.vertProperties[m.triVerts[i] * m.numProp + k];
+    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    geometry.computeVertexNormals();
+    return new THREE.Mesh(geometry, material);
+  }
+
+  let g: Geometry;
+  let framed = false;
+
+  /** Points the camera at what is shown, from where it looks now, near enough to fill the view. */
+  function frame() {
+    const box = new THREE.Box3();
+    for (const m of shown) box.expandByObject(m);
+    const sphere = box.getBoundingSphere(new THREE.Sphere());
+    const away = camera.position.clone().sub(controls.target).normalize();
+    const distance = (sphere.radius / Math.sin(THREE.MathUtils.degToRad(camera.fov / 2))) * 1.1;
+    controls.target.copy(sphere.center);
+    camera.position.copy(sphere.center).addScaledVector(away, distance);
+    framed = true;
+  }
+  function rebuild() {
+    for (const m of shown) {
+      scene.remove(m);
+      m.geometry.dispose();
+    }
+    shown = [];
+    try {
+      const s = settings();
+      const solid = clip(g, s);
+      shown = [meshOf(solid, clipMaterial), meshOf(ghost(g, s), ghostMaterial)];
+      for (const m of shown) scene.add(m);
+      if (!framed) frame();
+      status.textContent = '';
+    } catch (e) {
+      status.textContent = 'these measurements do not make a solid clip';
+    }
+  }
+
+  function download(name: string, solid: any) {
+    const s = settings();
+    const header = `bambi.wiki airpod clip, CC BY 4.0`;
+    const blob = new Blob([binaryStl(solid.getMesh(), header)], { type: 'model/stl' });
+    const a = document.createElement('a');
+    const values = kindOf(s.mount).measures.map((m) => `${m.key}${s.values[m.key]}`).join('-');
+    a.href = URL.createObjectURL(blob);
+    a.download = `bambi-${name}_${s.airpod.id}_${s.mount}-${values}_tol${s.fit.tolerance}-wall${s.fit.wall}-gap${s.reach}.stl`;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  }
+
+  form.addEventListener('click', (e) => {
+    const b = (e.target as HTMLElement).closest('button');
+    if (!b) return;
+    if (b.dataset.airpod) state.airpod = b.dataset.airpod;
+    if (b.dataset.preset) {
+      const p = presets.find((x) => x.id === b.dataset.preset)!;
+      state.preset = p.id;
+      state.kind = p.kind;
+      state.values = { ...p.values };
+      framed = false;
+    }
+    if (b.dataset.export === 'clip') return download('airpod-clip', clip(g, settings()));
+    if (b.dataset.export === 'claw') return download('airpod-claw', claw(g, settings().airpod, settings().fit).solid);
+    showForm();
+    remember();
+    rebuild();
+  });
+  form.addEventListener('input', (e) => {
+    const input = e.target as HTMLInputElement;
+    const n = Number(input.value);
+    if (!input.name || !Number.isFinite(n) || input.value === '') return;
+    if (input.name === 'tolerance' || input.name === 'wall' || input.name === 'reach') state[input.name] = n;
+    else state.values[input.name.split('.')[1]] = n;
+    remember();
+    rebuild();
+  });
+
+  showForm();
+  resize();
+  (Module as any)({ locateFile: () => wasmUrl }).then((w: any) => {
+    w.setup();
+    g = { CrossSection: w.CrossSection, Manifold: w.Manifold };
+    rebuild();
+  });
+</script>
+
+<style>
+  h1 {
+    margin: 8px 0 16px;
+  }
+  .summary {
+    margin-bottom: var(--section);
+  }
+  .tool {
+    display: grid;
+    grid-template-columns: minmax(0, 340px) minmax(0, 1fr);
+    gap: 40px;
+    align-items: start;
+  }
+  .form section {
+    margin-bottom: 36px;
+  }
+  .segments {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  }
+  .segments button {
+    font: inherit;
+    font-size: var(--size-label);
+    letter-spacing: var(--tracking-label);
+    color: var(--text);
+    background: none;
+    border: 0;
+    padding: 9px 8px;
+    cursor: pointer;
+  }
+  .segments button:hover {
+    background: var(--panel);
+  }
+  .segments button.chosen {
+    background: var(--chosen);
+    color: var(--text-inverse);
+  }
+  .figure {
+    margin: 20px 0 8px;
+    color: var(--text);
+  }
+  .figure :global(svg) {
+    width: 100%;
+    max-width: 280px;
+    height: auto;
+    font-size: 9px;
+    letter-spacing: 0.08em;
+  }
+  .figure :global(text) {
+    fill: var(--label);
+  }
+  .value {
+    display: grid;
+    gap: 4px;
+    padding: 10px 0;
+    border-bottom: var(--stroke-rule) solid var(--sand-light);
+  }
+  .field {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+  .field input {
+    font: inherit;
+    font-size: 18px;
+    width: 7em;
+    padding: 4px 6px;
+    background: var(--panel);
+    color: var(--text);
+    border: var(--stroke-rule) solid var(--rule);
+    border-radius: 0;
+  }
+  .field input:focus {
+    outline: none;
+    border-color: var(--rule-strong);
+  }
+  .unit,
+  .hint {
+    color: var(--label);
+    font-size: var(--size-small);
+  }
+  .export {
+    display: grid;
+    gap: 10px;
+  }
+  .button {
+    font: inherit;
+    padding: 10px 16px;
+    background: none;
+    color: var(--text);
+    border: var(--stroke-rule) solid var(--rule-strong);
+    cursor: pointer;
+  }
+  .button:hover {
+    background: var(--panel);
+  }
+  .button.main {
+    background: var(--chosen);
+    color: var(--text-inverse);
+  }
+  .export p {
+    margin: 0;
+  }
+  .preview {
+    position: sticky;
+    top: 16px;
+    border: var(--stroke-rule) solid var(--rule);
+    min-height: 320px;
+  }
+  .preview :global(canvas) {
+    display: block;
+    width: 100%;
+    touch-action: none;
+  }
+  .status {
+    position: absolute;
+    margin: 12px;
+    text-transform: none;
+  }
+  @media (max-width: 760px) {
+    .tool {
+      grid-template-columns: 1fr;
+    }
+    .preview {
+      position: relative;
+      top: 0;
+      order: -1;
+    }
+  }
+</style>

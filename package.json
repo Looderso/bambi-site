@@ -13,9 +13,14 @@
     "astro": "astro"
   },
   "dependencies": {
-    "astro": "^7.3.5"
+    "astro": "^7.3.5",
+    "manifold-3d": "^3.5.4",
+    "three": "^0.186.1"
   },
   "allowScripts": {
     "esbuild": true
+  },
+  "devDependencies": {
+    "@types/three": "^0.186.0"
   }
 }
