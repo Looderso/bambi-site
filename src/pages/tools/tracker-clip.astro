@@ -73,9 +73,6 @@ const printHints = {
                 </div>
               ))}
               <p class="hint" data-hint-line />
-              <button type="button" class="button" data-export={end.id}>
-                {end.id === 'tracker' ? 'tracker grip' : 'headphone grip'} · stl
-              </button>
             </section>
           ))
         }
@@ -101,6 +98,13 @@ const printHints = {
       </section>
 
       <section class="export">
+        <div class="grips">
+          {ends.map((end) => (
+            <button type="button" class="button" data-export={end.id}>
+              {end.id === 'tracker' ? 'tracker grip' : 'headphone grip'} · stl
+            </button>
+          ))}
+        </div>
         <button type="button" class="button main" data-export="clip">export clip · stl</button>
         <p class="hint">
           Print flat as exported, with no supports; check a fit with one end's grip first. The file's name and the page's
@@ -492,8 +496,17 @@ const printHints = {
     display: grid;
     gap: 10px;
   }
-  [data-end] .button {
-    width: 100%;
+  /*  under their ends: the same two columns, the same gap */
+  .grips {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 28px;
+  }
+  @media (max-width: 640px) {
+    .grips {
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
   }
   .button {
     font: inherit;
