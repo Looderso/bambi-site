@@ -151,7 +151,10 @@ const parts = [
         <li>Drag the cell up or down to set how much. Now the sound widens as it rings.</li>
       </ol>
       <ul>
-        <li><strong>Drag a cell</strong> up for more and down for less. A negative depth moves the target the other way.</li>
+        <li>
+          <strong>Drag a cell</strong> up or right for more, down or left for less. A negative depth moves the target
+          the other way.
+        </li>
         <li><strong>Hold shift</strong> while dragging for fine steps.</li>
         <li><strong>Click a cell</strong> to switch it between 0.50 and empty. <strong>Double-click</strong> it to empty it.</li>
         <li>A <strong>dot after a row's name</strong> means that row has depth on another tab.</li>
@@ -210,13 +213,17 @@ const parts = [
       </p>
       <p><strong>Every value is one box</strong>: its name, its number and a bar. The whole box is the control.</p>
       <ul>
-        <li><strong>Drag</strong> anywhere in it, up for more and down for less. <strong>Hold shift</strong> for fine steps.</li>
+        <li>
+          <strong>Drag</strong> anywhere in it: right or up for more, left or down for less. Sideways, the fill follows
+          the pointer. <strong>Hold shift</strong> for fine steps.
+        </li>
+        <li><strong>Click on its bar</strong> to put the value right there.</li>
         <li>
           <strong>Double-click</strong> to return it to its default. On an angle that means exactly zero, and it
           also clears any turning a rate has added.
         </li>
         <li>
-          <strong>Click</strong> to give it a row in the matrix. A value that is a choice, like
+          <strong>Click</strong> elsewhere in the box to give it a row in the matrix. A value that is a choice, like
           <code>direction</code> or <code>mode</code>, steps to its next option instead.
         </li>
         <li>Values that go round, like angles, wrap: drag past one end and they come back in at the other.</li>
@@ -263,8 +270,8 @@ const parts = [
         </li>
         <li>
           <strong>In the scene</strong>, a region is drawn in ink: its edge where it is half open, and a light wash
-          where it fades. While its tab is open it has handles. Drag the white circle to aim it and the others to
-          roll it or move its edge; double-click a handle to reset it.
+          where it fades. While its tab is open it has handles, in ink. Drag the one at its centre to aim it and the
+          others to roll it or move its edge; the one you hold turns orange. Double-click a handle to reset it.
         </li>
         <li>
           <strong><code>convert to custom</code></strong> freezes the shape into a grid of weights you can edit
