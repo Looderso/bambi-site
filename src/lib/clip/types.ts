@@ -28,6 +28,8 @@ export interface Fit {
 export interface GripKind {
   id: string;
   name: string;
+  /** Where a freshly chosen grip of this kind starts. */
+  defaults: Record<string, number>;
   measures: Measure[];
   /** A schematic of the cross-section, in SVG, with its measures labelled. */
   figure: string;
@@ -36,7 +38,7 @@ export interface GripKind {
 
 export type End = 'tracker' | 'headphones';
 
-/** A starting point: a kind of grip with values filled in, offered on one end. Choosing one copies its values. */
+/** A known device: a kind of grip with its values filled in, offered on one end. Choosing one copies them. */
 export interface GripPreset {
   id: string;
   name: string;

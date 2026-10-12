@@ -34,10 +34,25 @@ const printHints = {
           ends.map((end) => (
             <section data-end={end.id}>
               <h2>{end.title}</h2>
+              <label class="device">
+                <span class="label">device</span>
+                {presetsFor(end.id).length > 0 ? (
+                  <select name={`${end.id}.device`} data-device>
+                    <option value="">custom</option>
+                    {presetsFor(end.id).map((p) => (
+                      <option value={p.id}>{p.name}</option>
+                    ))}
+                  </select>
+                ) : (
+                  <select name={`${end.id}.device`} data-device disabled>
+                    <option value="">presets coming soon</option>
+                  </select>
+                )}
+              </label>
               <div class="segments">
-                {presetsFor(end.id).map((p) => (
-                  <button type="button" data-preset={p.id}>
-                    {p.name}
+                {kinds.map((k) => (
+                  <button type="button" data-kind-choice={k.id}>
+                    {k.name}
                   </button>
                 ))}
               </div>
@@ -105,7 +120,7 @@ const printHints = {
   import wasmUrl from 'manifold-3d/manifold.wasm?url';
   import * as THREE from 'three';
   import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-  import { kindOf, presets, presetsFor } from '../../lib/clip/grips';
+  import { kindOf, kinds, presets, presetsFor } from '../../lib/clip/grips';
   import { airpodGhost, clip, trackerGrip, type ClipSettings } from '../../lib/clip/build';
   import { binaryStl } from '../../lib/clip/stl';
   import type { End, Geometry } from '../../lib/clip/types';
@@ -115,16 +130,22 @@ const printHints = {
   const params = new URLSearchParams(location.search);
   const endsOf: End[] = ['tracker', 'headphones'];
 
-  //  each end: which preset it came from, which kind it is, and its values; the address keeps all of it
+  //  each end: the device it was set from ('' once edited), the primitive, and its values; the address keeps all of it
   type EndState = { preset: string; kind: string; values: Record<string, number> };
+  const startsAt: Record<End, EndState> = {
+    tracker: { preset: 'airpods-pro-3', kind: 'oval', values: { ...presets.find((p) => p.id === 'airpods-pro-3')!.values } },
+    headphones: { preset: '', kind: 'band', values: { ...kindOf('band').defaults } },
+  };
   const fromAddress = (end: End): EndState => {
-    const p = presetsFor(end).find((x) => x.id === params.get(`${end}.preset`)) ?? presetsFor(end)[0];
-    const values: Record<string, number> = { ...p.values };
-    for (const m of kindOf(p.kind).measures) {
+    if (!params.has(`${end}.kind`)) return startsAt[end];
+    const kind = kinds.some((k) => k.id === params.get(`${end}.kind`)) ? params.get(`${end}.kind`)! : startsAt[end].kind;
+    const preset = presetsFor(end).find((p) => p.id === params.get(`${end}.preset`) && p.kind === kind);
+    const values: Record<string, number> = { ...(preset?.values ?? kindOf(kind).defaults) };
+    for (const m of kindOf(kind).measures) {
       const n = Number(params.get(`${end}.${m.key}`));
       if (params.has(`${end}.${m.key}`) && Number.isFinite(n)) values[m.key] = n;
     }
-    return { preset: p.id, kind: p.kind, values };
+    return { preset: preset?.id ?? '', kind, values };
   };
   const state = {
     tracker: fromAddress('tracker'),
@@ -144,7 +165,8 @@ const printHints = {
   function remember() {
     const q = new URLSearchParams();
     for (const end of endsOf) {
-      q.set(`${end}.preset`, state[end].preset);
+      if (state[end].preset) q.set(`${end}.preset`, state[end].preset);
+      q.set(`${end}.kind`, state[end].kind);
       for (const [k, v] of Object.entries(state[end].values)) q.set(`${end}.${k}`, String(v));
     }
     for (const key of ['tolerance', 'wall', 'reach'] as const) q.set(key, String(state[key]));
@@ -154,7 +176,8 @@ const printHints = {
   function showForm() {
     for (const end of endsOf) {
       const section = form.querySelector<HTMLElement>(`[data-end="${end}"]`)!;
-      for (const b of section.querySelectorAll<HTMLButtonElement>('[data-preset]')) b.classList.toggle('chosen', b.dataset.preset === state[end].preset);
+      section.querySelector<HTMLSelectElement>('[data-device]')!.value = state[end].preset;
+      for (const b of section.querySelectorAll<HTMLButtonElement>('[data-kind-choice]')) b.classList.toggle('chosen', b.dataset.kindChoice === state[end].kind);
       for (const k of section.querySelectorAll<HTMLElement>('[data-kind]')) {
         const shown = k.dataset.kind === state[end].kind;
         k.hidden = !shown;
@@ -272,10 +295,12 @@ const printHints = {
   form.addEventListener('click', (e) => {
     const b = (e.target as HTMLElement).closest('button');
     if (!b) return;
-    if (b.dataset.preset) {
-      const p = presets.find((x) => x.id === b.dataset.preset)!;
-      state[p.end] = { preset: p.id, kind: p.kind, values: { ...p.values } };
-      framed = false;
+    if (b.dataset.kindChoice) {
+      const end = b.closest<HTMLElement>('[data-end]')!.dataset.end as End;
+      if (state[end].kind !== b.dataset.kindChoice) {
+        state[end] = { preset: '', kind: b.dataset.kindChoice, values: { ...kindOf(b.dataset.kindChoice).defaults } };
+        framed = false;
+      }
     }
     if (b.dataset.export === 'clip') return download('tracker-clip', clip(g, settings()));
     if (b.dataset.export === 'test') return download('test-grip', trackerGrip(g, settings()).solid);
@@ -283,14 +308,30 @@ const printHints = {
     remember();
     rebuild();
   });
+  form.addEventListener('change', (e) => {
+    const select = e.target as HTMLSelectElement;
+    if (!select.matches('[data-device]')) return;
+    const p = presets.find((x) => x.id === select.value);
+    if (!p) return; // custom: keep what is there
+    state[p.end] = { preset: p.id, kind: p.kind, values: { ...p.values } };
+    framed = false;
+    showForm();
+    remember();
+    rebuild();
+  });
   form.addEventListener('input', (e) => {
     const input = e.target as HTMLInputElement;
+    if (input.matches('[data-device]')) return;
     const n = Number(input.value);
     if (!input.name || !Number.isFinite(n) || input.value === '') return;
     if (input.name === 'tolerance' || input.name === 'wall' || input.name === 'reach') state[input.name] = n;
     else {
       const [end, key] = input.name.split('.') as [End, string];
       state[end].values[key] = n;
+      if (state[end].preset) {
+        state[end].preset = ''; // edited: no longer the device as listed
+        showForm();
+      }
     }
     remember();
     rebuild();
@@ -340,9 +381,26 @@ const printHints = {
   .form h2 {
     margin-bottom: 10px;
   }
+  .device {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+  .device select {
+    flex: 1;
+    min-width: 0;
+    font: inherit;
+    font-size: 15px;
+    padding: 5px 6px;
+    color: var(--text);
+    background: var(--panel);
+    border: var(--stroke-rule) solid var(--rule);
+    border-radius: 0;
+  }
   .segments {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(124px, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
   .segments button {
     font: inherit;
@@ -381,7 +439,8 @@ const printHints = {
   .figure :global(svg) {
     display: block;
     width: 100%;
-    max-width: 260px;
+    max-width: 280px;
+    overflow: visible;
     height: auto;
     font-size: 15px;
     letter-spacing: 0.04em;
