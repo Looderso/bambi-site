@@ -23,7 +23,7 @@ The header lists them in this order.
 | **tools** | `/tools`, `/tools/<tool>` | small things around working with bambi that run in the browser | `src/pages/tools/`, `src/lib/<tool>/` |
 | **foundations** | `/foundations` | the research and software bambi builds on, credited | `src/pages/foundations.astro` |
 | **contribute** | `/contribute`, `/contribute/<guideline>` | how to work on bambi, and how it is designed | `src/content/guidelines/*.md` |
-| **download** | `/download` | the builds, the visitor's system first, and how to install them | `src/pages/download.astro` |
+| **download** | `/download` | the newest release, the systems as tabs with the visitor's chosen, and how to install | `src/pages/download.astro` |
 | **about** | `/about` | what bambi is, its licence and its notices | `src/pages/about.astro` |
 
 Two pages are not in the header:
