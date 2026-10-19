@@ -19,7 +19,7 @@ export const tutorials: Tutorial[] = [
     group: 'every plugin',
     kind: 'start here',
   },
-  { id: 'encoder', title: 'encoder', summary: 'Placing a sound, and moving it with what it plays.', group: 'one plugin or setup', kind: 'plugin', plugin: 'encoder' },
+  { id: 'path-encoder', title: 'path encoder', summary: 'Placing a sound, and moving it with what it plays.', group: 'one plugin or setup', kind: 'plugin', plugin: 'path-encoder' },
   {
     id: 'echo',
     title: 'echo',

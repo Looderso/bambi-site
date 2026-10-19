@@ -11,5 +11,7 @@ export default defineConfig({
   redirects: {
     '/tools/airpod-clip': '/tools/tracker-clip',
     '/foundations': '/research/foundations',
+    '/plugins/encoder': '/plugins/path-encoder',
+    '/tutorial/encoder': '/tutorial/path-encoder',
   },
 });

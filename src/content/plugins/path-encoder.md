@@ -1,5 +1,5 @@
 ---
-name: encoder
+name: path encoder
 summary: "A source that travels a path on the sphere, moved by what it plays."
 colour: "#d4873a"
 order: 1
