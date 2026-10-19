@@ -18,7 +18,9 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     border-top: var(--stroke-identity) solid var(--identity);
     margin-top: var(--section);
   }
+  /*  Across the window, as the header is, so it stands still from page to page. */
   .row {
+    max-width: none;
     display: flex;
     justify-content: space-between;
     align-items: center;
