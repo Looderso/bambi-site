@@ -12,10 +12,7 @@ parts:
     text: "A row of rooms sets the numbers under it, which you can then change freely; double-click a room to bring its numbers back."
     points:
       - "<b>ambience · room · chamber · hall · large hall · cathedral</b>"
-      - "<b>size</b> · in metres: when the reflections arrive and how dense they are"
-      - "<b>decay</b> · how long the room rings"
-      - "<b>tone</b> · how much faster the highs die than the lows"
-      - "<b>roughness</b> · how much the walls scatter"
+      - "<b>size · decay · tone · roughness</b>"
   - shot: room
     crop: [625, 285, 345, 170]
     label: room · distance and input

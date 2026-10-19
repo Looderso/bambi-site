@@ -11,7 +11,6 @@ const plugins = defineCollection({
     order: z.number(),
     //  the parts on its product page, in reading order; without them the page is its text alone
     intro: z.string().optional(),
-    snap: z.boolean().optional(), // the product page settles on one part per screen
     parts: z
       .array(
         z.object({
