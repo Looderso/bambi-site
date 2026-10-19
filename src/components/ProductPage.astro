@@ -22,15 +22,16 @@ interface Props {
   section: { href: string; name: string };
   shots: string;
   window?: [number, number];
+  snap?: boolean; // each part fills the screen and the page settles on it, as if swiped
   intro?: string;
   parts: Part[];
   tutorials: { href: string; title: string; text: string; kind?: string; colour?: string }[];
 }
-const { name, summary, section, shots, window = [1020, 600], intro, parts, tutorials } = Astro.props;
+const { name, summary, section, shots, window = [1020, 600], intro, parts, tutorials, snap = false } = Astro.props;
 const [W, H] = window;
 ---
 
-<div class="product" data-w={W} data-h={H} data-shots={shots} style={`--ratio: ${W / H}`}>
+<div class:list={["product", { snap }]} data-w={W} data-h={H} data-shots={shots} style={`--ratio: ${W / H}`}>
   <article class="part intro" data-shot={parts[0]?.shot ?? 'window'} data-crop={`0 0 ${W} ${H}`} data-tag="">
     <p class="label"><a href={section.href}>{section.name}</a></p>
     <h1>{name}</h1>
@@ -266,6 +267,39 @@ const [W, H] = window;
       padding-top: 32px;
     }
     .part.intro {
+      min-height: 0;
+    }
+  }
+  /*  Snapping: every part, the intro included, is one screen below the header, and the page settles on each.
+      The footer is a snap point too, so the end of the page can be reached. */
+  :global(html:has(.product.snap)) {
+    scroll-snap-type: y mandatory;
+  }
+  :global(html:has(.product.snap) footer) {
+    scroll-snap-align: end;
+  }
+  .snap {
+    --screen: calc(100svh - var(--header) - 16px); /* below the scroll padding the page keeps under its header */
+  }
+  .snap .part,
+  .snap .part.intro,
+  .snap .part:last-child {
+    min-height: var(--screen);
+    padding-top: 32px;
+    scroll-snap-align: start; /* below the header: the page's scroll padding already keeps it clear */
+  }
+  @media (max-width: 860px) {
+    /*  On a phone the window stands over the text: a part starts below it, and fills what is left. */
+    .snap {
+      /* the window's height on a phone, and its stage's padding and tag around it */
+      --stage: calc(min((100vw - 2 * var(--gutter)) / var(--ratio), 40vh) + 44px);
+    }
+    .snap .part,
+    .snap .part:last-child {
+      min-height: calc(var(--screen) - var(--stage));
+      scroll-margin-top: var(--stage);
+    }
+    .snap .part.intro {
       min-height: 0;
     }
   }
