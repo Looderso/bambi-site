@@ -29,7 +29,8 @@ tool() { echo "$repo/build-plugin/plugins/$1/$2_artefacts/Release/$2"; }
 encoder=$(tool encoder bambi-plugin-snapshot)
 echo=$(tool echo bambi-echo-shot)
 reverb=$(tool reverb bambi-reverb-shot)
-for t in "$encoder" "$echo" "$reverb"; do
+decoder=$(tool decoder bambi-decoder-shot)
+for t in "$encoder" "$echo" "$reverb" "$decoder"; do
     [ -x "$t" ] || { echo "no picture tool at $t -- build the plugins first: cmake --build build-plugin" >&2; exit 1; }
 done
 command -v cwebp > /dev/null || { echo "cwebp is missing: brew install webp" >&2; exit 1; }
@@ -85,3 +86,11 @@ whole echo window     "$echo"
 whole echo axis       "$echo" --axis
 whole echo every-pass "$echo" --every-pass
 whole echo regions    "$echo" --regions
+whole encoder trajectory  "$encoder" --tab 0
+whole encoder transform   "$encoder" --tab 1
+whole encoder source      "$encoder" --tab 2
+whole reverb room         "$reverb" --room
+whole reverb send         "$reverb"
+whole decoder headphones   "$decoder"
+whole decoder speakers     "$decoder" --speakers
+whole decoder loudspeakers "$decoder" --loudspeakers

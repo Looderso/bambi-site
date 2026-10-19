@@ -3,44 +3,47 @@ name: encoder
 summary: "A source that travels a path on the sphere, moved by what it plays."
 colour: "#d4873a"
 order: 1
+intro: "its path, how it turns, and how the track sits on it"
+parts:
+  - shot: trajectory
+    crop: [622, 45, 350, 330]
+    label: trajectory
+    title: the path's shape
+    text: "A row of kinds, and under it that kind's own settings, each of which can be automated and modulated, so a path can breathe with the music. Convert to custom turns the path into nodes you edit on the sphere."
+    points:
+      - "<b>orbit · lissajous · wave · arc · spiral · custom</b>"
+      - "drag a node, or its handles; alt-drag a handle for a corner"
+      - "click the curve to add a node; shift-click a node to delete it"
+  - shot: transform
+    crop: [622, 45, 350, 300]
+    label: transform
+    title: where the path sits and how it turns
+    text: "Yaw, pitch and roll, each beside a rate that keeps it turning, and extent: at 1 the path is as drawn, at 0 it closes onto its own centre, at 2 it opens out through the far side."
+  - shot: source
+    crop: [622, 80, 350, 175]
+    label: source · input
+    title: one point, or two
+    text: "Sum puts one point on the path. Mid/side puts the mid on it and the side either side of it, spread apart; stereo puts left and right on it, offset apart. Input trim sets the level before the features hear it."
+    points:
+      - "<b>sum · mid/side · stereo</b>"
+  - shot: source
+    crop: [622, 265, 350, 170]
+    label: source · motion
+    title: how it travels
+    text: "Speed is how fast the source travels, and displace is where on the path it sits. Direction and mode say what happens at the ends."
+    points:
+      - "<b>wrap · ping-pong · once</b>"
+  - shot: source
+    crop: [622, 435, 350, 85]
+    label: source · render
+    title: how wide it sounds
+    text: "Width, how far the source spreads over the sphere, and the width range modulation may move it in."
+  - shot: trajectory
+    crop: [0, 44, 618, 301]
+    label: the scene
+    title: the path, and the source on it
+    text: "The path is drawn in ink on the sphere and the map, with the source on it in the colour of what comes in; every other encoder in the session is drawn beside it in silver."
 ---
-
-The encoder places a mono or stereo track in the ambisonic field and moves it along a path you draw on the
-sphere. How fast it travels can follow the input: silence parks the source, loud material moves it. It is the
-first plugin on a track: it takes one or two channels in and gives an ambisonic field out.
-
-Its window is the one every bambi plugin has, described in the [tutorial](/tutorial/the-window). What is the
-encoder's own is its three tabs.
-
-## trajectory
-
-The path's shape. The row at the top chooses a kind: `orbit`, `lissajous`, `wave`, `arc`, `spiral`, or
-`custom`. Under it are that kind's own settings, and each can be automated and modulated, so a path can
-breathe with the music.
-
-`convert to custom` turns the path into nodes you edit on the sphere:
-
-- **drag a node** to move it, and its handles to bend the curve; **alt-drag** a handle to make a corner;
-- **click the curve** to add a node there;
-- **shift-click a node** to delete it.
-
-The kind you converted from is kept, so you can go back to it.
-
-## transform
-
-Where the path sits and how it turns: `yaw`, `pitch` and `roll`, each beside a rate that keeps it turning,
-and `extent`. At 1 the path is as drawn, at 0 it closes onto its own centre, and at 2 it opens out through the
-far side.
-
-## source
-
-- **The input**: `sum` puts one point on the path. `mid/side` puts the mid on the path and the side either
-  side of it, `spread` apart. `stereo` puts left and right on the path, `offset` apart. `input trim` sets
-  the level before the features hear it.
-- **motion**: `speed` is how fast the source travels, and `displace` is where on the path it sits.
-  `direction` and `mode` (`wrap`, `ping-pong` or `once`) say what happens at the ends.
-- **render**: `width`, how far the source spreads over the sphere, and the `width range` modulation may move
-  it in.
 
 ## three things to try
 
