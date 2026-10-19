@@ -91,8 +91,10 @@ rather than boxes, no rounding, no shadows.
 - **A long page keeps its contents under the header**, as a second row of tabs that marks the part being read.
 - **Code is ink on the panel colour**, with no highlighting, and every block in prose has a copy button.
 - **Every page uses `src/layouts/Page.astro`**: `title` and `description` for the browser, `identity` for a
-  plugin's own colour on its rules, `wide` for a tool's page, which needs the wider measure.
-- **The header stays on screen.** Anything else that stays on screen sits below it (`var(--header)`).
+  plugin's own colour on its rules, `wide` for a page that needs the wider measure: a tool's, a product page, the front page.
+- **The header stays on screen**, across the whole window: the wordmark at the left edge, the sections at the right,
+  in the same place on every page. So does the footer. Anything else that stays on screen sits below the header
+  (`var(--header)`).
 - **Every page works at phone width**, with no sideways scrolling.
 
 ## Pictures
