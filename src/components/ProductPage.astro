@@ -30,14 +30,14 @@ const { name, summary, section, shots, window = [1020, 600], intro, parts, tutor
 const [W, H] = window;
 ---
 
-<div class="product" data-w={W} data-h={H} data-shots={shots}>
+<div class="product" data-w={W} data-h={H} data-shots={shots} style={`--ratio: ${W / H}`}>
+  <article class="part intro" data-shot={parts[0]?.shot ?? 'window'} data-crop={`0 0 ${W} ${H}`} data-tag="">
+    <p class="label"><a href={section.href}>{section.name}</a></p>
+    <h1>{name}</h1>
+    <p class="lede">{summary}</p>
+    {intro && <p class="more label">↓ {intro}</p>}
+  </article>
   <div class="list">
-    <article class="part intro" data-shot={parts[0]?.shot ?? 'window'} data-crop={`0 0 ${W} ${H}`} data-tag="">
-      <p class="label"><a href={section.href}>{section.name}</a></p>
-      <h1>{name}</h1>
-      <p class="lede">{summary}</p>
-      {intro && <p class="more label">↓ {intro}</p>}
-    </article>
     {
       parts.map((p) => (
         <article class="part" data-shot={p.shot} data-crop={p.crop.join(' ')} data-tag={p.label}>
@@ -59,7 +59,7 @@ const [W, H] = window;
     <div class="shot" style={`aspect-ratio: ${W} / ${H}`}>
       <div class="layer"><img src={`${shots}/${parts[0]?.shot ?? 'window'}.webp`} alt="" /></div>
     </div>
-    <span class="tag"></span>
+    <span class="tag label"></span>
   </div>
 </div>
 
@@ -136,10 +136,18 @@ const [W, H] = window;
   .product {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1.9fr);
-    gap: 56px;
+    grid-template-areas: 'intro stage' 'list stage';
+    column-gap: 56px;
     margin-top: calc(-1 * var(--section));
   }
+  .intro {
+    grid-area: intro;
+  }
+  .list {
+    grid-area: list;
+  }
   .stage {
+    grid-area: stage;
     position: sticky;
     top: calc(var(--header) + var(--stroke-identity) + 32px);
     align-self: start;
@@ -170,8 +178,6 @@ const [W, H] = window;
     padding: 3px 10px;
     background: var(--chosen);
     color: var(--text-inverse);
-    font-size: var(--size-small);
-    letter-spacing: var(--tracking-label);
   }
   .tag:empty {
     display: none;
@@ -207,7 +213,7 @@ const [W, H] = window;
     max-width: 38ch;
   }
   .part h3 {
-    font-size: 21px;
+    font-size: var(--size-lede);
     font-weight: 400;
     margin: 0 0 12px;
   }
@@ -237,20 +243,30 @@ const [W, H] = window;
       flex-direction: column;
       gap: 0;
     }
+    .list {
+      order: 2;
+    }
     .stage {
-      order: -1;
+      order: 1;
       align-self: stretch;
       z-index: 5;
       top: calc(var(--header) + var(--stroke-identity));
-      margin: var(--section) calc(-1 * var(--gutter)) 0;
+      margin: 24px calc(-1 * var(--gutter)) 0;
       padding: 12px var(--gutter) 8px;
       background: var(--ground);
       border-bottom: var(--stroke-rule) solid var(--rule);
     }
-    .part,
-    .part.intro {
+    /*  The stage sits under the intro, no taller than 40 % of the screen, so the text stays in view. */
+    .shot {
+      width: min(100%, calc(40vh * var(--ratio)));
+      margin: 0 auto;
+    }
+    .part {
       min-height: 55vh;
       padding-top: 32px;
+    }
+    .part.intro {
+      min-height: 0;
     }
   }
   @media (prefers-reduced-motion: reduce) {

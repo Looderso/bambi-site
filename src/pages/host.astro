@@ -1,10 +1,9 @@
 ---
-/*  The host: the application that plays a DAW's tracks through the suite's plugins and its decoders. A
-    product page, laid out as the plugins' pages will be: a picture of the window, what it does, its parts
-    one band at a time, its numbers, and the way on to its tutorial. The bands are outlines until the
-    pictures and the text exist. */
+/*  The host: the application that plays a DAW's tracks through the suite's plugins and its decoders. An
+    outline of its parts until its window has a picture tool; then it is a product page like a plugin's. */
 import Page from '../layouts/Page.astro';
 import Cards from '../components/Cards.astro';
+import Outline from '../components/Outline.astro';
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
@@ -39,19 +38,12 @@ const bands = [
     </div>
   </section>
 
-  {
-    bands.map((b) => (
-      <section id={b.id}>
-        <h2>{b.title}</h2>
-        <p class="fine">{b.text}</p>
-      </section>
-    ))
-  }
+  <Outline parts={bands} />
 
   <section>
-    <h2>next</h2>
+    <h2>tutorials</h2>
     <Cards
-      items={[{ href: `${base}/tutorial/host`, title: 'the host', text: 'Setting up a set to play through bambi.', kind: 'tutorial' }]}
+      items={[{ href: `${base}/tutorial/host`, title: 'the host', text: 'Setting up a set to play through bambi.', kind: 'the host' }]}
       style="row"
     />
   </section>

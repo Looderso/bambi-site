@@ -1,7 +1,7 @@
 ---
 name: encoder
 summary: "A source that travels a path on the sphere, moved by what it plays."
-colour: "#5e8bae"
+colour: "#d4873a"
 order: 1
 ---
 

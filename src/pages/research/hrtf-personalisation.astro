@@ -3,6 +3,7 @@
     the figures. Figures are inline SVG in currentColor, drawn from the model's own files. The sections are
     outlines until the text and the figures exist. */
 import Page from '../../layouts/Page.astro';
+import Outline from '../../components/Outline.astro';
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const sections = [
@@ -22,21 +23,11 @@ const sections = [
   <p class="sub label">personal binaural from the average of 548 heads, an ear slider and a head slider</p>
   <p class="fine">This page is being written.</p>
 
-  {
-    sections.map(([id, title, text]) => (
-      <section id={id}>
-        <h2>{title}</h2>
-        <p class="fine">{text}</p>
-      </section>
-    ))
-  }
+  <Outline parts={sections.map(([id, title, text]) => ({ id, title, text }))} />
 </Page>
 
 <style>
   .sub {
     margin: 12px 0 16px;
-  }
-  section {
-    margin-top: 40px;
   }
 </style>

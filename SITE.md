@@ -115,8 +115,9 @@ rather than boxes, no rounding, no shadows.
   `src/lib/tutorials.ts` naming the plugin, and a page in `src/pages/tutorial/`.
 - **A research page:** a page in `src/pages/research/` and a card on `/research`. Its figures are inline SVG in
   `currentColor`, drawn from the data the result came from.
-- **A tutorial:** a page in `src/pages/tutorial/`, and an entry in `src/lib/tutorials.ts` that puts it on
-  `/tutorial` in its group and gives it its previous and next. If it needs pictures, add their shots and crops
+- **A tutorial:** an entry in `src/lib/tutorials.ts` that puts it on `/tutorial` in its group and gives it its
+  previous and next. Until it has a page of its own in `src/pages/tutorial/`, `[id].astro` draws it from that
+  entry, with its `outline`. If it needs pictures, add their shots and crops
   to `scripts/pictures.sh`.
 - **A page read in order** — a guideline, a tutorial — ends with `src/components/PrevNext.astro`.
 - **A guideline:** a Markdown file in `src/content/guidelines/` with its `title`, `summary`, `group` and
