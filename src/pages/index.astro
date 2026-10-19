@@ -1,92 +1,167 @@
 ---
-/*  The front page says what bambi is for and where to go next. The plugins themselves are on their
-    own page; this one points there rather than repeating it. */
+/*  The front page: what bambi is, its plugins, the host, and the way to download it. Each part is one screen
+    and the page settles on each, as the product pages do. The header is always on screen, so the page does
+    not list the sections again. A plugin's tile shows its first part that is not a thin strip, cropped from
+    its product page's shot, so a new plugin appears here with no edit. */
+import { getCollection } from 'astro:content';
 import Page from '../layouts/Page.astro';
 import Cards from '../components/Cards.astro';
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const W = 1020, H = 600; // a plugin window's points, as the product pages' crops are given
 
-const ideas = [
-  {
-    title: 'driven by the signal',
-    text: 'Level, attack, tonality and three bands of the input, measured with no lookahead, drive any parameter through one modulation matrix, beside LFOs and envelopes.',
-  },
-  {
-    title: 'interpretable',
-    text: 'The sphere shows what arrives and what the plugin adds, and a probe shows what it would do to any direction. Every value is set, modulated and read in the same box.',
-  },
-  {
-    title: 'one system',
-    text: 'Every plugin shares the window, the matrix, regions, presets and undo, and every instance in a project can be edited from any window.',
-  },
-];
-
-const next = [
-  { href: '/download', name: 'download', text: 'VST3 and CLAP for macOS, Windows and Linux. Free, and in alpha.' },
-  { href: '/status', name: 'status', text: 'Where bambi has been tested, and what does not work yet.' },
-  { href: '/tutorial', name: 'tutorial', text: 'How to use bambi, starting with the window every plugin shares.' },
-  { href: '/plugins', name: 'plugins', text: 'What each plugin does.' },
-  { href: '/host', name: 'host', text: 'A whole set played through bambi, beside the DAW.' },
-  { href: '/contribute', name: 'contribute', text: 'How to build bambi, and the rules its code is written by.' },
-];
+const plugins = (await getCollection('plugins')).sort((a, b) => a.data.order - b.data.order);
+const tiles = plugins.map((p) => {
+  const first = p.data.parts?.find((part) => part.crop[2] / part.crop[3] <= 2.5) ?? p.data.parts?.[0];
+  const [x, y, w, h] = first?.crop ?? [0, 0, W, H];
+  const shot = `${base}/product/${p.id}/${first?.shot ?? 'window'}.webp`;
+  return {
+    href: `${base}/plugins/${p.id}`,
+    title: p.data.name,
+    text: p.data.summary,
+    colour: p.data.colour,
+    picture: first
+      ? [
+          `background-image: url(${shot})`,
+          `background-size: ${(W / w) * 100}% auto`,
+          `background-position: ${w === W ? 0 : (x / (W - w)) * 100}% ${h === H ? 0 : (y / (H - h)) * 100}%`,
+        ].join('; ')
+      : undefined,
+  };
+});
 ---
 
 <Page>
-  <section class="intro">
-    <p class="label">an ambisonics plugin suite</p>
-    <h1>Intuitive yet powerful spatialization.</h1>
-    <p class="meta label">ambix at any order · vst3 · clap · free and open source</p>
-  </section>
+  <div class="home snap">
+    <section class="screen intro">
+      <h1>A free and open source 3D audio suite.</h1>
+      <figure class="window">
+        <img src={`${base}/tutorial/window.webp`} alt="A bambi window: the sphere with the sound's energy on it, the modulation matrix, and the plugin's controls." width="2040" height="1200" />
+      </figure>
+    </section>
 
-  <figure class="window">
-    <img src={`${base}/tutorial/window.webp`} alt="A bambi window: the sphere with the sound's energy on it, the modulation matrix, and the plugin's controls." width="2040" height="1200" />
-  </figure>
+    <section class="screen" aria-labelledby="plugins">
+      <h2 id="plugins">plugins</h2>
+      <Cards items={tiles} />
+    </section>
 
-  <section class="ideas">
-    {
-      ideas.map((idea) => (
-        <div>
-          <h2>{idea.title}</h2>
-          <p>{idea.text}</p>
+    <section class="screen" aria-labelledby="host">
+      <h2 id="host">host</h2>
+      <div class="host">
+        <div class="pictures">
+          <img src={`${base}/product/host/routing.webp`} alt="The host's routing page: Live's tracks, the returns and main, and two decoders, joined by wires." width="4368" height="2400" />
+          <img src={`${base}/product/host/timeline.webp`} alt="The host's timeline: Live's arrangement, and the host's lanes over it." width="4368" height="2400" />
         </div>
-      ))
-    }
-  </section>
+        <div class="about">
+          <p>
+            The host plays a set's tracks through bambi's plugins and decoders, routed as a field rather than as
+            stereo, while the DAW keeps the arrangement and the transport. It works with Ableton Live.
+          </p>
+          <p><a href={`${base}/host`}>the host →</a></p>
+        </div>
+      </div>
+    </section>
 
-  <section>
-    <h2>where to go</h2>
-    <Cards items={next.map((n) => ({ href: `${base}${n.href}`, title: n.name, text: n.text }))} style="row" />
-  </section>
+    <section class="screen download" aria-labelledby="download">
+      <h2 id="download">download</h2>
+      <a class="button" href={`${base}/download`}>download bambi</a>
+      <p class="label">vst3 and clap · macos, windows and linux</p>
+      <p class="fine">What has been tried where, and what does not work yet, is on <a href={`${base}/status`}>status</a>.</p>
+    </section>
+  </div>
 </Page>
 
 <style>
-  .intro {
-    display: grid;
-    gap: 16px;
-    margin-bottom: var(--section);
+  .screen {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap);
   }
-  .intro h1 {
-    max-width: 22ch;
-  }
-  .intro p {
+  h2 {
     margin: 0;
   }
-  .window {
-    margin: 0 0 var(--section);
+
+  .intro h1 {
+    max-width: 22ch;
+    margin: 0;
   }
-  .window img {
+  /*  A picture never makes its part taller than the screen: the window takes the room the headline leaves,
+      and the host's two pages share theirs. */
+  .intro {
+    height: var(--screen);
+  }
+  .window {
+    flex: 1;
+    min-height: 0;
+    margin: 0;
+  }
+  .window img,
+  .pictures img {
     display: block;
-    width: 100%;
+    width: auto;
+    max-width: 100%;
     height: auto;
     border: var(--stroke-rule) solid var(--rule);
   }
-  .ideas {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: var(--gap);
-    margin-bottom: var(--section);
+  .window img {
+    max-height: 100%;
   }
-  .ideas p {
+  .pictures img {
+    max-height: calc((var(--screen) - 32px - 2 * var(--gap) - var(--size-label) - 14px) / 2); /* the part's padding, the heading, the gap between */
+  }
+
+  /*  The host: two of its pages beside what it is. */
+  .host {
+    display: grid;
+    grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+    gap: 40px;
+    align-items: start;
+  }
+  .pictures {
+    display: grid;
+    gap: 14px;
+  }
+  .home {
+    margin-top: calc(-1 * var(--section));
+  }
+  .about p {
+    max-width: 38ch;
+  }
+
+  /*  The way to download: one button, the black block the site chooses with. */
+  .download {
+    align-items: flex-start;
+  }
+  .button {
+    display: inline-block;
+    padding: var(--gap) calc(2 * var(--gap));
+    background: var(--chosen);
+    color: var(--text-inverse);
+    font-size: var(--size-lede);
+  }
+  .button:hover {
+    text-decoration: none;
+    background: var(--text);
+  }
+  .download p {
     margin: 0;
+  }
+
+  @media (max-width: 760px) {
+    /*  On a phone the plugins stand two to a row, and the host shows one of its pages. */
+    .home :global(.cards.tile) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .host {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+    .pictures img + img {
+      display: none;
+    }
+    .pictures img {
+      max-height: none;
+    }
   }
 </style>

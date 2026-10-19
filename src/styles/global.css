@@ -45,6 +45,9 @@
   --page: 1040px;
   --page-wide: 1360px; /* a tool's page, where a picture works beside a form */
   --header: 44px; /* the header's and the footer's height; the header stays on screen */
+  --header-pad: 16px; /* the room a link to a heading keeps below the header */
+  --size-card-title: 18px;
+  --size-card-text: 14px;
   --gap: 24px;
   --section: 64px;
 
@@ -62,7 +65,23 @@
 html {
   -webkit-text-size-adjust: 100%;
   /* a link to a heading lands below the header, not under it */
-  scroll-padding-top: calc(var(--header) + 16px);
+  scroll-padding-top: calc(var(--header) + var(--header-pad));
+}
+
+/*  A page of screens: every `.screen` fills the screen under the header and the page settles on each, as if
+    swiped. A page opts in by holding a `.snap`; its footer is the last stop, so the end can be reached. */
+html:has(.snap) {
+  scroll-snap-type: y mandatory;
+}
+html:has(.snap) footer {
+  scroll-snap-align: end;
+}
+.screen {
+  --screen: calc(100svh - var(--header) - var(--stroke-identity));
+  min-height: var(--screen);
+  padding-top: 32px;
+  scroll-snap-align: start;
+  scroll-margin-top: calc(var(--stroke-identity) - var(--header-pad)); /* flush under the header */
 }
 
 /*  The page is a column at least the screen's height, so on a short page the footer stays at the bottom. */

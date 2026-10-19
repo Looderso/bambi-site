@@ -29,8 +29,9 @@ The header lists them in this order.
 
 Two pages are not in the header:
 
-- **the front page** (`/`): what bambi is for, a picture of a window, and where to go next. It repeats no
-  section; it points to them.
+- **the front page** (`/`): what bambi is, in one line; its plugins with a picture each, listed from the plugins
+  collection; the host with its pictures; and the download. Each part is one screen. It does not list the
+  sections again, since the header is always on screen.
 - **status** (`/status`): where bambi has been tested, its known gaps, what is planned once it is decided,
   and where to ask for something. Linked from the front page, the download page and the footer.
 
@@ -61,7 +62,8 @@ Two pages are not in the header:
   authors on foundations and in a research page's references, and the people thanked on about, each with their
   agreement. Text never says who decided something, never gives a date, a decision number or a reference to a private document, and never says what
   something used to be.
-- **Only plugin pages, the host's page, research pages and tutorials name plugins.** Everywhere else a plugin is described by its role — a
+- **Only plugin pages, the host's page, research pages and tutorials name plugins**, and the front page, which
+  lists them from the collection. Everywhere else a plugin is described by its role — a
   source plugin, a field effect, a send, a return — so a new plugin needs a new page and nothing else changes.
 - **A control's name is its name in the plugin.** Check it against the plugin's code, not against a document.
 - **Every claim is checked against the code.** A number on the site came from the code or from a run.
@@ -83,6 +85,9 @@ rather than boxes, no rounding, no shadows.
   then a grey line or a lede saying what the page is.
 - **A list of pages to go to is cards** (`src/components/Cards.astro`): tiles for a few entries that each
   deserve weight, rows for a longer list read in order. A plugin's card wears its colour.
+- **A page of screens** — a product page, the front page — holds a `.snap`, and each part is a `.screen`
+  (`src/styles/global.css`): it fills the screen under the header, and the page settles on it. A part's text
+  stays short enough to fit one screen, down to a small phone.
 - **A long page keeps its contents under the header**, as a second row of tabs that marks the part being read.
 - **Code is ink on the panel colour**, with no highlighting, and every block in prose has a copy button.
 - **Every page uses `src/layouts/Page.astro`**: `title` and `description` for the browser, `identity` for a
