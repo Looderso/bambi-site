@@ -30,8 +30,8 @@ const { name, summary, section, shots, window = [1020, 600], intro, parts, tutor
 const [W, H] = window;
 ---
 
-<div class="product" data-w={W} data-h={H} data-shots={shots} style={`--ratio: ${W / H}`}>
-  <article class="part intro" data-shot={parts[0]?.shot ?? 'window'} data-crop={`0 0 ${W} ${H}`} data-tag="">
+<div class="product snap" data-w={W} data-h={H} data-shots={shots} style={`--ratio: ${W / H}`}>
+  <article class="part screen intro" data-shot={parts[0]?.shot ?? 'window'} data-crop={`0 0 ${W} ${H}`} data-tag="">
     <p class="label"><a href={section.href}>{section.name}</a></p>
     <h1>{name}</h1>
     <p class="lede">{summary}</p>
@@ -40,7 +40,7 @@ const [W, H] = window;
   <div class="list">
     {
       parts.map((p) => (
-        <article class="part" data-shot={p.shot} data-crop={p.crop.join(' ')} data-tag={p.label}>
+        <article class="part screen" data-shot={p.shot} data-crop={p.crop.join(' ')} data-tag={p.label}>
           <h2>{p.label}</h2>
           <h3>{p.title}</h3>
           <p>{p.text}</p>
@@ -183,22 +183,10 @@ const [W, H] = window;
     display: none;
   }
 
-  /*  Every part, the intro included, is one screen below the header, and the page settles on each, as if swiped.
-      The footer is a snap point too, so the end of the page can be reached. */
-  :global(html:has(.product)) {
-    scroll-snap-type: y mandatory;
-  }
-  :global(html:has(.product) footer) {
-    scroll-snap-align: end;
-  }
-  .product {
-    --screen: calc(100svh - var(--header) - 16px); /* below the scroll padding the page keeps under its header */
-  }
+  /*  Every part, the intro included, is one `.screen`: the page settles on each, as if swiped. */
   .part {
-    min-height: var(--screen);
-    padding: 32px 0 0 14px;
+    padding-left: 14px;
     border-left: 3px solid transparent;
-    scroll-snap-align: start; /* below the header: the page's scroll padding already keeps it clear */
   }
   .part.intro {
     padding-left: 0;
@@ -271,11 +259,11 @@ const [W, H] = window;
     }
     /*  The window stands over the text: a part starts below it, and fills what is left. */
     .product {
-      --stage: calc(min((100vw - 2 * var(--gutter)) / var(--ratio), 40vh) + 44px); /* the window, its padding and tag */
+      --stage: calc(min((100vw - 2 * var(--gutter)) / var(--ratio), 40vh) + 54px); /* the window, its padding, its tag and its rule */
     }
     .part {
       min-height: calc(var(--screen) - var(--stage));
-      scroll-margin-top: var(--stage);
+      scroll-margin-top: calc(var(--stage) + var(--stroke-identity) - var(--header-pad)); /* below the window */
     }
     .part.intro {
       min-height: 0;

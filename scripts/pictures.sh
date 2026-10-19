@@ -30,6 +30,7 @@ encoder=$(tool encoder bambi-plugin-snapshot)
 echo=$(tool echo bambi-echo-shot)
 reverb=$(tool reverb bambi-reverb-shot)
 decoder=$(tool decoder bambi-decoder-shot)
+host="$repo/build-plugin/apps/live-host/bambi-live-host-shot_artefacts/Release/bambi-live-host-shot"
 for t in "$encoder" "$echo" "$reverb" "$decoder"; do
     [ -x "$t" ] || { echo "no picture tool at $t -- build the plugins first: cmake --build build-plugin" >&2; exit 1; }
 done
@@ -133,3 +134,15 @@ whole reverb send         "$reverb"
 whole decoder headphones   "$decoder"
 whole decoder speakers     "$decoder" --speakers
 whole decoder loudspeakers "$decoder" --loudspeakers
+
+#  The host: its window is wider than a plugin's, 1092 x 600 points. Its tool is built with the host
+#  (cmake -DBAMBI_BUILD_HOST=ON); without it these are left as they are.
+if [ -x "$host" ]; then
+    whole host routing  "$host" --routing
+    whole host wires    "$host" --wires
+    whole host timeline "$host" --timeline
+    whole host session  "$host" --session
+    whole host outputs  "$host" --outputs
+else
+    echo "  host: no picture tool at $host -- build it with -DBAMBI_BUILD_HOST=ON" >&2
+fi

@@ -32,7 +32,7 @@ const tested: Row[] = [
   {
     what: 'Ableton Live',
     cells: [
-      { mark: 'none', text: 'not yet' },
+      { mark: 'heard', text: 'through the host' },
       { mark: 'none', text: 'not yet' },
       { mark: 'never', text: 'no Linux version' },
     ],
@@ -48,6 +48,10 @@ const tested: Row[] = [
 ];
 
 const gaps = [
+  {
+    what: 'the host',
+    text: 'The host runs on macOS, where Live plays through bambi’s loop device, built on BlackHole. Its device in Live is a Max for Live device, so it needs Live Suite. Windows, and DAWs other than Live, are open: say on GitHub which one you work in.',
+  },
   {
     what: 'signing',
     text: 'The builds are not signed yet. macOS needs one extra step before a host will load them, and Windows may warn when the zip is unpacked; the download page has both.',

@@ -8,6 +8,7 @@ interface Item {
   title: string;
   text: string;
   kind?: string;
+  picture?: string; // a tile's picture: an inline style that sets its background
   colour?: string;
 }
 interface Props {
@@ -22,6 +23,7 @@ const { items, style = 'tile' } = Astro.props;
     items.map((item) => (
       <li style={item.colour ? `--card: ${item.colour}` : undefined} class:list={{ coloured: !!item.colour }}>
         <a href={item.href}>
+          {item.picture && <span class="picture" style={item.picture} aria-hidden="true" />}
           {item.kind && <span class="kind">{item.kind}</span>}
           <span class="title">{item.title}</span>
           <span class="text">{item.text}</span>
@@ -85,12 +87,21 @@ const { items, style = 'tile' } = Astro.props;
     color: var(--label);
     padding-right: 20px;
   }
+  /*  a picture across the top of a tile, edge to edge, one height for every tile so the titles line up */
+  .tile .picture {
+    display: block;
+    aspect-ratio: 2 / 1;
+    margin: -11px -14px 6px;
+    background-color: var(--panel);
+    background-repeat: no-repeat;
+    border-bottom: var(--stroke-rule) solid var(--rule);
+  }
   .tile .title {
-    font-size: 18px;
+    font-size: var(--size-card-title);
     line-height: 1.25;
   }
   .tile .text {
-    font-size: 14px;
+    font-size: var(--size-card-text);
     line-height: 1.45;
   }
   .tile .go {
