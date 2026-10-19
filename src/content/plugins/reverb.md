@@ -20,7 +20,7 @@ parts:
     crop: [625, 285, 345, 170]
     label: room · distance and input
     title: how far, how late, what goes in
-    text: "How far away the sound is assumed to be, the time before the room answers, and the band that goes into the room."
+    text: "How far away the sound is taken to be, how much longer the tail waits after the reflections, and the band that goes into the room."
     points:
       - "<b>distance · pre-delay</b>"
       - "<b>input</b> · low cut · high cut"

@@ -46,6 +46,8 @@ trap 'rm -rf "$shots"' EXIT
 "$echo"    "$shots/echo-axis.png" --axis                            > /dev/null
 "$echo"    "$shots/echo-every-pass.png" --every-pass                > /dev/null
 "$reverb"  "$shots/reverb-settings.png" --settings                  > /dev/null
+"$reverb"  "$shots/reverb.png"                                     > /dev/null
+"$reverb"  "$shots/reverb-room.png" --room                          > /dev/null
 "$encoder" "$shots/encoder.png" --scale 2                           > /dev/null
 "$encoder" "$shots/encoder-source.png" --scale 2 --tab 2            > /dev/null
 "$encoder" "$shots/encoder-region.png" --scale 2 --matrix-tab 3 --source 18 --region-kind 1 > /dev/null
@@ -80,6 +82,12 @@ picture echo-timing     echo.png            1240  526  696  580
 picture echo-axis       echo-axis.png       1240  526  696  240
 picture echo-every-pass echo-every-pass.png 1240  526  696  540
 picture echo-send       echo-regions.png    1240   84  696  700
+
+#  Reverb's tutorial
+picture reverb-window   reverb.png
+picture reverb-room     reverb-room.png     1240   84  696  830
+picture reverb-send     reverb.png          1240   84  696  780
+picture reverb-scene    reverb.png             0   88 1236  602
 
 #  The product pages: whole shots at four times the window's size, so the page's zoom stays sharp. The
 #  page crops them itself, in the window's points, from the parts listed in src/content/plugins/<plugin>.md.
