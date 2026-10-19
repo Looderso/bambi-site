@@ -138,6 +138,20 @@ whole decoder loudspeakers "$decoder" --loudspeakers
 #  The host: its window is wider than a plugin's, 1092 x 600 points. Its tool is built with the host
 #  (cmake -DBAMBI_BUILD_HOST=ON); without it these are left as they are.
 if [ -x "$host" ]; then
+    #  the host's tutorial: crops of its window at twice its size, 2184 x 1200
+    "$host" "$shots/host.png" --routing   > /dev/null
+    "$host" "$shots/host-wires.png" --wires > /dev/null
+    "$host" "$shots/host-timeline.png" --timeline > /dev/null
+    "$host" "$shots/host-session.png" --session > /dev/null
+    "$host" "$shots/host-outputs.png" --outputs > /dev/null
+    picture host-window    host.png
+    picture host-tracks    host.png           152  104  760  620
+    picture host-returns   host.png          1020  104  640  290
+    picture host-wires     host-wires.png     152  104 1520  540
+    picture host-decoders  host.png          1760  104  424  360
+    picture host-timeline  host-timeline.png
+    picture host-session   host-session.png
+    picture host-outputs   host-outputs.png   210   44 1760 1060
     whole host routing  "$host" --routing
     whole host wires    "$host" --wires
     whole host timeline "$host" --timeline
