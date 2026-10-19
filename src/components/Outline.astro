@@ -1,0 +1,23 @@
+---
+/*  The parts of a page still being written: each a heading and a line saying what it will hold, so the page's
+    shape is there before its text. */
+interface Props {
+  parts: { id: string; title: string; text: string }[];
+}
+const { parts } = Astro.props;
+---
+
+{
+  parts.map((p) => (
+    <section id={p.id} class="outline">
+      <h2>{p.title}</h2>
+      <p class="fine">{p.text}</p>
+    </section>
+  ))
+}
+
+<style>
+  .outline {
+    margin-top: 40px;
+  }
+</style>

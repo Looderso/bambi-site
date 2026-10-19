@@ -1,0 +1,33 @@
+---
+/*  Research: what bambi found out on its way, written up with its figures, and the work it builds on. */
+import Page from '../../layouts/Page.astro';
+import Cards from '../../components/Cards.astro';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const items = [
+  {
+    href: `${base}/research/hrtf-personalisation`,
+    title: 'a head made, not chosen',
+    text: 'Personal binaural from the average of 548 heads, an ear slider and a head slider.',
+    kind: 'binaural',
+  },
+  {
+    href: `${base}/research/foundations`,
+    title: 'foundations',
+    text: 'The research and the software bambi builds on, credited.',
+    kind: 'credits',
+  },
+];
+---
+
+<Page title="research" description="What bambi found out, and the work it builds on.">
+  <h1>research</h1>
+  <p class="sub label">what bambi found out, and the work it builds on</p>
+  <Cards items={items} />
+</Page>
+
+<style>
+  .sub {
+    margin: 12px 0 var(--section);
+  }
+</style>

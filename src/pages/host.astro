@@ -1,0 +1,59 @@
+---
+/*  The host: the application that plays a DAW's tracks through the suite's plugins and its decoders. An
+    outline of its parts until its window has a picture tool; then it is a product page like a plugin's. */
+import Page from '../layouts/Page.astro';
+import Cards from '../components/Cards.astro';
+import Outline from '../components/Outline.astro';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+const bands = [
+  { id: 'tracks', title: 'tracks', text: 'Which of the set’s tracks it hears, and where each one goes.' },
+  { id: 'routing', title: 'routing', text: 'Sources into buses and returns, along wires, at one order.' },
+  { id: 'decoders', title: 'decoders', text: 'Any number of them, each with a mix and outputs of its own.' },
+  { id: 'timeline', title: 'timeline', text: 'The set’s transport, followed sample for sample.' },
+];
+---
+
+<Page title="host" description="The application that plays a set's tracks through bambi.">
+  <h1>host</h1>
+  <p class="sub label">a whole set in ambisonics, played beside the DAW</p>
+
+  <div class="prose">
+    <p class="lede">
+      The host plays the tracks of a set through bambi's plugins and decoders, routed as a field rather than as
+      stereo, while the DAW keeps the arrangement and the transport.
+    </p>
+    <p class="fine">This page is being written. Its picture, its parts and its numbers come next.</p>
+  </div>
+
+  <section>
+    <h2>where it runs</h2>
+    <div class="prose">
+      <p>
+        The host works with Ableton Live. Other DAWs, and a way that works with any DAW on any system, are
+        open: say on <a href="https://github.com/Looderso/bambi/issues">GitHub</a> which one you work in. What
+        has been tried where is on <a href={`${base}/status`}>status</a>.
+      </p>
+    </div>
+  </section>
+
+  <Outline parts={bands} />
+
+  <section>
+    <h2>tutorials</h2>
+    <Cards
+      items={[{ href: `${base}/tutorial/host`, title: 'the host', text: 'Setting up a set to play through bambi.', kind: 'the host' }]}
+      style="row"
+    />
+  </section>
+</Page>
+
+<style>
+  .sub {
+    margin: 12px 0 var(--section);
+  }
+  section {
+    margin-top: var(--section);
+  }
+</style>

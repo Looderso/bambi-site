@@ -10,5 +10,6 @@ export default defineConfig({
   //  addresses that moved, kept working
   redirects: {
     '/tools/airpod-clip': '/tools/tracker-clip',
+    '/foundations': '/research/foundations',
   },
 });
