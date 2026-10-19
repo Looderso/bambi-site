@@ -9,9 +9,9 @@ parts:
     crop: [622, 45, 350, 330]
     label: trajectory
     title: the path's shape
-    text: "A row of kinds, each with its own settings; the angles can be automated and modulated. Convert to custom turns the path into nodes you drag on the sphere."
+    text: "Five shapes — orbit, lissajous, wave, arc and spiral — each with settings of its own, whose angles can be automated and modulated. Or a path of your own: custom."
     points:
-      - "<b>orbit · lissajous · wave · arc · spiral · custom</b>"
+      - "<b>convert to custom</b> · turns the shape into nodes you drag on the sphere"
   - shot: transform
     crop: [622, 45, 350, 300]
     label: transform
@@ -22,15 +22,15 @@ parts:
     label: source · input
     title: one point, or two
     text: "Sum puts one point on the path. Mid/side puts the mid on it and the side either side of it, spread apart; stereo puts left and right on it, offset apart. Input trim sets the level before the features hear it."
-    points:
-      - "<b>sum · mid/side · stereo</b>"
   - shot: source
     crop: [622, 265, 350, 170]
     label: source · motion
     title: how it travels
-    text: "Speed is how fast the source travels, and displace is where on the path it sits. Direction and mode say what happens at the ends."
+    text: "Speed is how fast the source travels along the path, direction which way, and displace where on the path it sits. Mode says what happens at the end."
     points:
-      - "<b>wrap · ping-pong · once</b>"
+      - "<b>wrap</b> · back to the start"
+      - "<b>ping-pong</b> · back the way it came"
+      - "<b>once</b> · it stays at the end"
   - shot: source
     crop: [622, 435, 350, 85]
     label: source · render

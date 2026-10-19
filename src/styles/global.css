@@ -81,6 +81,7 @@ html:has(.snap) footer {
   min-height: var(--screen);
   padding-top: 32px;
   scroll-snap-align: start;
+  scroll-snap-stop: always; /* one flick moves one screen, never past it */
   scroll-margin-top: calc(var(--stroke-identity) - var(--header-pad)); /* flush under the header */
 }
 

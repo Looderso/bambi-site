@@ -9,17 +9,13 @@ parts:
     crop: [625, 75, 340, 185]
     label: taps
     title: four loops on one time line
-    text: "A row of starting points sets all four taps at once. Under it, a strip shows the four taps on one time line, each with its on/off at the left and its level at the right; click a row to choose a tap."
-    points:
-      - "<b>even · ping-pong · spiral · cascade · single</b>"
-      - "double-click the row to bring its values back"
+    text: "A row of starting points — even, ping-pong, spiral, cascade, single — sets all four taps at once; double-click one to bring its values back. Under it, the four taps on one time line: click a row to choose a tap."
   - shot: window
     crop: [620, 265, 348, 280]
     label: taps · timing
     title: how long a pass lasts
-    text: "Free, a pass lasts its time in milliseconds; synced, its steps in sixteenths of the bar. An offset, or offset steps, starts the tap late."
+    text: "Free, a pass is timed in milliseconds; synced, in sixteenths of the bar."
     points:
-      - "<b>free · sync</b>"
       - "<b>time · steps</b> · how long a pass lasts"
       - "<b>offset · offset steps</b> · how late the tap starts"
       - "<b>swing</b> · shuffles a synced tap against the others"
@@ -32,11 +28,12 @@ parts:
     crop: [620, 265, 348, 280]
     label: taps · every pass
     title: a little further, quieter and vaguer
-    text: "How far the tap turns each pass, how far it slides along its axis, how much quieter it gets and how much vaguer, and the band it is filtered to every pass."
+    text: "What changes each time a tap comes round."
     points:
-      - "<b>spin</b> · 180° is a ping-pong: twice round is back where it started"
-      - "<b>skew · feedback · blur</b>"
-      - "<b>band</b> · low cut · high cut"
+      - "<b>spin</b> · how far it turns; 180° is a ping-pong"
+      - "<b>skew</b> · how far it slides along its axis"
+      - "<b>feedback · blur</b> · how much quieter, how much vaguer"
+      - "<b>band</b> · a low cut and a high cut, every pass"
   - shot: regions
     crop: [620, 42, 348, 350]
     label: send

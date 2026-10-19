@@ -9,18 +9,21 @@ parts:
     crop: [625, 82, 345, 195]
     label: room
     title: a room to start from
-    text: "A row of rooms sets the numbers under it, which you can then change freely; double-click a room to bring its numbers back."
+    text: "Six rooms to start from, ambience to cathedral: choosing one sets the numbers under it, and a double-click brings them back."
     points:
-      - "<b>ambience · room · chamber · hall · large hall · cathedral</b>"
-      - "<b>size · decay · tone · roughness</b>"
+      - "<b>size</b> · when the reflections arrive, and how dense"
+      - "<b>decay</b> · how long the room rings"
+      - "<b>tone</b> · how much faster the highs die"
+      - "<b>roughness</b> · how much the walls scatter"
   - shot: room
     crop: [625, 285, 345, 170]
     label: room · distance and input
     title: how far, how late, what goes in
-    text: "How far away the sound is taken to be, how much longer the tail waits after the reflections, and the band that goes into the room."
+    text: "Three more settings of the room."
     points:
-      - "<b>distance · pre-delay</b>"
-      - "<b>input</b> · low cut · high cut"
+      - "<b>distance</b> · how far away the sound is"
+      - "<b>pre-delay</b> · how much longer the tail waits"
+      - "<b>input</b> · the band that goes into the room"
   - shot: send
     crop: [620, 45, 350, 390]
     label: send and return
