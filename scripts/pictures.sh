@@ -53,6 +53,9 @@ trap 'rm -rf "$shots"' EXIT
 "$encoder" "$shots/encoder-region.png" --scale 2 --matrix-tab 3 --source 18 --region-kind 1 > /dev/null
 "$encoder" "$shots/encoder-transform.png" --scale 2 --tab 1         > /dev/null
 "$encoder" "$shots/encoder-nodes.png" --scale 2 --nodes             > /dev/null
+"$decoder" "$shots/decoder.png"                                     > /dev/null
+"$decoder" "$shots/decoder-speakers.png" --speakers                > /dev/null
+"$decoder" "$shots/decoder-loudspeakers.png" --loudspeakers        > /dev/null
 
 #  picture: shot, then cwebp's crop as x y width height, or nothing for the whole window
 picture() {
@@ -98,6 +101,15 @@ picture encoder-custom     encoder-nodes.png     1240   84  696  484
 picture encoder-nodes      encoder-nodes.png        0   88 1236  602
 picture encoder-transform  encoder-transform.png 1240   84  696  640
 picture encoder-scene      encoder.png              0   88 1236  602
+
+#  the decoder's tutorial
+picture decoder-window       decoder.png
+picture decoder-outputs      decoder.png                 520    0  640   88
+picture decoder-headphones   decoder.png                1240   84  696  720
+picture decoder-speakers     decoder-speakers.png       1240   84  696  860
+picture decoder-loudspeakers decoder-loudspeakers.png   1240   84  696  820
+picture decoder-orientation  decoder.png                   0  690 1236  420
+picture decoder-scene        decoder-speakers.png          0   88 1236  602
 
 #  The product pages: whole shots at four times the window's size, so the page's zoom stays sharp. The
 #  page crops them itself, in the window's points, from the parts listed in src/content/plugins/<plugin>.md.
