@@ -51,6 +51,8 @@ trap 'rm -rf "$shots"' EXIT
 "$encoder" "$shots/encoder.png" --scale 2                           > /dev/null
 "$encoder" "$shots/encoder-source.png" --scale 2 --tab 2            > /dev/null
 "$encoder" "$shots/encoder-region.png" --scale 2 --matrix-tab 3 --source 18 --region-kind 1 > /dev/null
+"$encoder" "$shots/encoder-transform.png" --scale 2 --tab 1         > /dev/null
+"$encoder" "$shots/encoder-nodes.png" --scale 2 --nodes             > /dev/null
 
 #  picture: shot, then cwebp's crop as x y width height, or nothing for the whole window
 picture() {
@@ -88,6 +90,14 @@ picture reverb-window   reverb.png
 picture reverb-room     reverb-room.png     1240   84  696  830
 picture reverb-send     reverb.png          1240   84  696  780
 picture reverb-scene    reverb.png             0   88 1236  602
+
+#  the encoder's tutorial
+picture encoder-window     encoder.png
+picture encoder-trajectory encoder.png           1240   84  696  700
+picture encoder-custom     encoder-nodes.png     1240   84  696  484
+picture encoder-nodes      encoder-nodes.png        0   88 1236  602
+picture encoder-transform  encoder-transform.png 1240   84  696  640
+picture encoder-scene      encoder.png              0   88 1236  602
 
 #  The product pages: whole shots at four times the window's size, so the page's zoom stays sharp. The
 #  page crops them itself, in the window's points, from the parts listed in src/content/plugins/<plugin>.md.
