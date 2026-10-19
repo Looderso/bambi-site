@@ -1,6 +1,6 @@
 ---
-/*  What the encoder adds to the window every plugin shares: its path, a custom path's nodes, where the path
-    sits, how the track travels it, and what it draws on the scene. The pictures are the encoder's own, drawn
+/*  What the path encoder adds to the window every plugin shares: its path, a custom path's nodes, where the path
+    sits, how the track travels it, and what it draws on the scene. The pictures are the path encoder's own, drawn
     by its picture tool. */
 import TutorialPage from '../../layouts/TutorialPage.astro';
 
@@ -19,19 +19,19 @@ const parts: [string, string][] = [
 ---
 
 <TutorialPage
-  id="encoder"
+  id="path-encoder"
   sub="a source that travels a path on the sphere, moved by what it plays"
   parts={parts}
-  window={{ src: img('encoder-window'), alt: 'An encoder window: five tracks as tabs, the scene with the paths, the matrix with three cells set, and the trajectory tab.', caption: 'an encoder window' }}
+  window={{ src: img('encoder-window'), alt: 'A path encoder window: five tracks as tabs, the scene with the paths, the matrix with three cells set, and the trajectory tab.', caption: 'a path encoder window' }}
 >
   <div class="prose" slot="intro">
     <p class="lede">
-      The encoder places a mono or stereo track in the ambisonic field and moves it along a path you draw on the
+      The path encoder places a mono or stereo track in the ambisonic field and moves it along a path you draw on the
       sphere. How fast it travels can follow the input: silence parks the source, loud material moves it.
     </p>
     <p>
       Its window is the one every bambi plugin has; the scene, the matrix, regions, presets and the link are
-      explained in <a href={window}>the window</a>. This page covers what is the encoder's own: its three tabs,
+      explained in <a href={window}>the window</a>. This page covers what is the path encoder's own: its three tabs,
       <code>trajectory</code>, <code>transform</code> and <code>source</code>, and what it draws on the scene.
     </p>
   </div>
@@ -151,7 +151,7 @@ const parts: [string, string][] = [
     <div class="prose">
       <p>
         The path is drawn in ink on the globe and the equirect, with the source on it in the colour of what comes
-        in. Every other encoder in the session is drawn beside it, fainter, so you place each track against the
+        in. Every other path encoder in the session is drawn beside it, fainter, so you place each track against the
         others. <strong>Click another track's source or path</strong> to switch the window to that instance, as its tab in
         the header does.
       </p>

@@ -95,7 +95,7 @@ picture reverb-room     reverb-room.png     1240   84  696  830
 picture reverb-send     reverb.png          1240   84  696  780
 picture reverb-scene    reverb.png             0   88 1236  602
 
-#  the encoder's tutorial
+#  the path encoder's tutorial
 picture encoder-window     encoder.png
 picture encoder-trajectory encoder.png           1240   84  696  700
 picture encoder-custom     encoder-nodes.png     1240   84  696  484
@@ -126,9 +126,9 @@ whole echo window     "$echo"
 whole echo axis       "$echo" --axis
 whole echo every-pass "$echo" --every-pass
 whole echo regions    "$echo" --regions
-whole encoder trajectory  "$encoder" --tab 0
-whole encoder transform   "$encoder" --tab 1
-whole encoder source      "$encoder" --tab 2
+whole path-encoder trajectory "$encoder" --tab 0
+whole path-encoder transform  "$encoder" --tab 1
+whole path-encoder source     "$encoder" --tab 2
 whole reverb room         "$reverb" --room
 whole reverb send         "$reverb"
 whole decoder headphones   "$decoder"
