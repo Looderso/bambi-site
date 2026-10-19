@@ -22,16 +22,15 @@ interface Props {
   section: { href: string; name: string };
   shots: string;
   window?: [number, number];
-  snap?: boolean; // each part fills the screen and the page settles on it, as if swiped
   intro?: string;
   parts: Part[];
   tutorials: { href: string; title: string; text: string; kind?: string; colour?: string }[];
 }
-const { name, summary, section, shots, window = [1020, 600], intro, parts, tutorials, snap = false } = Astro.props;
+const { name, summary, section, shots, window = [1020, 600], intro, parts, tutorials } = Astro.props;
 const [W, H] = window;
 ---
 
-<div class:list={["product", { snap }]} data-w={W} data-h={H} data-shots={shots} style={`--ratio: ${W / H}`}>
+<div class="product" data-w={W} data-h={H} data-shots={shots} style={`--ratio: ${W / H}`}>
   <article class="part intro" data-shot={parts[0]?.shot ?? 'window'} data-crop={`0 0 ${W} ${H}`} data-tag="">
     <p class="label"><a href={section.href}>{section.name}</a></p>
     <h1>{name}</h1>
@@ -184,18 +183,26 @@ const [W, H] = window;
     display: none;
   }
 
+  /*  Every part, the intro included, is one screen below the header, and the page settles on each, as if swiped.
+      The footer is a snap point too, so the end of the page can be reached. */
+  :global(html:has(.product)) {
+    scroll-snap-type: y mandatory;
+  }
+  :global(html:has(.product) footer) {
+    scroll-snap-align: end;
+  }
+  .product {
+    --screen: calc(100svh - var(--header) - 16px); /* below the scroll padding the page keeps under its header */
+  }
   .part {
-    min-height: 70vh;
-    padding: var(--section) 0 0 14px;
+    min-height: var(--screen);
+    padding: 32px 0 0 14px;
     border-left: 3px solid transparent;
+    scroll-snap-align: start; /* below the header: the page's scroll padding already keeps it clear */
   }
   .part.intro {
-    min-height: 80vh;
     padding-left: 0;
     border-left: 0;
-  }
-  .part:last-child {
-    min-height: 85vh;
   }
   .part.here:not(.intro) {
     border-left-color: var(--rule-strong);
@@ -262,44 +269,15 @@ const [W, H] = window;
       width: min(100%, calc(40vh * var(--ratio)));
       margin: 0 auto;
     }
+    /*  The window stands over the text: a part starts below it, and fills what is left. */
+    .product {
+      --stage: calc(min((100vw - 2 * var(--gutter)) / var(--ratio), 40vh) + 44px); /* the window, its padding and tag */
+    }
     .part {
-      min-height: 55vh;
-      padding-top: 32px;
-    }
-    .part.intro {
-      min-height: 0;
-    }
-  }
-  /*  Snapping: every part, the intro included, is one screen below the header, and the page settles on each.
-      The footer is a snap point too, so the end of the page can be reached. */
-  :global(html:has(.product.snap)) {
-    scroll-snap-type: y mandatory;
-  }
-  :global(html:has(.product.snap) footer) {
-    scroll-snap-align: end;
-  }
-  .snap {
-    --screen: calc(100svh - var(--header) - 16px); /* below the scroll padding the page keeps under its header */
-  }
-  .snap .part,
-  .snap .part.intro,
-  .snap .part:last-child {
-    min-height: var(--screen);
-    padding-top: 32px;
-    scroll-snap-align: start; /* below the header: the page's scroll padding already keeps it clear */
-  }
-  @media (max-width: 860px) {
-    /*  On a phone the window stands over the text: a part starts below it, and fills what is left. */
-    .snap {
-      /* the window's height on a phone, and its stage's padding and tag around it */
-      --stage: calc(min((100vw - 2 * var(--gutter)) / var(--ratio), 40vh) + 44px);
-    }
-    .snap .part,
-    .snap .part:last-child {
       min-height: calc(var(--screen) - var(--stage));
       scroll-margin-top: var(--stage);
     }
-    .snap .part.intro {
+    .part.intro {
       min-height: 0;
     }
   }

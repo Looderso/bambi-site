@@ -9,11 +9,9 @@ parts:
     crop: [622, 45, 350, 330]
     label: trajectory
     title: the path's shape
-    text: "A row of kinds, and under it that kind's own settings. Its angles can be automated and modulated, so a path can breathe with the music. Convert to custom turns the path into nodes you edit on the sphere."
+    text: "A row of kinds, each with its own settings; the angles can be automated and modulated. Convert to custom turns the path into nodes you drag on the sphere."
     points:
       - "<b>orbit · lissajous · wave · arc · spiral · custom</b>"
-      - "drag a node, or its handles; alt-drag a handle for a corner"
-      - "click the curve to add a node; shift-click a node to delete it"
   - shot: transform
     crop: [622, 45, 350, 300]
     label: transform
