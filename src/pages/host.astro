@@ -1,59 +1,104 @@
 ---
-/*  The host: the application that plays a DAW's tracks through the suite's plugins and its decoders. An
-    outline of its parts until its window has a picture tool; then it is a product page like a plugin's. */
+/*  The host's page: a product page like a plugin's, its own window held beside the text, one screen per part.
+    The host's window is wider than a plugin's, 1092 x 600 points, and its pictures are drawn by its picture
+    tool (scripts/pictures.sh). */
 import Page from '../layouts/Page.astro';
-import Cards from '../components/Cards.astro';
-import Outline from '../components/Outline.astro';
+import ProductPage, { type Part } from '../components/ProductPage.astro';
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const summary = 'A Live set’s tracks, played as a field through bambi.';
 
-const bands = [
-  { id: 'tracks', title: 'tracks', text: 'Which of the set’s tracks it hears, and where each one goes.' },
-  { id: 'routing', title: 'routing', text: 'Sources into buses and returns, along wires, at one order.' },
-  { id: 'decoders', title: 'decoders', text: 'Any number of them, each with a mix and outputs of its own.' },
-  { id: 'timeline', title: 'timeline', text: 'The set’s transport, followed sample for sample.' },
+const parts: Part[] = [
+  {
+    shot: 'routing',
+    crop: [0, 44, 72, 556],
+    label: 'the rail',
+    title: 'the suite, and the host’s own pages',
+    text: 'Down the left edge: each plugin’s own window, then the host’s routing, its timeline, and the audio sheet. At the foot, whether Live is connected, how many sources play, and the latency.',
+  },
+  {
+    shot: 'routing',
+    crop: [76, 52, 380, 310],
+    label: 'routing · live’s tracks',
+    title: 'every track, as Live files it',
+    text: 'Live’s tracks and groups in a column, and the host’s own inputs under them. Each track is left in Live, or played by bambi: through an encoder, with inserts after it.',
+    points: ['<b>live · bambi · bus · in group</b> · where a track plays', '<b>+ encoder</b> · <b>+</b> for an insert'],
+  },
+  {
+    shot: 'routing',
+    crop: [510, 52, 320, 145],
+    label: 'routing · returns and main',
+    title: 'returns and main, in the field',
+    text: 'Live’s returns and its main, each left in Live or taken into bambi with inserts of its own, as a reverb on a return.',
+  },
+  {
+    shot: 'wires',
+    crop: [76, 52, 760, 270],
+    label: 'routing · wires',
+    title: 'sends along wires',
+    text: 'Press send, and what a track may reach rings; a click there makes the wire, at 0 dB. Choose a track by its name, and its wires open under it, dragged for their level.',
+    points: ['<b>route all</b> · <b>all to Live</b>'],
+  },
+  {
+    shot: 'routing',
+    crop: [880, 52, 212, 180],
+    label: 'routing · decoders',
+    title: 'any number of decoders',
+    text: 'Each decoder hears a mix of its own, and plays to headphones, to loudspeakers, or to both.',
+  },
+  {
+    shot: 'timeline',
+    crop: [70, 40, 800, 400],
+    label: 'timeline',
+    title: 'the arrangement, with lanes over it',
+    text: 'Live’s transport and arrangement, drawn as heard. Under each track, lanes for any parameter the host plays, set every block from the song position the plugins hear.',
+  },
+  {
+    shot: 'session',
+    crop: [70, 40, 800, 520],
+    label: 'timeline · session',
+    title: 'clips, with lanes of their own',
+    text: 'Live’s session grid. Choose a clip, and its own lanes open at the foot, following the clip as it loops.',
+  },
+  {
+    shot: 'outputs',
+    crop: [105, 22, 880, 530],
+    label: 'audio',
+    title: 'where everything goes out',
+    text: 'The audio sheet: the interfaces, then every output — Live’s main, each decoder’s headphones and speakers, on their channels — with copies on other channels, or back to Live for recording.',
+    points: ['<b>interface · outputs · inputs · midi</b>'],
+  },
 ];
+
+const tutorials = [{ href: `${base}/tutorial/host`, title: 'the host', text: 'Setting up a set to play through bambi.', kind: 'the host' }];
 ---
 
-<Page title="host" description="The application that plays a set's tracks through bambi.">
-  <h1>host</h1>
-  <p class="sub label">a whole set in ambisonics, played beside the DAW</p>
-
-  <div class="prose">
-    <p class="lede">
-      The host plays the tracks of a set through bambi's plugins and decoders, routed as a field rather than as
-      stereo, while the DAW keeps the arrangement and the transport.
-    </p>
-    <p class="fine">This page is being written. Its picture, its parts and its numbers come next.</p>
-  </div>
-
-  <section>
-    <h2>where it runs</h2>
-    <div class="prose">
+<Page title="host" description={summary} wide>
+  <ProductPage
+    name="host"
+    summary={summary}
+    section={{ href: `${base}/`, name: 'bambi' }}
+    shots={`${base}/product/host`}
+    window={[1092, 600]}
+    intro="its tracks and routing, its timeline, its outputs"
+    parts={parts}
+    tutorials={tutorials}
+  >
+    <div class="prose after">
+      <h2>where it runs</h2>
       <p>
-        The host works with Ableton Live. Other DAWs, and a way that works with any DAW on any system, are
-        open: say on <a href="https://github.com/Looderso/bambi/issues">GitHub</a> which one you work in. What
-        has been tried where is on <a href={`${base}/status`}>status</a>.
+        The host runs on macOS and works with Ableton Live: Live plays into it, and Live keeps the arrangement and the
+        transport. Other DAWs, and other systems, are open: say on <a href="https://github.com/Looderso/bambi/issues">GitHub</a>
+        which one you work in. What has been tried where is on <a href={`${base}/status`}>status</a>.
       </p>
     </div>
-  </section>
-
-  <Outline parts={bands} />
-
-  <section>
-    <h2>tutorials</h2>
-    <Cards
-      items={[{ href: `${base}/tutorial/host`, title: 'the host', text: 'Setting up a set to play through bambi.', kind: 'the host' }]}
-      style="row"
-    />
-  </section>
+  </ProductPage>
 </Page>
 
 <style>
-  .sub {
-    margin: 12px 0 var(--section);
-  }
-  section {
+  .after {
     margin-top: var(--section);
+    border-top: var(--stroke-rule) solid var(--rule-strong);
+    padding-top: 24px;
   }
 </style>

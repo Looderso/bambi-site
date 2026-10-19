@@ -16,7 +16,7 @@ interface Props {
   sub: string;
   description?: string;
   parts: [string, string][];
-  window: { src: string; alt: string; caption: string };
+  window: { src: string; alt: string; caption: string; width?: number; height?: number }; // a plugin's window by default
 }
 const { id, sub, description, parts, window } = Astro.props;
 const tutorial = tutorials.find((t) => t.id === id)!;
@@ -35,7 +35,7 @@ const link = (t?: { id: string; title: string }) => t && { href: `${base}/tutori
     <slot name="intro" />
 
     <figure>
-      <img src={window.src} alt={window.alt} width="2040" height="1200" />
+      <img src={window.src} alt={window.alt} width={window.width ?? 2040} height={window.height ?? 1200} />
       <figcaption><span class="label">{window.caption}</span><span class="label">drawn by the plugin</span></figcaption>
     </figure>
 
