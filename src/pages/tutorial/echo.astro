@@ -1,0 +1,178 @@
+---
+/*  What Echo adds to the window every plugin shares: its taps, their timing, axis and every pass, its send,
+    and the spirals it draws for the probe. The pictures are Echo's own, drawn by its picture tool. */
+import TutorialPage from '../../layouts/TutorialPage.astro';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const img = (name: string) => `${base}/tutorial/${name}.webp`;
+const window = `${base}/tutorial/the-window`;
+
+const parts: [string, string][] = [
+  ['taps', 'the taps'],
+  ['timing', 'timing'],
+  ['axis', 'axis'],
+  ['every-pass', 'every pass'],
+  ['send', 'send'],
+  ['scene', 'the scene'],
+  ['try', 'things to try'],
+];
+---
+
+<TutorialPage
+  id="echo"
+  sub="four echoes that turn through the field as they repeat"
+  parts={parts}
+  window={{ src: img('window'), alt: 'An echo window: the scene with the probe placed, the matrix, and the taps tab.', caption: 'an echo window' }}
+>
+  <div class="prose" slot="intro">
+    <p class="lede">
+      Echo repeats an ambisonic field. Each of its four taps is a loop: every pass comes back a little later,
+      turned further round an axis, and a little quieter and vaguer than the one before.
+    </p>
+    <p>
+      Its window is the one every bambi plugin has; the scene, the matrix, presets and the link are explained in
+      <a href={window}>the window</a>. This page covers what is Echo's own: its two tabs, <code>taps</code> and
+      <code>send</code>, and what it draws on the scene.
+    </p>
+  </div>
+
+  <section id="taps" class="split">
+    <figure class="panel">
+      <img src={img('echo-taps')} alt="The taps tab: the row of patterns, spiral chosen, and the strip of four taps, the first two on." width="696" height="440" />
+    </figure>
+    <div class="prose">
+      <h2>the taps</h2>
+      <p>
+        The row at the top is a set of <strong>starting points</strong> for all four taps:
+        <code>even</code>, <code>ping-pong</code>, <code>spiral</code>, <code>cascade</code> and
+        <code>single</code>. Choosing one sets the taps; the pattern stays lit while you change them from there,
+        and a <strong>double-click</strong> brings its values back.
+      </p>
+      <p>Under it, the <strong>strip</strong> shows the four taps on one time line. Each row is one tap:</p>
+      <ul>
+        <li><strong>Click a row</strong> to choose that tap. The pages below edit the chosen one, marked by a bar at its left.</li>
+        <li>
+          <strong>The numbered box</strong> switches the tap on and off, without choosing it, so you can silence a
+          tap while editing another.
+        </li>
+        <li><strong>The level</strong> at the right; drag it to change it. It is greyed while the tap is off.</li>
+        <li>
+          <strong>Every pass</strong> is a mark on the row, where it lands in time. A mark fades as the passes get
+          quieter, spans the tap's band from high at the top to low at the bottom, and softens as the passes get
+          vaguer.
+        </li>
+      </ul>
+      <p>The ticks under the strip are beats, so an offset can be read against them.</p>
+    </div>
+  </section>
+
+  <section id="timing" class="split">
+    <figure class="panel">
+      <img src={img('echo-timing')} alt="The timing page: free and sync, time and steps, offset and offset steps, swing." width="696" height="580" />
+    </figure>
+    <div class="prose">
+      <h2>timing</h2>
+      <p>
+        Under the strip, the chosen tap's settings come in three pages: <code>timing</code>, <code>axis</code>
+        and <code>every pass</code>.
+      </p>
+      <p>
+        <code>free</code> and <code>sync</code> say how a pass is timed. Free, a pass lasts its
+        <code>time</code> in milliseconds; synced, its <code>steps</code> in sixteenths of the bar. Both rows
+        stay on screen, and the one not in use is greyed.
+      </p>
+      <ul>
+        <li><strong><code>offset</code></strong> or <strong><code>offset steps</code></strong> starts the tap late.</li>
+        <li><strong><code>swing</code></strong> delays a synced tap by a fraction of a step, off the grid of the others. It is greyed when the tap is free.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="axis" class="split">
+    <figure class="panel">
+      <img src={img('echo-axis')} alt="The axis page: azimuth 0 degrees, elevation 90 degrees." width="696" height="240" />
+    </figure>
+    <div class="prose">
+      <h2>axis</h2>
+      <p>
+        The direction the tap turns about, as an <code>azimuth</code> and an <code>elevation</code>. Straight up,
+        at an elevation of 90°, the passes turn round the listener; laid on its side, they roll over their head.
+        How far a pass turns is on the next page.
+      </p>
+    </div>
+  </section>
+
+  <section id="every-pass" class="split">
+    <figure class="panel">
+      <img src={img('echo-every-pass')} alt="The every pass page: spin, skew, feedback, blur, and the band's low and high cut." width="696" height="540" />
+    </figure>
+    <div class="prose">
+      <h2>every pass</h2>
+      <p>What happens each time the tap comes round, in two pairs and a band:</p>
+      <ul>
+        <li>
+          <strong><code>spin</code></strong>, how far the pass turns round the axis, and <strong><code>skew</code></strong>,
+          how far it slides along it. A spin of 180° is a ping-pong: twice round is back where it started.
+        </li>
+        <li>
+          <strong><code>feedback</code></strong>, how much quieter each pass is, and <strong><code>blur</code></strong>,
+          how much vaguer.
+        </li>
+        <li>
+          <strong>band</strong>: a <code>low cut</code> and a <code>high cut</code>, applied every pass, so the
+          repeats thin out as they go.
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="send" class="split">
+    <figure class="panel">
+      <img src={img('echo-send')} alt="The send tab: shape chosen, the spot region, its size and softness." width="696" height="700" />
+    </figure>
+    <div class="prose">
+      <h2>send</h2>
+      <p>
+        The part of the field the taps hear. By default it is <code>everywhere</code>; choose another kind and
+        only what arrives from there is repeated. The dry level still carries the whole field.
+        Shaping and moving a region works the same in every plugin: see
+        <a href={`${window}#regions`}>regions</a>.
+      </p>
+    </div>
+  </section>
+
+  <section id="scene">
+    <h2>the scene</h2>
+    <figure>
+      <img src={img('scene')} alt="The scene with the probe placed: beads in Echo's colour along the taps' spirals, round the probe's direction." width="1236" height="602" />
+    </figure>
+    <div class="prose">
+      <p>
+        Place the <a href={`${window}#scene`}>probe</a> on the scene and Echo answers with its taps: for each one,
+        a spiral that carries the probe's direction round the tap's axis a turn at a time, climbing as the skew
+        compounds and fading with the feedback. Every pass drops a bead as wide as its blur. The chosen tap is
+        drawn in full and the others fainter, and the answer follows the taps as they play, modulation included.
+      </p>
+    </div>
+  </section>
+
+  <section id="try">
+    <h2>things to try</h2>
+    <div class="prose">
+      <ol>
+        <li>
+          <strong>A ping-pong that fades into the room.</strong> Choose <code>ping-pong</code>, open
+          <code>every pass</code>, and raise <code>blur</code>: each return is vaguer than the last.
+        </li>
+        <li>
+          <strong>Echoes that climb.</strong> Choose <code>spiral</code> and give <code>skew</code> a value: each
+          pass turns and rises a little more. Place the probe to see the spiral.
+        </li>
+        <li>
+          <strong>Only one direction repeats.</strong> In <code>send</code>, choose a spot and put it over one
+          source. Only that source echoes; the rest of the mix is not repeated.
+        </li>
+      </ol>
+    </div>
+  </section>
+</TutorialPage>

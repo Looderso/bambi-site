@@ -1,0 +1,182 @@
+---
+/*  A tutorial: its title, an introduction, a picture of the whole window, then its parts, each a section.
+    The parts are listed in a contents row that stays under the header and marks the part being read, as
+    the open tab is marked in the plugins. A tutorial for one plugin wears that plugin's colour.
+
+    The sections are the page's own; the styles here give them their shape: a figure is a picture drawn by a
+    plugin's picture tool, `.split` puts a panel picture beside its text (`.panel` for a panel's width,
+    `.column` for the level column's), one above the other on a phone. */
+import { getCollection } from 'astro:content';
+import Page from './Page.astro';
+import PrevNext from '../components/PrevNext.astro';
+import { neighbours, tutorials } from '../lib/tutorials';
+
+interface Props {
+  id: string;
+  sub: string;
+  description?: string;
+  parts: [string, string][];
+  window: { src: string; alt: string; caption: string };
+}
+const { id, sub, description, parts, window } = Astro.props;
+const tutorial = tutorials.find((t) => t.id === id)!;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const identity = (await getCollection('plugins')).find((p) => p.id === tutorial.plugin)?.data.colour;
+const { previous, next } = neighbours(id);
+const link = (t?: { id: string; title: string }) => t && { href: `${base}/tutorial/${t.id}`, title: t.title };
+---
+
+<Page title={tutorial.title} description={description ?? tutorial.summary} identity={identity}>
+  <div class="tutorial">
+    <p class="label"><a href={`${base}/tutorial`}>tutorial</a></p>
+    <h1>{tutorial.title}</h1>
+    <p class="sub label">{sub}</p>
+
+    <slot name="intro" />
+
+    <figure>
+      <img src={window.src} alt={window.alt} width="2040" height="1200" />
+      <figcaption><span class="label">{window.caption}</span><span class="label">drawn by the plugin</span></figcaption>
+    </figure>
+
+    <nav class="contents" aria-label="on this page" data-contents>
+      <ol>
+        {parts.map(([part, name]) => <li><a href={`#${part}`} data-part={part}>{name}</a></li>)}
+      </ol>
+    </nav>
+
+    <slot />
+
+    <PrevNext previous={link(previous)} next={link(next)} />
+  </div>
+</Page>
+
+<script>
+  /*  The part being read is marked in the contents, as the open tab is in the plugins. */
+  const links = new Map(
+    [...document.querySelectorAll<HTMLAnchorElement>('[data-contents] a')].map((a) => [a.dataset.part, a]),
+  );
+  const mark = (id?: string) => {
+    if (!id) return; // between two parts: the last one stays marked
+    for (const [part, a] of links) a.classList.toggle('here', part === id);
+    //  on a narrow screen the row scrolls sideways: keep the marked part in it
+    const a = links.get(id)!;
+    const row = a.closest('ol')!;
+    if (a.offsetLeft < row.scrollLeft || a.offsetLeft + a.offsetWidth > row.scrollLeft + row.clientWidth)
+      row.scrollLeft = a.offsetLeft - 8;
+  };
+  const seen = new Set<string>();
+  const observer = new IntersectionObserver(
+    (entries) => {
+      for (const e of entries) e.isIntersecting ? seen.add(e.target.id) : seen.delete(e.target.id);
+      mark([...links.keys()].find((id) => id && seen.has(id)));
+    },
+    { rootMargin: '-45% 0px -50% 0px' },
+  );
+  for (const id of links.keys()) {
+    const section = id && document.getElementById(id);
+    if (section) observer.observe(section);
+  }
+</script>
+
+<style>
+  .sub {
+    margin: 12px 0 var(--section);
+  }
+  .tutorial :global(section) {
+    margin-top: var(--section);
+    scroll-margin-top: 40px; /* below the contents row, as well as the header */
+  }
+  .tutorial :global(figure) {
+    margin: 0 0 24px;
+  }
+  .tutorial :global(figure img) {
+    display: block;
+    width: 100%;
+    height: auto;
+    border: var(--stroke-rule) solid var(--rule);
+  }
+  figcaption {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--gap);
+    margin-top: 8px;
+    text-transform: none;
+  }
+  /*  the contents stay under the header, a second row of tabs: one line, scrolling sideways when narrow */
+  .contents {
+    position: sticky;
+    top: calc(var(--header) + var(--stroke-identity));
+    z-index: 5;
+    background: var(--ground);
+    border-bottom: var(--stroke-rule) solid var(--rule);
+    margin-bottom: 8px;
+  }
+  .contents ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: 2px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .contents ol::-webkit-scrollbar {
+    display: none;
+  }
+  .contents a {
+    display: block;
+    white-space: nowrap;
+    color: var(--text);
+    font-size: var(--size-label);
+    letter-spacing: var(--tracking-label);
+    padding: 7px 10px;
+  }
+  .contents a:hover {
+    background: var(--panel);
+    text-decoration: none;
+  }
+  .contents a.here {
+    background: var(--chosen);
+    color: var(--text-inverse);
+  }
+  .tutorial :global(kbd) {
+    font-family: inherit;
+    font-size: 0.9em;
+    padding: 0 0.3em;
+    border: var(--stroke-rule) solid var(--rule);
+  }
+
+  /*  a panel picture beside its text, one above the other on a phone */
+  .tutorial :global(.split) {
+    display: grid;
+    grid-template-columns: minmax(0, 348px) minmax(0, 1fr);
+    gap: 40px;
+    align-items: start;
+  }
+  .tutorial :global(.split.levels) {
+    grid-template-columns: 52px minmax(0, 1fr);
+  }
+  .tutorial :global(.split > figure) {
+    margin: 0;
+  }
+  .tutorial :global(.split .prose h2) {
+    margin-top: 0;
+  }
+  @media (max-width: 760px) {
+    .tutorial :global(.split),
+    .tutorial :global(.split.levels) {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+    .tutorial :global(.split > figure) {
+      order: 1; /* the heading and the text first, the picture after them */
+    }
+    .tutorial :global(.split > .panel) {
+      max-width: 348px;
+    }
+    .tutorial :global(.split > .column) {
+      width: 52px;
+    }
+  }
+</style>
