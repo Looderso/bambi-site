@@ -1,0 +1,261 @@
+---
+/*  A product's page — a plugin's, the host's: its real window held beside the text. At the top the window
+    is shown whole; as each part is read, the window zooms smoothly to that part, and a part on another
+    sub-page cuts to that sub-page's shot. Only the product's own parts are listed; the window every plugin
+    shares is a tutorial, linked at the bottom with the product's own.
+
+    A part's `crop` is x, y, width, height in the window's own points (1020 x 600 for a plugin), so a shot
+    drawn at any scale fits. Shots are `<shots>/<shot>.webp`. */
+import Cards from './Cards.astro';
+
+export interface Part {
+  shot: string;
+  crop: [number, number, number, number];
+  label: string;
+  title: string;
+  text: string;
+  points?: string[];
+}
+interface Props {
+  name: string;
+  summary: string;
+  section: { href: string; name: string };
+  shots: string;
+  window?: [number, number];
+  intro?: string;
+  parts: Part[];
+  tutorials: { href: string; title: string; text: string; kind?: string; colour?: string }[];
+}
+const { name, summary, section, shots, window = [1020, 600], intro, parts, tutorials } = Astro.props;
+const [W, H] = window;
+---
+
+<div class="product" data-w={W} data-h={H} data-shots={shots}>
+  <div class="list">
+    <article class="part intro" data-shot={parts[0]?.shot ?? 'window'} data-crop={`0 0 ${W} ${H}`} data-tag="">
+      <p class="label"><a href={section.href}>{section.name}</a></p>
+      <h1>{name}</h1>
+      <p class="lede">{summary}</p>
+      {intro && <p class="more label">↓ {intro}</p>}
+    </article>
+    {
+      parts.map((p) => (
+        <article class="part" data-shot={p.shot} data-crop={p.crop.join(' ')} data-tag={p.label}>
+          <h2>{p.label}</h2>
+          <h3>{p.title}</h3>
+          <p>{p.text}</p>
+          {p.points && (
+            <ul>
+              {p.points.map((t) => (
+                <li set:html={t} />
+              ))}
+            </ul>
+          )}
+        </article>
+      ))
+    }
+  </div>
+  <div class="stage" aria-hidden="true">
+    <div class="shot" style={`aspect-ratio: ${W} / ${H}`}>
+      <div class="layer"><img src={`${shots}/${parts[0]?.shot ?? 'window'}.webp`} alt="" /></div>
+    </div>
+    <span class="tag"></span>
+  </div>
+</div>
+
+<slot />
+
+<section class="tutorials">
+  <h2>tutorials</h2>
+  <Cards items={tutorials} style="row" />
+</section>
+
+<script>
+  /*  The part being read is the one across a line at 40 % of the screen, or the nearest to it. The zoom fits
+      that part in the stage with a little room, centred on it and never past the window's edges. */
+  const MARGIN = 1.1;
+  const MAX_ZOOM = 2.6;
+
+  for (const product of document.querySelectorAll<HTMLElement>('.product')) {
+    const W = Number(product.dataset.w), H = Number(product.dataset.h), shots = product.dataset.shots;
+    const shot = product.querySelector<HTMLElement>('.shot')!;
+    const layer = product.querySelector<HTMLElement>('.layer')!;
+    const img = layer.querySelector('img')!;
+    const tag = product.querySelector<HTMLElement>('.tag')!;
+    const parts = [...product.querySelectorAll<HTMLElement>('.part')];
+
+    //  every shot loaded up front, so moving to another sub-page is a cut, never a picture arriving
+    const loaded = new Map<string, HTMLImageElement>();
+    for (const p of parts) {
+      const id = p.dataset.shot!;
+      if (loaded.has(id)) continue;
+      const i = new Image();
+      i.src = `${shots}/${id}.webp`;
+      loaded.set(id, i);
+    }
+
+    const zoom = (part: HTMLElement) => {
+      const [x, y, w, h] = part.dataset.crop!.split(' ').map(Number);
+      const sw = shot.clientWidth, sh = shot.clientHeight, k = sw / W;
+      const s = Math.max(1, Math.min(MAX_ZOOM, W / (w * MARGIN), H / (h * MARGIN)));
+      const clamp = (v: number, lo: number) => Math.min(0, Math.max(lo, v));
+      const tx = clamp(sw / 2 - s * (x + w / 2) * k, sw - s * sw);
+      const ty = clamp(sh / 2 - s * (y + h / 2) * k, sh - s * sh);
+      layer.style.transform = `translate(${tx}px, ${ty}px) scale(${s})`;
+    };
+
+    let here: HTMLElement | null = null;
+    const point = (part: HTMLElement) => {
+      if (part === here) return;
+      here?.classList.remove('here');
+      part.classList.add('here');
+      here = part;
+      img.src = loaded.get(part.dataset.shot!)!.src;
+      tag.textContent = part.dataset.tag ?? '';
+      zoom(part);
+    };
+
+    const reading = () => {
+      const line = innerHeight * 0.4;
+      let best = parts[0], d = Infinity;
+      for (const p of parts) {
+        const r = p.getBoundingClientRect();
+        const dist = r.top <= line && r.bottom >= line ? 0 : Math.min(Math.abs(r.top - line), Math.abs(r.bottom - line));
+        if (dist < d) [d, best] = [dist, p];
+      }
+      point(best);
+    };
+
+    addEventListener('scroll', reading, { passive: true });
+    addEventListener('resize', () => here && zoom(here));
+    reading();
+  }
+</script>
+
+<style>
+  .product {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.9fr);
+    gap: 56px;
+    margin-top: calc(-1 * var(--section));
+  }
+  .stage {
+    position: sticky;
+    top: calc(var(--header) + var(--stroke-identity) + 32px);
+    align-self: start;
+    margin-top: var(--section);
+  }
+  .shot {
+    position: relative;
+    overflow: hidden;
+    border: var(--stroke-rule) solid var(--rule-strong);
+    background: var(--panel);
+  }
+  /*  The zoom: unhurried in, settled. */
+  .layer {
+    position: absolute;
+    inset: 0;
+    transform-origin: 0 0;
+    transition: transform 650ms cubic-bezier(0.45, 0, 0.2, 1);
+    will-change: transform;
+  }
+  .layer img {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+  .tag {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 3px 10px;
+    background: var(--chosen);
+    color: var(--text-inverse);
+    font-size: var(--size-small);
+    letter-spacing: var(--tracking-label);
+  }
+  .tag:empty {
+    display: none;
+  }
+
+  .part {
+    min-height: 70vh;
+    padding: var(--section) 0 0 14px;
+    border-left: 3px solid transparent;
+  }
+  .part.intro {
+    min-height: 80vh;
+    padding-left: 0;
+    border-left: 0;
+  }
+  .part:last-child {
+    min-height: 85vh;
+  }
+  .part.here:not(.intro) {
+    border-left-color: var(--rule-strong);
+  }
+  .part p,
+  .part ul {
+    max-width: 38ch;
+  }
+  .part p {
+    margin: 0 0 12px;
+  }
+  .part h1 {
+    margin: 8px 0 12px;
+  }
+  .part h2 {
+    max-width: 38ch;
+  }
+  .part h3 {
+    font-size: 21px;
+    font-weight: 400;
+    margin: 0 0 12px;
+  }
+  .part ul {
+    margin: 12px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .part li {
+    padding: 6px 0;
+    border-top: var(--stroke-rule) solid var(--rule);
+    font-size: 14px;
+  }
+  .part li :global(b) {
+    font-weight: 500;
+  }
+  .more {
+    margin-top: 40px;
+  }
+  .tutorials {
+    margin-top: var(--section);
+  }
+
+  @media (max-width: 860px) {
+    .product {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    .stage {
+      order: -1;
+      align-self: stretch;
+      z-index: 5;
+      top: calc(var(--header) + var(--stroke-identity));
+      margin: var(--section) calc(-1 * var(--gutter)) 0;
+      padding: 12px var(--gutter) 8px;
+      background: var(--ground);
+      border-bottom: var(--stroke-rule) solid var(--rule);
+    }
+    .part,
+    .part.intro {
+      min-height: 55vh;
+      padding-top: 32px;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .layer {
+      transition: none;
+    }
+  }
+</style>

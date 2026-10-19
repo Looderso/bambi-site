@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 #
-# Draws every picture on the tutorial page again, from the plugins' own picture tools, and writes them
-# to public/tutorial/. Run it whenever the plugins' window changes; nothing on the page is drawn by hand.
+# Draws every picture of a plugin on the site again, from the plugins' own picture tools: the tutorial's
+# crops into public/tutorial/, and each product page's whole shots into public/product/<plugin>/. Run it
+# whenever the plugins' window changes; nothing on the site is drawn by hand.
 #
-#   scripts/tutorial-pictures.sh [path to the bambi repository]
+#   scripts/pictures.sh [path to the bambi repository]
 #
 # The repository defaults to ../AETHER beside this one, or $BAMBI. Its plugins must be built
 # (`cmake --build build-plugin`). Needs cwebp (`brew install webp`).
@@ -22,6 +23,7 @@ site=$(cd "$(dirname "$0")/.." && pwd)
 repo=${1:-${BAMBI:-$site/../AETHER}}
 repo=$(cd "$repo" && pwd)
 out=$site/public/tutorial
+product=$site/public/product
 
 tool() { echo "$repo/build-plugin/plugins/$1/$2_artefacts/Release/$2"; }
 encoder=$(tool encoder bambi-plugin-snapshot)
@@ -68,3 +70,18 @@ picture presets       echo-presets.png    1240    0  800 1200
 picture settings      reverb-settings.png
 picture levels        echo.png            1936   84  104 1116
 picture footer        echo.png               0 1128 2040   72
+
+#  The product pages: whole shots at four times the window's size, so the page's zoom stays sharp. The
+#  page crops them itself, in the window's points, from the parts listed in src/content/plugins/<plugin>.md.
+#  A tool without --scale draws at twice the size and ignores it.
+whole() {
+    local plugin=$1 name=$2 tool=$3; shift 3
+    mkdir -p "$product/$plugin"
+    "$tool" "$shots/product.png" "$@" --scale 4 > /dev/null
+    cwebp -quiet -q 90 "$shots/product.png" -o "$product/$plugin/$name.webp"
+    echo "  $plugin/$name"
+}
+whole echo window     "$echo"
+whole echo axis       "$echo" --axis
+whole echo every-pass "$echo" --every-pass
+whole echo regions    "$echo" --regions

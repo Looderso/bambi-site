@@ -92,8 +92,9 @@ rather than boxes, no rounding, no shadows.
 
 ## Pictures
 
-- **Pictures of the plugins come from the plugins.** `scripts/tutorial-pictures.sh` draws every one with the
-  plugins' own picture tools, crops it and writes it to `public/tutorial/`. Nothing is drawn or edited by hand.
+- **Pictures of the plugins come from the plugins.** `scripts/pictures.sh` draws every one with the
+  plugins' own picture tools: the tutorial's crops into `public/tutorial/`, and each product page's whole shots,
+  at four times the window's size, into `public/product/<plugin>/`. Nothing is drawn or edited by hand.
   A view the tools cannot draw gets a new mode in the tool, in the bambi repository.
 - **Run the script again whenever the plugins' window changes**, and commit the pictures with the change.
 - **Diagrams** (a tool's measurements, for example) are inline SVG in one shared frame per tool, drawn in
@@ -108,13 +109,15 @@ rather than boxes, no rounding, no shadows.
 ## Adding something
 
 - **A plugin:** a Markdown file in `src/content/plugins/` with its `name`, `summary`, `colour` and `order`. It
-  appears on `/plugins` and on its own page. Its tutorial is an entry in `src/lib/tutorials.ts` naming the
-  plugin, and a page in `src/pages/tutorial/`.
+  appears on `/plugins` and on its own page. Its `parts` make that page a product page
+  (`src/components/ProductPage.astro`): each names a shot, a crop in the window's points (1020 × 600), a label,
+  a title and a few lines; the shots are added to `scripts/pictures.sh`. Its tutorial is an entry in
+  `src/lib/tutorials.ts` naming the plugin, and a page in `src/pages/tutorial/`.
 - **A research page:** a page in `src/pages/research/` and a card on `/research`. Its figures are inline SVG in
   `currentColor`, drawn from the data the result came from.
 - **A tutorial:** a page in `src/pages/tutorial/`, and an entry in `src/lib/tutorials.ts` that puts it on
   `/tutorial` in its group and gives it its previous and next. If it needs pictures, add their shots and crops
-  to `scripts/tutorial-pictures.sh`.
+  to `scripts/pictures.sh`.
 - **A page read in order** — a guideline, a tutorial — ends with `src/components/PrevNext.astro`.
 - **A guideline:** a Markdown file in `src/content/guidelines/` with its `title`, `summary`, `group` and
   `order`. It appears on `/contribute` in its group.

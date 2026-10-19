@@ -1,7 +1,10 @@
 ---
+/*  A plugin's page: a product page from its parts when it has them, otherwise its text alone. Both end
+    with its tutorial and the one for the window every plugin shares. */
 import { getCollection, render } from 'astro:content';
 import Page from '../../layouts/Page.astro';
 import Cards from '../../components/Cards.astro';
+import ProductPage from '../../components/ProductPage.astro';
 
 export async function getStaticPaths() {
   const plugins = await getCollection('plugins');
@@ -11,26 +14,44 @@ export async function getStaticPaths() {
 const { plugin } = Astro.props;
 const { Content } = await render(plugin);
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const { name, summary, colour, intro, parts } = plugin.data;
+const tutorials = [
+  { href: `${base}/tutorial/${plugin.id}`, title: name, text: `How to use ${name}, step by step.`, kind: 'this plugin', colour },
+  { href: `${base}/tutorial/the-window`, title: 'the window', text: 'The scene, the matrix, presets and the link every plugin shares.', kind: 'every plugin' },
+];
 ---
 
-<Page title={plugin.data.name} description={plugin.data.summary} identity={plugin.data.colour}>
-  <p class="label"><a href={`${base}/plugins`}>plugins</a></p>
-  <h1>{plugin.data.name}</h1>
-  <p class="lede summary">{plugin.data.summary}</p>
-  <div class="prose">
-    <Content />
-  </div>
-
-  <section class="tutorials">
-    <h2>tutorials</h2>
-    <Cards
-      items={[
-        { href: `${base}/tutorial/${plugin.id}`, title: plugin.data.name, text: `How to use ${plugin.data.name}, step by step.`, kind: 'this plugin', colour: plugin.data.colour },
-        { href: `${base}/tutorial/the-window`, title: 'the window', text: 'The scene, the matrix, presets and the link every plugin shares.', kind: 'every plugin' },
-      ]}
-      style="row"
-    />
-  </section>
+<Page title={name} description={summary} identity={colour} wide={!!parts}>
+  {
+    parts ? (
+      <ProductPage
+        name={name}
+        summary={summary}
+        section={{ href: `${base}/plugins`, name: 'plugins' }}
+        shots={`${base}/product/${plugin.id}`}
+        intro={intro}
+        parts={parts}
+        tutorials={tutorials}
+      >
+        <div class="prose after">
+          <Content />
+        </div>
+      </ProductPage>
+    ) : (
+      <>
+        <p class="label"><a href={`${base}/plugins`}>plugins</a></p>
+        <h1>{name}</h1>
+        <p class="lede summary">{summary}</p>
+        <div class="prose">
+          <Content />
+        </div>
+        <section class="tutorials">
+          <h2>tutorials</h2>
+          <Cards items={tutorials} style="row" />
+        </section>
+      </>
+    )
+  }
 </Page>
 
 <style>
@@ -42,5 +63,10 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
   }
   .tutorials {
     margin-top: var(--section);
+  }
+  .after {
+    margin-top: var(--section);
+    border-top: var(--stroke-rule) solid var(--rule-strong);
+    padding-top: 24px;
   }
 </style>
