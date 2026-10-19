@@ -1,0 +1,27 @@
+---
+/*  How to use reverb, step by step, with pictures drawn by its picture tool. An outline until the text exists. */
+import { getCollection } from 'astro:content';
+import Page from '../../layouts/Page.astro';
+import PrevNext from '../../components/PrevNext.astro';
+import { neighbours, tutorials } from '../../lib/tutorials';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const tutorial = tutorials.find((t) => t.id === 'reverb')!;
+const identity = (await getCollection('plugins')).find((p) => p.id === tutorial.plugin)?.data.colour;
+const { previous, next } = neighbours('reverb');
+const link = (t?: { id: string; title: string }) => t && { href: `${base}/tutorial/${t.id}`, title: t.title };
+---
+
+<Page title={tutorial.title} description={tutorial.summary} identity={identity}>
+  <p class="label"><a href={`${base}/tutorial`}>tutorial</a></p>
+  <h1>{tutorial.title}</h1>
+  <p class="sub label">{tutorial.summary.toLowerCase().replace(/\.$/, '')}</p>
+  <p class="fine">This tutorial is being written. The window every plugin shares is in <a href={`${base}/tutorial/the-window`}>the window</a>.</p>
+  <PrevNext previous={link(previous)} next={link(next)} />
+</Page>
+
+<style>
+  .sub {
+    margin: 12px 0 var(--section);
+  }
+</style>

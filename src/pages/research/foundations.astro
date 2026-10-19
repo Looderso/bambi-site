@@ -1,6 +1,8 @@
 ---
 /*  The work bambi builds on: what each gave, and where to read it. */
-import Page from '../layouts/Page.astro';
+import Page from '../../layouts/Page.astro';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
 interface Work {
   who: string;
@@ -117,6 +119,7 @@ const groups: { title: string; works: Work[] }[] = [
 ---
 
 <Page title="foundations" description="The research and the software bambi builds on.">
+  <p class="label"><a href={`${base}/research`}>research</a></p>
   <h1>foundations</h1>
   <p class="sub label">the research and the software bambi builds on</p>
 

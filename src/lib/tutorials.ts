@@ -18,6 +18,11 @@ export const tutorials: Tutorial[] = [
     group: 'every plugin',
     kind: 'start here',
   },
+  { id: 'encoder', title: 'encoder', summary: 'Placing a sound, and moving it with what it plays.', group: 'one plugin or setup', kind: 'plugin', plugin: 'encoder' },
+  { id: 'echo', title: 'echo', summary: 'Taps that turn through the field as they repeat.', group: 'one plugin or setup', kind: 'plugin', plugin: 'echo' },
+  { id: 'reverb', title: 'reverb', summary: 'A room around the field, and where in it each reflection lands.', group: 'one plugin or setup', kind: 'plugin', plugin: 'reverb' },
+  { id: 'decoder', title: 'decoder', summary: 'The field out to loudspeakers or headphones.', group: 'one plugin or setup', kind: 'plugin', plugin: 'decoder' },
+  { id: 'host', title: 'the host', summary: 'Setting up a set to play through bambi.', group: 'one plugin or setup', kind: 'setup' },
 ];
 
 /** The tutorials either side of one, in reading order. */

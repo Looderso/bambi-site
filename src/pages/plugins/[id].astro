@@ -1,6 +1,7 @@
 ---
 import { getCollection, render } from 'astro:content';
 import Page from '../../layouts/Page.astro';
+import Cards from '../../components/Cards.astro';
 
 export async function getStaticPaths() {
   const plugins = await getCollection('plugins');
@@ -19,6 +20,17 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
   <div class="prose">
     <Content />
   </div>
+
+  <section class="tutorials">
+    <h2>tutorials</h2>
+    <Cards
+      items={[
+        { href: `${base}/tutorial/${plugin.id}`, title: plugin.data.name, text: `How to use ${plugin.data.name}, step by step.`, kind: 'this plugin', colour: plugin.data.colour },
+        { href: `${base}/tutorial/the-window`, title: 'the window', text: 'The scene, the matrix, presets and the link every plugin shares.', kind: 'every plugin' },
+      ]}
+      style="row"
+    />
+  </section>
 </Page>
 
 <style>
@@ -27,5 +39,8 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
   }
   .summary {
     margin-bottom: var(--section);
+  }
+  .tutorials {
+    margin-top: var(--section);
   }
 </style>

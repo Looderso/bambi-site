@@ -34,4 +34,4 @@ Two regions: which part of the field goes into the room, and where the room come
 ## what it builds on
 
 The image method for the reflections, Eyring's reverberation time, and feedback delay networks for the tail,
-all on the [foundations](/foundations) page.
+all on the [foundations](/research/foundations) page.

@@ -1,5 +1,7 @@
 ---
 import Page from '../layouts/Page.astro';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
 
 <Page title="about">
@@ -16,6 +18,17 @@ import Page from '../layouts/Page.astro';
       The source is on <a href="https://github.com/Looderso/bambi">GitHub</a>, and every release carries its
       complete source and the notices of the third-party components it contains.
     </p>
+  </div>
+
+  <section class="thanks">
+    <h2>thanks</h2>
+    <div class="prose">
+      <p>The people who inspired bambi and helped make it. The research and software it builds on are credited on <a href={`${base}/research/foundations`}>foundations</a>.</p>
+      <p class="fine">This list is being written.</p>
+    </div>
+  </section>
+
+  <div class="prose notices">
     <p class="fine">VST is a registered trademark of Steinberg Media Technologies GmbH.
     </p>
   </div>
@@ -24,5 +37,9 @@ import Page from '../layouts/Page.astro';
 <style>
   .sub {
     margin: 12px 0 var(--section);
+  }
+  .thanks,
+  .notices {
+    margin-top: var(--section);
   }
 </style>

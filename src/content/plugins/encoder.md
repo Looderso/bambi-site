@@ -52,5 +52,5 @@ far side.
 
 ## what it builds on
 
-The encoding follows the ambisonics literature on the [foundations](/foundations) page: the spherical
+The encoding follows the ambisonics literature on the [foundations](/research/foundations) page: the spherical
 harmonics, ACN ordering and SN3D normalisation, and the max-rE weighting its width is drawn with.

@@ -31,4 +31,4 @@ The region of the field the taps hear. By default it is `everywhere`; see [regio
 
 ## what it builds on
 
-The slide along an axis is the warp of Pomberger and Zotter, on the [foundations](/foundations) page.
+The slide along an axis is the warp of Pomberger and Zotter, on the [foundations](/research/foundations) page.
