@@ -43,6 +43,8 @@ trap 'rm -rf "$shots"' EXIT
 "$echo"    "$shots/echo-regions.png" --regions                      > /dev/null
 "$echo"    "$shots/echo-lfo.png" --lfo                              > /dev/null
 "$echo"    "$shots/echo-presets.png" --presets                      > /dev/null
+"$echo"    "$shots/echo-axis.png" --axis                            > /dev/null
+"$echo"    "$shots/echo-every-pass.png" --every-pass                > /dev/null
 "$reverb"  "$shots/reverb-settings.png" --settings                  > /dev/null
 "$encoder" "$shots/encoder.png" --scale 2                           > /dev/null
 "$encoder" "$shots/encoder-source.png" --scale 2 --tab 2            > /dev/null
@@ -71,6 +73,13 @@ picture presets       echo-presets.png    1240    0  800 1200
 picture settings      reverb-settings.png
 picture levels        echo.png            1936   84  104 1116
 picture footer        echo.png               0 1128 2040   72
+
+#  Echo's tutorial: its own panel, a crop of the panel's width beside the text
+picture echo-taps       echo.png            1240   84  696  440
+picture echo-timing     echo.png            1240  526  696  580
+picture echo-axis       echo-axis.png       1240  526  696  240
+picture echo-every-pass echo-every-pass.png 1240  526  696  540
+picture echo-send       echo-regions.png    1240   84  696  700
 
 #  The product pages: whole shots at four times the window's size, so the page's zoom stays sharp. The
 #  page crops them itself, in the window's points, from the parts listed in src/content/plugins/<plugin>.md.

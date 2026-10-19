@@ -46,7 +46,7 @@ parts:
     crop: [0, 44, 618, 301]
     label: the scene
     title: every pass where it lands
-    text: "On the sphere and the map, each tap's passes are drawn as dots along its path, in Echo's colour, over the energy that came in."
+    text: "Point the probe at a direction, and Echo answers with each tap's passes as beads along a spiral round its axis, in Echo's colour, over the energy that came in."
 ---
 
 The slide along an axis is the warp of Pomberger and Zotter, on the [foundations](/research/foundations) page.

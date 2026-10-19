@@ -1,16 +1,12 @@
 ---
 /*  The parts every bambi window has, and the gestures each takes. The pictures are the plugins' own,
     drawn by their picture tools; the text names colours by what they mean, not by their hue. */
-import Page from '../../layouts/Page.astro';
-import PrevNext from '../../components/PrevNext.astro';
-import { neighbours } from '../../lib/tutorials';
+import TutorialPage from '../../layouts/TutorialPage.astro';
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
-const { previous, next } = neighbours('the-window');
-const link = (t?: { id: string; title: string }) => t && { href: `${base}/tutorial/${t.id}`, title: t.title };
 const img = (name: string) => `${base}/tutorial/${name}.webp`;
 
-const parts = [
+const parts: [string, string][] = [
   ['header', 'the header'],
   ['scene', 'the scene'],
   ['matrix', 'the modulation matrix'],
@@ -24,12 +20,14 @@ const parts = [
 ];
 ---
 
-<Page title="the window" description="The parts of a bambi window, and how to use them.">
-  <p class="label"><a href={`${base}/tutorial`}>tutorial</a></p>
-  <h1>the window</h1>
-  <p class="sub label">the parts of a bambi window, and how to use them</p>
-
-  <div class="prose">
+<TutorialPage
+  id="the-window"
+  sub="the parts of a bambi window, and how to use them"
+  description="The parts of a bambi window, and how to use them."
+  parts={parts}
+  window={{ src: img('window'), alt: 'An echo window: header, scene, matrix, the taps tab and the level column.', caption: 'an echo window' }}
+>
+  <div class="prose" slot="intro">
     <p class="lede">Every bambi plugin is laid out the same way, so what you learn in one works in the others.</p>
     <p>
       At the top is the header. Below it on the left is the scene, a picture of the sphere around you, and
@@ -37,17 +35,6 @@ const parts = [
       levels. This page walks through each part: what it is for, and what you can do with it.
     </p>
   </div>
-
-  <figure>
-    <img src={img('window')} alt="An echo window: header, scene, matrix, the taps tab and the level column." width="2040" height="1200" />
-    <figcaption><span class="label">an echo window</span><span class="label">drawn by the plugin</span></figcaption>
-  </figure>
-
-  <nav class="contents" aria-label="on this page" data-contents>
-    <ol>
-      {parts.map(([id, name]) => <li><a href={`#${id}`} data-part={id}>{name}</a></li>)}
-    </ol>
-  </nav>
 
   <section id="header">
     <h2>the header</h2>
@@ -404,136 +391,4 @@ const parts = [
   <figure>
     <img src={img('footer')} alt="The bottom edge of the window: global amount, has depth on another tab, rates continue, and the readout." width="2040" height="72" />
   </figure>
-  <PrevNext previous={link(previous)} next={link(next)} />
-</Page>
-
-<script>
-  /*  The part being read is marked in the contents, as the open tab is in the plugins. */
-  const links = new Map(
-    [...document.querySelectorAll<HTMLAnchorElement>('[data-contents] a')].map((a) => [a.dataset.part, a]),
-  );
-  const mark = (id?: string) => {
-    if (!id) return; // between two parts: the last one stays marked
-    for (const [part, a] of links) a.classList.toggle('here', part === id);
-    //  on a narrow screen the row scrolls sideways: keep the marked part in it
-    const a = links.get(id)!;
-    const row = a.closest('ol')!;
-    if (a.offsetLeft < row.scrollLeft || a.offsetLeft + a.offsetWidth > row.scrollLeft + row.clientWidth)
-      row.scrollLeft = a.offsetLeft - 8;
-  };
-  const seen = new Set<string>();
-  const observer = new IntersectionObserver(
-    (entries) => {
-      for (const e of entries) e.isIntersecting ? seen.add(e.target.id) : seen.delete(e.target.id);
-      mark([...links.keys()].find((id) => id && seen.has(id)));
-    },
-    { rootMargin: '-45% 0px -50% 0px' },
-  );
-  for (const id of links.keys()) {
-    const section = id && document.getElementById(id);
-    if (section) observer.observe(section);
-  }
-</script>
-
-
-<style>
-  .sub {
-    margin: 12px 0 var(--section);
-  }
-  section {
-    margin-top: var(--section);
-    scroll-margin-top: 40px; /* below the contents row, as well as the header */
-  }
-  figure {
-    margin: 0 0 24px;
-  }
-  figure img {
-    display: block;
-    width: 100%;
-    height: auto;
-    border: var(--stroke-rule) solid var(--rule);
-  }
-  figcaption {
-    display: flex;
-    justify-content: space-between;
-    gap: var(--gap);
-    margin-top: 8px;
-    text-transform: none;
-  }
-  /*  the contents stay under the header, a second row of tabs: one line, scrolling sideways when narrow */
-  .contents {
-    position: sticky;
-    top: calc(var(--header) + var(--stroke-identity));
-    z-index: 5;
-    background: var(--ground);
-    border-bottom: var(--stroke-rule) solid var(--rule);
-    margin-bottom: 8px;
-  }
-  .contents ol {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    gap: 2px;
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
-  .contents ol::-webkit-scrollbar {
-    display: none;
-  }
-  .contents a {
-    display: block;
-    white-space: nowrap;
-    color: var(--text);
-    font-size: var(--size-label);
-    letter-spacing: var(--tracking-label);
-    padding: 7px 10px;
-  }
-  .contents a:hover {
-    background: var(--panel);
-    text-decoration: none;
-  }
-  .contents a.here {
-    background: var(--chosen);
-    color: var(--text-inverse);
-  }
-  kbd {
-    font-family: inherit;
-    font-size: 0.9em;
-    padding: 0 0.3em;
-    border: var(--stroke-rule) solid var(--rule);
-  }
-
-  /*  a panel picture beside its text, one above the other on a phone */
-  .split {
-    display: grid;
-    grid-template-columns: minmax(0, 348px) minmax(0, 1fr);
-    gap: 40px;
-    align-items: start;
-  }
-  .split.levels {
-    grid-template-columns: 52px minmax(0, 1fr);
-  }
-  .split > figure {
-    margin: 0;
-  }
-  .split .prose h2 {
-    margin-top: 0;
-  }
-  @media (max-width: 760px) {
-    .split,
-    .split.levels {
-      grid-template-columns: 1fr;
-      gap: 16px;
-    }
-    .split > figure {
-      order: 1; /* the heading and the text first, the picture after them */
-    }
-    .split > .panel {
-      max-width: 348px;
-    }
-    .split > .column {
-      width: 52px;
-    }
-  }
-</style>
+</TutorialPage>
