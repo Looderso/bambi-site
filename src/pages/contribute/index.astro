@@ -13,14 +13,14 @@ const context = [
   { href: file('AGENTS.md'), kind: 'AGENTS.md', title: 'the rules', text: 'How to build, where things live and the rules every change keeps. Each module has its own for what holds there.' },
   { href: tree('docs'), kind: 'docs/', title: 'what is true, and why', text: 'A page per concept, and the decisions behind them, with the routes already tried and rejected.' },
   { href: tree('.claude/skills'), kind: 'skills', title: 'the procedures', text: 'Step by step for the recurring tasks: adding a parameter or a plugin, a benchmark, a pull request.' },
-  { href: tree('.claude/agents'), kind: 'reviewers', title: 'the checks', text: 'Reviewers to run over finished work: architecture, the audio thread, cost and the look.' },
+  { href: tree('.claude/agents'), kind: 'reviewers', title: 'the checks', text: 'Review agents to run over finished work: architecture, real-time safety, DSP performance and UI consistency.' },
 ];
 
 const steps = [
   { title: 'an issue', text: 'Say what is wrong or missing. Anything a musician would notice is agreed there first.' },
   { title: 'a branch', text: 'One branch for the issue, named after it, with nothing else in it.' },
-  { title: 'tools/verify.sh', text: 'Tests, renders, style and layers in one command. It passes, or the change is not ready.' },
-  { title: 'a pull request', text: 'What is now true, what it did to the sound, a picture if the window changed.' },
+  { title: 'tools/verify.sh', text: 'Tests, audio renders, formatting and style checks in one command. It passes, or the change is not ready.' },
+  { title: 'a pull request', text: 'What changed, what it did to the sound, and a screenshot if the UI changed.' },
 ];
 
 const rules = [

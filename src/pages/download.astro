@@ -150,7 +150,7 @@ const tiles = plugins.map((p) => ({
         <img class="mark" src={`${base}/marks/host.svg`} alt="" width="72" height="72" />
         <div>
           <p class="about">
-            The host plays a Live set's tracks through bambi, on macOS. It comes as three parts:
+            The host runs bambi's plugins beside Ableton Live, on macOS. It comes in three parts:
           </p>
           <ul class="steps across">
             <li>
@@ -158,12 +158,12 @@ const tiles = plugins.map((p) => ({
               <span class="text">Goes into Applications.</span>
             </li>
             <li>
-              <span class="title">the loop device</span>
-              <span class="text">An audio device that carries Live's tracks to the host. Installing it asks for your password and restarts the Mac's audio for a moment.</span>
+              <span class="title">the virtual audio driver</span>
+              <span class="text">A loopback driver that carries Live's tracks to the host. Installing it asks for your password and restarts the Mac's audio for a moment.</span>
             </li>
             <li>
-              <span class="title">the device in Live</span>
-              <span class="text">A Max for Live device: it needs Live Suite, or Live Standard with Max for Live.</span>
+              <span class="title">the Max for Live device</span>
+              <span class="text">Goes on Live's Main track. It needs Live Suite, or Live Standard with Max for Live.</span>
             </li>
           </ul>
           <p class="fine">

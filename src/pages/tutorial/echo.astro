@@ -13,26 +13,26 @@ const parts: [string, string][] = [
   ['axis', 'axis'],
   ['every-pass', 'every pass'],
   ['send', 'send'],
-  ['scene', 'the scene'],
+  ['scene', 'the 3D view'],
   ['try', 'things to try'],
 ];
 ---
 
 <TutorialPage
   id="echo"
-  sub="four echoes that turn through the field as they repeat"
+  sub="four delay taps whose repeats rotate around the listener"
   parts={parts}
-  window={{ src: img('window'), alt: 'An echo window: the scene with the probe placed, the matrix, and the taps tab.', caption: 'an echo window' }}
+  window={{ src: img('window'), alt: 'An echo window: the 3D view with the probe placed, the matrix, and the taps tab.', caption: 'an echo window' }}
 >
   <div class="prose" slot="intro">
     <p class="lede">
-      Echo repeats an ambisonic field. Each of its four taps is a loop: every pass comes back a little later,
-      turned further round an axis, and a little quieter and vaguer than the one before.
+      Echo is an ambisonic delay with four delay taps, each with its own feedback: every repeat comes back a little
+      later, rotated further around an axis, and a little quieter and blurrier than the one before.
     </p>
     <p>
-      Its window is the one every bambi plugin has; the scene, the matrix, presets and the link are explained in
+      Its window is the one every bambi plugin has; the 3D view, the matrix, presets and the link are explained in
       <a href={window}>the window</a>. This page covers what is Echo's own: its two tabs, <code>taps</code> and
-      <code>send</code>, and what it draws on the scene.
+      <code>send</code>, and what it shows in the 3D view.
     </p>
   </div>
 
@@ -45,24 +45,24 @@ const parts: [string, string][] = [
       <p>
         The row at the top is a set of <strong>starting points</strong> for all four taps:
         <code>even</code>, <code>ping-pong</code>, <code>spiral</code>, <code>cascade</code> and
-        <code>single</code>. Choosing one sets the taps; the pattern stays lit while you change them from there,
+        <code>single</code>. Choosing one sets the taps; the pattern stays highlighted while you edit them,
         and a <strong>double-click</strong> brings its values back.
       </p>
-      <p>Under it, the <strong>strip</strong> shows the four taps on one time line. Each row is one tap:</p>
+      <p>Under it, the <strong>strip</strong> shows the four taps on one timeline. Each row is one tap:</p>
       <ul>
-        <li><strong>Click a row</strong> to choose that tap. The pages below edit the chosen one, marked by a bar at its left.</li>
+        <li><strong>Click a row</strong> to select that tap. The pages below edit the selected one, marked by a bar at its left.</li>
         <li>
-          <strong>The numbered box</strong> switches the tap on and off, without choosing it, so you can silence a
+          <strong>The numbered box</strong> switches the tap on and off without selecting it, so you can mute a
           tap while editing another.
         </li>
         <li><strong>The level</strong> at the right; drag it to change it. It is greyed while the tap is off.</li>
         <li>
-          <strong>Every pass</strong> is a mark on the row, where it lands in time. A mark fades as the passes get
-          quieter, spans the tap's band from high at the top to low at the bottom, and softens as the passes get
-          vaguer.
+          <strong>Every pass</strong> is a mark on the row, at the time it plays. A mark fades as the repeats get
+          quieter, spans the tap's band from high at the top to low at the bottom, and softens as the repeats get
+          blurrier.
         </li>
       </ul>
-      <p>The ticks under the strip are beats, so an offset can be read against them.</p>
+      <p>The ticks under the strip are beats, so you can read an offset against them.</p>
     </div>
   </section>
 
@@ -73,12 +73,12 @@ const parts: [string, string][] = [
     <div class="prose">
       <h2>timing</h2>
       <p>
-        Under the strip, the chosen tap's settings come in three pages: <code>timing</code>, <code>axis</code>
+        Under the strip, the selected tap's settings come in three pages: <code>timing</code>, <code>axis</code>
         and <code>every pass</code>.
       </p>
       <p>
-        <code>free</code> and <code>sync</code> say how a pass is timed. Free, a pass lasts its
-        <code>time</code> in milliseconds; synced, its <code>steps</code> in sixteenths of the bar. Both rows
+        <code>free</code> and <code>sync</code> choose how the delay time is set. In free, each repeat comes after
+        <code>time</code> milliseconds; in sync, after <code>steps</code> sixteenth notes. Both rows
         stay on screen, and the one not in use is greyed.
       </p>
       <ul>
@@ -95,9 +95,9 @@ const parts: [string, string][] = [
     <div class="prose">
       <h2>axis</h2>
       <p>
-        The direction the tap turns about, as an <code>azimuth</code> and an <code>elevation</code>. Straight up,
-        at an elevation of 90°, the passes turn round the listener; laid on its side, they roll over their head.
-        How far a pass turns is on the next page.
+        The axis the tap's repeats rotate around, as an <code>azimuth</code> and an <code>elevation</code>. Straight up,
+        at an elevation of 90°, the repeats circle around the listener; tilted on its side, they roll over their head.
+        How far each repeat rotates is on the next page.
       </p>
     </div>
   </section>
@@ -108,19 +108,19 @@ const parts: [string, string][] = [
     </figure>
     <div class="prose">
       <h2>every pass</h2>
-      <p>What happens each time the tap comes round, in two pairs and a band:</p>
+      <p>What happens on each repeat, in two pairs and a band:</p>
       <ul>
         <li>
-          <strong><code>spin</code></strong>, how far the pass turns round the axis, and <strong><code>skew</code></strong>,
-          how far it slides along it. A spin of 180° is a ping-pong: twice round is back where it started.
+          <strong><code>spin</code></strong>, how far each repeat rotates around the axis, and <strong><code>skew</code></strong>,
+          how far it shifts along it. A spin of 180° is a ping-pong: every second repeat is back where it started.
         </li>
         <li>
-          <strong><code>feedback</code></strong>, how much quieter each pass is, and <strong><code>blur</code></strong>,
-          how much vaguer.
+          <strong><code>feedback</code></strong>, how much quieter each repeat is, and <strong><code>blur</code></strong>,
+          how much blurrier.
         </li>
         <li>
-          <strong>band</strong>: a <code>low cut</code> and a <code>high cut</code>, applied every pass, so the
-          repeats thin out as they go.
+          <strong>band</strong>: a <code>low cut</code> and a <code>high cut</code>, applied on every repeat, so the
+          repeats get thinner as they go.
         </li>
       </ul>
     </div>
@@ -133,8 +133,8 @@ const parts: [string, string][] = [
     <div class="prose">
       <h2>send</h2>
       <p>
-        The part of the field the taps hear. By default it is <code>everywhere</code>; choose another kind and
-        only what arrives from there is repeated. The dry level still carries the whole field.
+        The part of the sound scene that goes into the delay. By default it is <code>everywhere</code>; choose another
+        shape and only sound arriving from there is delayed. The dry signal still carries the whole sound scene.
         Shaping and moving a region works the same in every plugin: see
         <a href={`${window}#regions`}>regions</a>.
       </p>
@@ -142,16 +142,17 @@ const parts: [string, string][] = [
   </section>
 
   <section id="scene">
-    <h2>the scene</h2>
+    <h2>the 3D view</h2>
     <figure>
-      <img src={img('scene')} alt="The scene with the probe placed: beads in Echo's colour along the taps' spirals, round the probe's direction." width="1236" height="602" />
+      <img src={img('scene')} alt="The 3D view with the probe placed: dots in Echo's colour along the taps' spirals, around the probe's direction." width="1236" height="602" />
     </figure>
     <div class="prose">
       <p>
-        Place the <a href={`${window}#scene`}>probe</a> on the scene and Echo answers with its taps: for each one,
-        a spiral that carries the probe's direction round the tap's axis a turn at a time, climbing as the skew
-        compounds and fading with the feedback. Every pass drops a bead as wide as its blur. The chosen tap is
-        drawn in full and the others fainter, and the answer follows the taps as they play, modulation included.
+        Place the <a href={`${window}#scene`}>probe</a> in the 3D view and Echo shows where its repeats arrive from:
+        for each tap, a spiral that rotates the probe's direction around the tap's axis one repeat at a time,
+        climbing as the skew adds up and fading with the feedback. Each repeat is a dot as wide as its blur. The
+        selected tap is drawn in full and the others fainter, and the display follows the taps as they play,
+        modulation included.
       </p>
     </div>
   </section>
@@ -162,15 +163,15 @@ const parts: [string, string][] = [
       <ol>
         <li>
           <strong>A ping-pong that fades into the room.</strong> Choose <code>ping-pong</code>, open
-          <code>every pass</code>, and raise <code>blur</code>: each return is vaguer than the last.
+          <code>every pass</code>, and raise <code>blur</code>: each repeat is blurrier than the last.
         </li>
         <li>
           <strong>Echoes that climb.</strong> Choose <code>spiral</code> and give <code>skew</code> a value: each
-          pass turns and rises a little more. Place the probe to see the spiral.
+          repeat rotates and rises a little more. Place the probe to see the spiral.
         </li>
         <li>
           <strong>Only one direction repeats.</strong> In <code>send</code>, choose a spot and put it over one
-          source. Only that source echoes; the rest of the mix is not repeated.
+          source. Only that source is delayed; the rest of the mix stays dry.
         </li>
       </ol>
     </div>

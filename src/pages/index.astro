@@ -36,7 +36,7 @@ const tiles = plugins.map((p) => {
     <section class="screen intro">
       <h1>A free and open source 3D audio suite.</h1>
       <figure class="window">
-        <img src={`${base}/tutorial/window.webp`} alt="A bambi window: the sphere with the sound's energy on it, the modulation matrix, and the plugin's controls." width="2040" height="1200" />
+        <img src={`${base}/tutorial/window.webp`} alt="A bambi plugin window: the 3D view of the signal's energy, the modulation matrix, and the plugin's controls." width="2040" height="1200" />
       </figure>
     </section>
 
@@ -49,13 +49,13 @@ const tiles = plugins.map((p) => {
       <h2 id="host">host</h2>
       <div class="host">
         <div class="pictures">
-          <img src={`${base}/product/host/routing.webp`} alt="The host's routing page: Live's tracks, the returns and main, and two decoders, joined by wires." width="4368" height="2400" />
-          <img src={`${base}/product/host/timeline.webp`} alt="The host's timeline: Live's arrangement, and the host's lanes over it." width="4368" height="2400" />
+          <img src={`${base}/product/host/routing.webp`} alt="The host's routing page: Live's tracks, returns and main, sent to two decoders." width="4368" height="2400" />
+          <img src={`${base}/product/host/timeline.webp`} alt="The host's timeline: Live's arrangement with automation lanes." width="4368" height="2400" />
         </div>
         <div class="about">
           <p>
-            The host plays a set's tracks through bambi's plugins and decoders, routed as a field rather than as
-            stereo, while the DAW keeps the arrangement and the transport. It works with Ableton Live.
+            Ableton Live's tracks are stereo, so ambisonics can't run inside it. The host runs bambi's plugins
+            beside Live on an ambisonics bus, while Live keeps the arrangement and the transport.
           </p>
           <p><a href={`${base}/host`}>the host →</a></p>
         </div>
