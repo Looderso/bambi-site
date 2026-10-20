@@ -97,24 +97,6 @@ export function at(model, azimuth, elevation) {
   };
 }
 
-/*  The notches alone at a unit direction (x front, y left, z up), with the ears shifted by earShift ERB: each
-    notch's centre as played (shifted, kept in the band), its depth with factor and fade, and its width. Only the
-    notch maps are evaluated, so a whole sphere of directions stays cheap. */
-export function notchesAt(model, x, y, z, earShift = 0) {
-  const N = model.notches;
-  const Y = sh(x, y, z, N.order);
-  const [fadeIn, fadeOut] = N.fade, [widthMin, widthMax] = N.widthRange, [bandLo, bandHi] = N.band;
-  return N.list.map((n) => {
-    const t = Math.min(1, Math.max(0, (dot(Y, n.presence) - fadeIn) / (fadeOut - fadeIn)));
-    const fade = t * t * (3 - 2 * t);
-    return {
-      centre: Math.min(bandHi, Math.max(bandLo, dot(Y, n.centre) + earShift)),
-      depth: Math.max(-60, Math.min(0, dot(Y, n.depth)) * N.depthFactor * fade),
-      width: Math.min(widthMax, Math.max(widthMin, dot(Y, n.width))),
-    };
-  });
-}
-
 /*  The two ears at one direction for a slider setting: the summed level with its notches shifted by
     earShift (ERB), split into the ears by the level difference morphed with headSize; and the time
     difference scaled by headSize. Each notch is a peaking filter's dip, depth / (1 + u^2), u its distance

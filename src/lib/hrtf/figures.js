@@ -15,6 +15,7 @@ import {
 } from 'chart.js';
 import { at, ears, hzOf } from './model.js';
 import { solids } from './solid.js';
+import { heatmaps } from './heat.js';
 
 Chart.register(LineController, LineElement, PointElement, LinearScale, LogarithmicScale, Legend, Tooltip);
 
@@ -92,6 +93,7 @@ export async function figures(base) {
   const data = `${base}/research/personalisation`;
   const head = await json(`${data}/head.json`);
   solids(head);
+  heatmaps(base);
   const all = (name) => document.querySelectorAll(`figure[data-figure="${name}"]`);
 
   //  1 · the parts of a head at a direction: the summed level, its smooth part and its notches, and the difference
