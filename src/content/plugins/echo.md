@@ -38,7 +38,7 @@ parts:
     label: send
     title: which directions go into the delay
     text: "The send region picks the directions that feed the delay: all of them by default, or a spot, a band, sectors, dots or clouds."
-  - shot: window
+  - shot: skew
     crop: [0, 44, 618, 301]
     label: the scene
     title: where each echo comes from
