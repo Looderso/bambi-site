@@ -1,66 +1,76 @@
 ---
-/*  About: what bambi is, the people it thanks, its licence and its notices. The research and software it builds
-    on are credited on foundations, not here. */
+/*  About, as a page of screens: the people bambi thanks and who supports it; its licence and its notices.
+    What bambi is stays on the front page, and the work it builds on on foundations. */
 import Page from '../layouts/Page.astro';
+import { sonible } from '../lib/links';
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
-const thanks = ['Daniel Rudrich', 'Alexander Mülleder', 'Fabian Hummel', 'Jonathan Wögerbauer'];
+const thanks = ['Daniel Rudrich', 'Alexander Mülleder', 'Fabian Hummel', 'Jonathan Wögerbauer', 'DI Ollinger'];
+
 ---
 
-<Page title="about" description="What bambi is, who it thanks, and its licence.">
-  <h1>about</h1>
-  <p class="sub label">free and open source</p>
+<Page title="about" description="Who bambi thanks, who supports it, and its licence." wide>
+  <div class="about-page snap">
+    <section class="screen">
+      <h1>about</h1>
+      <p class="sub label">the people bambi thanks, who supports it, and its licence</p>
+      <h2 id="thanks" class="first">special thanks</h2>
+      <ul class="names">{thanks.map((name) => <li>{name}</li>)}</ul>
 
-  <section>
-    <h2>what bambi is</h2>
-    <div class="prose">
-      <p>
-        bambi is a suite of ambisonics plugins, and a host that runs them beside Ableton Live. The plugins share one
-        window, one modulation matrix and a link between instances, so what you learn in one works in the others.
-        They work in AmbiX (ACN ordering, SN3D normalisation), at any ambisonic order the DAW’s tracks can carry.
-      </p>
-    </div>
-  </section>
+      <h2 class="later">supported by</h2>
+      <a class="sonible" href={sonible} aria-label="sonible">
+        <img src={`${base}/credits/sonible.png`} alt="sonible" width="900" height="416" />
+      </a>
+    </section>
 
-  <section>
-    <h2>special thanks</h2>
-    <div class="prose">
-      <p>For inspiration and ideas, to</p>
-    </div>
-    <ul class="names">{thanks.map((name) => <li>{name}</li>)}</ul>
-    <p class="fine">The research and the software bambi builds on are credited on <a href={`${base}/research/foundations`}>foundations</a>.</p>
-  </section>
-
-  <section>
-    <h2>licence</h2>
-    <div class="prose">
-      <p>
+    <section class="screen" aria-labelledby="licence">
+      <h2 id="licence">licence</h2>
+      <p class="about">
         bambi’s own code is GPL-3.0-or-later; the plugin builds, which include JUCE, are distributed under AGPLv3.
         The source is on <a href="https://github.com/Looderso/bambi">GitHub</a>, and every release carries its
         complete source and the notices of the third-party components it contains.
       </p>
-    </div>
-  </section>
-
-  <p class="fine notices">VST is a registered trademark of Steinberg Media Technologies GmbH.</p>
+      <p class="fine notices">VST is a registered trademark of Steinberg Media Technologies GmbH.</p>
+    </section>
+  </div>
 </Page>
 
 <style>
-  section + section,
-  .notices {
-    margin-top: var(--section);
+  .screen {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap);
   }
-  /*  The names, one to a row on the rule, as the site lists what deserves weight. */
+  h2,
+  .sub,
+  .about,
+  .fine {
+    margin: 0;
+  }
+  .about {
+    max-width: var(--measure);
+  }
+  .first,
+  .later {
+    margin-top: var(--gap);
+  }
+  /*  The names, one to a line. */
   .names {
     list-style: none;
-    margin: 8px 0 16px;
+    margin: 0;
     padding: 0;
     max-width: var(--measure);
-    border-top: var(--stroke-rule) solid var(--rule-strong);
   }
   .names li {
-    padding: 12px 0;
-    font-size: var(--size-lede);
-    border-bottom: var(--stroke-rule) solid var(--rule);
+    padding: 4px 0;
+  }
+  /*  sonible's own logo, in its one-colour version, small. */
+  .sonible {
+    align-self: start;
+  }
+  .sonible img {
+    display: block;
+    width: 140px;
+    height: auto;
   }
 </style>

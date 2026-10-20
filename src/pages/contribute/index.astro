@@ -3,6 +3,7 @@
     repository, where an agent reads them; this page says what is there and links to it, so they are written once. */
 import Page from '../../layouts/Page.astro';
 import Cards from '../../components/Cards.astro';
+import { discord } from '../../lib/links';
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const repo = 'https://github.com/Looderso/bambi';
@@ -106,6 +107,12 @@ const rules = [
             A host or a system not listed there is worth an issue.
           </p>
         </div>
+        <div>
+          <h3>talk to us</h3>
+          <p>
+            Questions, ideas and what you made with bambi: the community is on <a href={discord}>Discord</a>.
+          </p>
+        </div>
       </div>
       <p class="fine">
         bambi's own code is GPL-3.0-or-later and its plugin builds are AGPLv3. A contribution is licensed the same way.
@@ -161,7 +168,7 @@ const rules = [
 
   .other {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: var(--gap);
   }
   .other h3 {
