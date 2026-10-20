@@ -25,7 +25,7 @@ The header lists them in this order.
 | **tools** | `/tools`, `/tools/<tool>` | small things around working with bambi that run in the browser | `src/pages/tools/`, `src/lib/<tool>/` |
 | **contribute** | `/contribute` | how to work on bambi, with or without a coding agent, and what every change keeps | `src/pages/contribute/index.astro` |
 | **download** | `/download` | the visitor's system with its download and steps, what the zip holds, every release, and the host | `src/pages/download.astro` |
-| **about** | `/about` | what bambi is, the people who inspired and helped it, its licence and its notices | `src/pages/about.astro` |
+| **about** | `/about` | what bambi is, the people it thanks and who supports it, its licence and its notices | `src/pages/about.astro` |
 
 Two pages are not in the header:
 
@@ -93,8 +93,8 @@ rather than boxes, no rounding, no shadows (except a faint one under a product's
 - **A list of pages to go to is cards** (`src/components/Cards.astro`): tiles for a few entries that each
   deserve weight, rows for a longer list read in order. A plugin's card wears its colour.
 - **Most pages are one of three kinds**, and a new page picks the one its reader needs; the rest — status,
-  about, a tool — are a single page of their own:
-  - **screens**, for a page that shows what something is: the front page, a product page, contribute, download. It holds
+  a tool — are a single page of their own:
+  - **screens**, for a page that shows what something is: the front page, a product page, contribute, download, about. It holds
     a `.snap`, and each part is a `.screen` (`src/styles/global.css`): it fills the screen under the header,
     and the page settles on it. A part's text stays short enough to fit one screen, down to a small phone.
     On the first screen a small arrow at the bottom (`src/components/NextScreen.astro`, on every page) says
@@ -123,6 +123,8 @@ rather than boxes, no rounding, no shadows (except a faint one under a product's
 - **A product's mark comes from the repository too.** `scripts/marks.sh` copies the plugins' marks and bambi's β,
   the host's, from `ui/assets/marks/` into `public/marks/`, named by their pages; a product page shows it
   beside the name.
+- **A supporter's logo is its own**, as its press page gives it, in its one-colour version (`public/credits/`),
+  small, on about; the footer names it in text. Addresses linked from more than one page live in `src/lib/links.ts`.
 - **Diagrams** (a tool's measurements, for example) are inline SVG in one shared frame per tool, drawn in
   `currentColor`.
 - **A research page's figures are the model itself**, evaluated in the page from the decoder's own files and drawn

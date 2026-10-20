@@ -6,6 +6,7 @@
 import { getCollection } from 'astro:content';
 import Page from '../layouts/Page.astro';
 import Cards from '../components/Cards.astro';
+import { discord } from '../lib/links';
 
 const repo = 'https://github.com/Looderso/bambi';
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
@@ -63,7 +64,8 @@ const tiles = plugins.map((p) => ({
       <p class="sub label">vst3 and clap · macos, windows and linux · free and open source</p>
       <p class="about">
         bambi is in open beta: it works, and it will still change between releases. Please{' '}
-        <a href={`${repo}/issues/new?template=report.yml`}>report what breaks</a>; where it has been tried is on{' '}
+        <a href={`${repo}/issues/new?template=report.yml`}>report what breaks</a> or ask on <a href={discord}>Discord</a>;
+        where it has been tried is on{' '}
         <a href={`${base}/status`}>status</a>.
       </p>
       <div class="choose">
