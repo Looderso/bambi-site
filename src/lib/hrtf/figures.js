@@ -76,7 +76,10 @@ function chart(canvas, datasets, { x = 'frequency', y = 'dB', log = true, min, m
 function sliders(figure, draw) {
   const inputs = [...figure.querySelectorAll('input[type=range]')];
   const read = () => Object.fromEntries(inputs.map((i) => [i.dataset.k, Number(i.value)]));
-  const show = () => inputs.forEach((i) => (i.nextElementSibling.textContent = `${i.value}${i.dataset.unit ?? ''}`));
+  //  a value is shown with its slider's own decimals, so 1 reads 1.0 beside 0.8 and nothing beside it moves
+  const decimals = (i) => (i.step.split('.')[1] ?? '').length;
+  const show = () =>
+    inputs.forEach((i) => (i.nextElementSibling.textContent = `${Number(i.value).toFixed(decimals(i))}${i.dataset.unit ?? ''}`));
   for (const i of inputs) i.addEventListener('input', () => { show(); draw(read()); });
   show();
   draw(read());
