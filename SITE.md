@@ -106,6 +106,10 @@ rather than boxes, no rounding, no shadows.
 - **Run the script again whenever the plugins' window changes**, and commit the pictures with the change.
 - **Diagrams** (a tool's measurements, for example) are inline SVG in one shared frame per tool, drawn in
   `currentColor`.
+- **A research page's figures are the model itself**, evaluated in the page from the decoder's own files and drawn
+  with Chart.js, loaded by that page alone. `scripts/research-data.sh` copies the files in; `scripts/hrtf-check.mjs`
+  holds the page's evaluation (`src/lib/hrtf/model.js`) to the decoder's fixtures. A figure's sliders are the
+  decoder's own, and its colours are named by meaning: ink for the model, grey for what it is compared with.
 
 ## Links
 

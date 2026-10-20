@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "astro": "^7.3.5",
+    "chart.js": "^4.4.7",
     "manifold-3d": "^3.5.4",
     "qrcode-generator": "^1.4.4",
     "three": "^0.186.1"
