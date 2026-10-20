@@ -42,7 +42,7 @@ const tiles = plugins.map((p) => {
 
     <section class="screen" aria-labelledby="plugins">
       <h2 id="plugins">plugins</h2>
-      <Cards items={tiles} />
+      <Cards items={tiles} pairs />
     </section>
 
     <section class="screen" aria-labelledby="host">
@@ -148,11 +148,7 @@ const tiles = plugins.map((p) => {
   }
 
   @media (max-width: 760px) {
-    /*  On a phone the plugins stand two to a row, and the host shows one of its pages. */
-    .home :global(.cards.tile) {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 10px;
-    }
+    /*  On a phone the host shows one of its pages. */
     .host {
       grid-template-columns: 1fr;
       gap: 16px;

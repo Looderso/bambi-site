@@ -168,7 +168,7 @@ p {
   padding-inline: var(--gutter);
 }
 
-/*  Prose written in Markdown: guidelines and a plugin's page. */
+/*  Prose: a plugin's page, a tutorial, a research page. */
 .prose {
   max-width: var(--measure);
 }
