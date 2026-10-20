@@ -28,7 +28,6 @@ const link = (t?: { id: string; title: string }) => t && { href: `${base}/tutori
 
 <Page title={tutorial.title} description={description ?? tutorial.summary} identity={identity}>
   <div class="tutorial">
-    <p class="label"><a href={`${base}/tutorial`}>tutorial</a></p>
     <h1>{tutorial.title}</h1>
     <p class="sub label">{sub}</p>
 
@@ -80,9 +79,6 @@ const link = (t?: { id: string; title: string }) => t && { href: `${base}/tutori
 </script>
 
 <style>
-  .sub {
-    margin: 12px 0 var(--section);
-  }
   .tutorial :global(section) {
     margin-top: var(--section);
     scroll-margin-top: 40px; /* below the contents row, as well as the header */

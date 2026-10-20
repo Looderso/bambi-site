@@ -46,6 +46,7 @@
   --page-wide: 1360px; /* a tool's page, where a picture works beside a form */
   --header: 44px; /* the header's and the footer's height; the header stays on screen */
   --corner: 104px; /* the square the beta band crosses, bottom right */
+  --top: 32px; /* where every page's first line starts under the header */
   --header-pad: 16px; /* the room a link to a heading keeps below the header */
   --size-card-title: 18px;
   --size-card-text: 14px;
@@ -78,6 +79,10 @@ html {
 
 /*  A page of screens: every `.screen` fills the screen under the header and the page settles on each, as if
     swiped. A page opts in by holding a `.snap`; its footer is the last stop, so the end can be reached. */
+/*  a page of screens starts flush under the header: each screen keeps the page's top room itself */
+.snap {
+  margin-top: calc(-1 * var(--top));
+}
 html:has(.snap) {
   scroll-snap-type: y mandatory;
 }
@@ -87,7 +92,7 @@ html:has(.snap) footer {
 .screen {
   --screen: calc(100svh - var(--header) - var(--stroke-identity));
   min-height: var(--screen);
-  padding-top: 32px;
+  padding-top: var(--top);
   scroll-snap-align: start;
   scroll-snap-stop: always; /* one flick moves one screen, never past it */
   scroll-margin-top: calc(var(--stroke-identity) - var(--header-pad)); /* flush under the header */
@@ -162,6 +167,11 @@ p {
 .fine {
   font-size: var(--size-small);
   color: var(--label);
+}
+
+/*  A page opens with its title and one grey line under it saying what the page is. */
+.sub {
+  margin: 12px 0 var(--section);
 }
 
 .lede {

@@ -10,7 +10,6 @@ const plugins = defineCollection({
     colour: z.string(), // the plugin's own, as the plugin draws it
     order: z.number(),
     //  the parts on its product page, in reading order; without them the page is its text alone
-    intro: z.string().optional(),
     parts: z
       .array(
         z.object({

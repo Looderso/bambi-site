@@ -37,9 +37,10 @@ const rules = [
   <div class="contribute snap">
     <section class="screen intro">
       <h1>contribute</h1>
-      <p class="lede">
-        Everybody is welcome, whether you write the code yourself or with a coding agent. The rules are plain files
-        in the repository, for you to read or for an agent to follow, so every change stays as neat as the rest.
+      <p class="sub label">everybody is welcome, whether you write the code yourself or with a coding agent</p>
+      <p class="about">
+        The rules are plain files in the repository, for you to read or for an agent to follow, so every change stays
+        as neat as the rest.
       </p>
       <div class="prose">
         <pre><code>git clone --recurse-submodules {repo}</code></pre>
@@ -114,9 +115,6 @@ const rules = [
 </Page>
 
 <style>
-  .contribute {
-    margin-top: calc(-1 * var(--section));
-  }
   .screen {
     display: flex;
     flex-direction: column;
@@ -125,7 +123,7 @@ const rules = [
   h2 {
     margin: 0;
   }
-  .lede,
+  .sub,
   .about,
   .fine {
     margin: 0; /* the screen's gap spaces them */

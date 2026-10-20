@@ -60,6 +60,7 @@ const tiles = plugins.map((p) => ({
   <div class="download snap">
     <section class="screen">
       <h1>download</h1>
+      <p class="sub label">vst3 and clap · macos, windows and linux · free and open source</p>
       <p class="about">
         bambi is in open beta: it works, and it will still change between releases. Please{' '}
         <a href={`${repo}/issues/new?template=report.yml`}>report what breaks</a>; where it has been tried is on{' '}
@@ -214,9 +215,6 @@ const tiles = plugins.map((p) => ({
 </script>
 
 <style>
-  .download {
-    margin-top: calc(-1 * var(--section));
-  }
   .screen {
     display: flex;
     flex-direction: column;
@@ -224,6 +222,9 @@ const tiles = plugins.map((p) => ({
   }
   h2 {
     margin: 0;
+  }
+  .sub {
+    margin: 0; /* the screen's gap spaces it */
   }
   .about {
     max-width: 52ch;
