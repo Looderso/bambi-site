@@ -33,11 +33,12 @@ const F = {
 };
 ---
 
-<Page title="a head made, not chosen" description="Personal binaural from the average of measured heads and two sliders.">
+<Page title="a head made, not chosen" description="Personal binaural from the average of measured heads and two sliders." wide>
   <p class="label"><a href={`${base}/research`}>research</a></p>
   <h1>a head made, not chosen</h1>
   <p class="sub label">personal binaural from the average of measured heads, an ear slider and a head slider</p>
 
+  <div class="layout">
   <div class="prose paper">
     <section id="abstract">
       <h2>abstract</h2>
@@ -80,8 +81,13 @@ const F = {
       </p>
       <Tex tex={F.cll} display n={2} />
       <Tex tex={F.ild} display n={3} />
-      <p>Together the first two give back the ears, so a head can be built from its cues:</p>
+      <p>Together the first two give back the ears, so a head can be built from its cues (figure 1):</p>
       <Tex tex={F.ears} display n={4} />
+      <figure class="chart" data-n="1" data-figure="parts">
+        <div class="controls"><label><span class="label">azimuth</span><input type="range" data-k="az" min="-180" max="180" step="5" value="30" data-unit="°" /><output></output></label><label><span class="label">elevation</span><input type="range" data-k="el" min="-45" max="90" step="5" value="0" data-unit="°" /><output></output></label></div>
+        <div class="plot"><canvas aria-label="figure 1: The parts of nobody’s head at one direction: the summed level of the two ears, its smooth pattern with the timbre, the notches cut into it, and the level difference between the ears. Move the direction."></canvas></div>
+        <figcaption><span class="label">figure 1</span> The parts of nobody’s head at one direction: the summed level of the two ears, its smooth pattern with the timbre, the notches cut into it, and the level difference between the ears. Move the direction.</figcaption>
+      </figure>
       <p>
         Each ear’s arrival time τ is where its response best matches its own minimum-phase version
         H<sub>min</sub> (made as in <a href="#eq-19">(19)</a>), and the time difference is the difference between the
@@ -157,19 +163,23 @@ const F = {
         ordered as ACN, the convention ambisonics uses,
       </p>
       <Tex tex={F.sh} display n={10} />
-      <p>so that the summed level of a head is its timbre T, a smooth pattern of order 4, and its notches,</p>
+      <p>so that the summed level of a head is its timbre T, a smooth pattern of order 4, and its notches — figure 2 shows the three on a measured head —</p>
       <Tex tex={F.parts} display n={11} />
+      <figure class="chart" data-n="2" data-heat="parts">
+        <div class="quad">
+          <div><span class="label">measured</span><canvas data-field="0" aria-label="the measured summed level"></canvas></div>
+          <div><span class="label">smooth pattern</span><canvas data-field="1" aria-label="the smooth pattern"></canvas></div>
+          <div><span class="label">notches</span><canvas data-field="2" aria-label="the notches rebuilt from the surfaces"></canvas></div>
+          <div><span class="label">smooth pattern and notches</span><canvas data-field="3" aria-label="the smooth pattern and the notches together"></canvas></div>
+        </div>
+        <figcaption><span class="label">figure 2</span> The same head in its parts: the measured level, the smooth pattern of order 4, the notches rebuilt from the surfaces’ few numbers, and the two together. Measured against the head, blurred to one ERB, they miss by <span data-heat-cost></span>.</figcaption>
+      </figure>
       <p>and the two differences are patterns of their own:</p>
       <Tex tex={F.cues} display n={12} />
       <p>
         A direction is evaluated rather than looked up, and no measured grid is shipped. Along frequency, the
         coefficients are sampled every tenth of an ERB.
       </p>
-      <figure class="chart" data-figure="parts">
-        <div class="controls"><label><span class="label">azimuth</span><input type="range" data-k="az" min="-180" max="180" step="5" value="30" data-unit="°" /><output></output></label><label><span class="label">elevation</span><input type="range" data-k="el" min="-45" max="90" step="5" value="0" data-unit="°" /><output></output></label></div>
-        <div class="plot"><canvas aria-label="figure 1: The parts of nobody’s head at one direction: the summed level of the two ears, its smooth pattern with the timbre, the notches cut into it, and the level difference between the ears. Move the direction."></canvas></div>
-        <figcaption><span class="label">figure 1</span> The parts of nobody’s head at one direction: the summed level of the two ears, its smooth pattern with the timbre, the notches cut into it, and the level difference between the ears. Move the direction.</figcaption>
-      </figure>
     </section>
 
     <section id="nobodys-head">
@@ -179,17 +189,22 @@ const F = {
         heads, each database’s mean taken first and then the mean of those, for every part p:
       </p>
       <Tex tex={F.nobody} display n={13} />
-      <p>It is no one’s, and closer to anyone’s than the dummy is.</p>
+      <p>It is no one’s, and closer to anyone’s than the dummy is (figure 4).</p>
       <p>
         Its <strong>timbre is the KU100’s</strong>. The dummy’s is flat within 3.4 dB from 0.3 to 16 kHz; the
         population’s spans 12.9 dB, up at 4 kHz and down at 16 kHz — the ear’s own resonance, which every measured
         head carries and the dummy’s equalisation takes out. In the perceptual study this model starts from [1], an
         individualised head won on externalisation and lost on timbre; keeping the dummy’s timbre keeps the colour a mix is judged on, and personalises only the
-        cues for direction.
+        cues for direction (figure 3).
       </p>
-      <figure class="chart" data-figure="timbre">
-        <div class="plot"><canvas aria-label="figure 2: The timbre — the summed level averaged over every direction — of the KU100, which the model keeps, and of the measured heads, which it does not."></canvas></div>
-        <figcaption><span class="label">figure 2</span> The timbre — the summed level averaged over every direction — of the KU100, which the model keeps, and of the measured heads, which it does not.</figcaption>
+      <figure class="chart" data-n="3" data-figure="timbre">
+        <div class="plot"><canvas aria-label="figure 3: The timbre — the summed level averaged over every direction — of the KU100, which the model keeps, and of the measured heads, which it does not."></canvas></div>
+        <figcaption><span class="label">figure 3</span> The timbre — the summed level averaged over every direction — of the KU100, which the model keeps, and of the measured heads, which it does not.</figcaption>
+      </figure>
+      <figure class="chart" data-n="4" data-figure="ku100">
+        <div class="controls"><label><span class="label">azimuth</span><input type="range" data-k="az" min="-180" max="180" step="5" value="135" data-unit="°" /><output></output></label><label><span class="label">elevation</span><input type="range" data-k="el" min="-45" max="90" step="5" value="30" data-unit="°" /><output></output></label></div>
+        <div class="plot"><canvas aria-label="figure 4: Nobody’s head beside the KU100, both through the decoder’s chain, at one direction. Move the direction."></canvas></div>
+        <figcaption><span class="label">figure 4</span> Nobody’s head beside the KU100, both through the decoder’s chain, at one direction. Move the direction.</figcaption>
       </figure>
     </section>
 
@@ -199,8 +214,14 @@ const F = {
         The notches are a <strong>template</strong> of three notch surfaces over the sphere — centre, depth, width
         and presence, each as spherical harmonics of order 6 — learned from half of the heads and scored on the
         other half. A larger ear cuts its notches lower, a smaller one higher, so the slider shifts all three
-        centres together along frequency, by −2 to +2 ERB. A measured head’s own shift spreads by 0.58 ERB.
+        centres together along frequency, by −2 to +2 ERB. A measured head’s own shift spreads by 0.58 ERB. Around the median plane the notches are valleys that
+        climb in frequency as the source rises (figure 5).
       </p>
+      <figure class="chart" data-n="5" data-solid="surface">
+        <div class="controls"><label><span class="label">ears</span><input type="range" data-k="shift" min="-2" max="2" step="0.1" value="0" data-unit=" ERB" /><output></output></label><span class="label hint">drag to turn</span></div>
+        <div class="plot solid"><canvas aria-label="figure 5: The summed level of nobody’s head around the median plane, as a surface: across, from below in front, over the top, to below behind; along, the frequency; up, the level. The notches are the valleys, climbing in frequency as the source rises. Turn it, and move the ears."></canvas></div>
+        <figcaption><span class="label">figure 5</span> The summed level of nobody’s head around the median plane, as a surface: across, from below in front, over the top, to below behind; along, the frequency; up, the level. The notches are the valleys, climbing in frequency as the source rises. Turn it, and move the ears.</figcaption>
+      </figure>
       <p>
         A notch fades in with its presence, so nothing switches as a source moves; in front, the template plays its
         notches at about 7.0, 9.2 and 13.7 kHz. Each notch i is a peaking filter’s dip with depth a<sub>i</sub>,
@@ -215,8 +236,13 @@ const F = {
       <p>
         A shifted centre stays within 4 to 18 kHz, a width within 0.1 to 1.5 ERB, and a depth above −60 dB. The
         factor γ plays the notches at 1.5 times the depth the heads measure: deep enough to be heard as height,
-        without the darkening a deeper template brings.
+        without the darkening a deeper template brings. Figure 6 moves the ears.
       </p>
+      <figure class="chart" data-n="6" data-figure="ears">
+        <div class="controls"><label><span class="label">ears</span><input type="range" data-k="shift" min="-2" max="2" step="0.1" value="0.8" data-unit=" ERB" /><output></output></label><label><span class="label">elevation</span><input type="range" data-k="el" min="-45" max="90" step="5" value="0" data-unit="°" /><output></output></label></div>
+        <div class="plot"><canvas aria-label="figure 6: The ear slider at work: the summed level in front, at an elevation, as learned and with the notches shifted. Move the ears, and the height."></canvas></div>
+        <figcaption><span class="label">figure 6</span> The ear slider at work: the summed level in front, at an elevation, as learned and with the notches shifted. Move the ears, and the height.</figcaption>
+      </figure>
       <p>
         The template is learned by alignment. Each head’s dips k, found on its measured summed level, are given to the
         template notch they lie nearest, and the head’s own shift is the median of how far they sit, a shallow dip
@@ -225,31 +251,12 @@ const F = {
       <Tex tex={F.shift} display n={16} />
       <p>
         With the shifts taken out, each notch’s centre and width are fitted to the dips given to it, its depth to
-        those dips alone, and its presence to every direction; four turns of this settle the template. The template fits SONICOM’s heads, which
+        those dips alone, and its presence to every direction; four turns of this settle the template. Figure 7 shows the notches found on one measured head. The template fits SONICOM’s heads, which
         it never saw, as well as its own held-out ones.
       </p>
-      <figure class="chart" data-heat="found">
-        <div class="plot heat"><canvas aria-label="figure 3: notches found on a measured head"></canvas></div>
-        <figcaption><span class="label">figure 3</span> The notches found on one measured head, <span data-heat-head></span>, along the median plane: its summed level less its average, ink where it dips and orange where it rises, and each notch surface the fit found drawn over it as a numbered line, thicker where deeper.</figcaption>
-      </figure>
-      <figure class="chart" data-heat="parts">
-        <div class="quad">
-          <div><span class="label">measured</span><canvas data-field="0" aria-label="the measured summed level"></canvas></div>
-          <div><span class="label">smooth pattern</span><canvas data-field="1" aria-label="the smooth pattern"></canvas></div>
-          <div><span class="label">notches</span><canvas data-field="2" aria-label="the notches rebuilt from the surfaces"></canvas></div>
-          <div><span class="label">smooth pattern and notches</span><canvas data-field="3" aria-label="the smooth pattern and the notches together"></canvas></div>
-        </div>
-        <figcaption><span class="label">figure 4</span> The same head in its parts: the measured level, the smooth pattern of order 4, the notches rebuilt from the surfaces’ few numbers, and the two together. Measured against the head, blurred to one ERB, they miss by <span data-heat-cost></span>.</figcaption>
-      </figure>
-      <figure class="chart" data-solid="surface">
-        <div class="controls"><label><span class="label">ears</span><input type="range" data-k="shift" min="-2" max="2" step="0.1" value="0" data-unit=" ERB" /><output></output></label><span class="label hint">drag to turn</span></div>
-        <div class="plot solid"><canvas aria-label="figure 5: The summed level of nobody’s head around the median plane, as a surface: across, from below in front, over the top, to below behind; along, the frequency; up, the level. The notches are the valleys, climbing in frequency as the source rises. Turn it, and move the ears."></canvas></div>
-        <figcaption><span class="label">figure 5</span> The summed level of nobody’s head around the median plane, as a surface: across, from below in front, over the top, to below behind; along, the frequency; up, the level. The notches are the valleys, climbing in frequency as the source rises. Turn it, and move the ears.</figcaption>
-      </figure>
-            <figure class="chart" data-figure="ears">
-        <div class="controls"><label><span class="label">ears</span><input type="range" data-k="shift" min="-2" max="2" step="0.1" value="0.8" data-unit=" ERB" /><output></output></label><label><span class="label">elevation</span><input type="range" data-k="el" min="-45" max="90" step="5" value="0" data-unit="°" /><output></output></label></div>
-        <div class="plot"><canvas aria-label="figure 6: The ear slider at work: the summed level in front, at an elevation, as learned and with the notches shifted. Move the ears, and the height."></canvas></div>
-        <figcaption><span class="label">figure 6</span> The ear slider at work: the summed level in front, at an elevation, as learned and with the notches shifted. Move the ears, and the height.</figcaption>
+      <figure class="chart" data-n="7" data-heat="found">
+        <div class="plot heat"><canvas aria-label="figure 7: notches found on a measured head"></canvas></div>
+        <figcaption><span class="label">figure 7</span> The notches found on one measured head, <span data-heat-head></span>, along the median plane: its summed level less its average, ink where it dips and orange where it rises, and each notch surface the fit found drawn over it as a numbered line, thicker where deeper.</figcaption>
       </figure>
     </section>
 
@@ -269,12 +276,12 @@ const F = {
       <Tex tex={F.learn} display n={18} />
       <p>
         Each slider moves its own cues. At 60° to the left, the ears ±10 % move the level difference by 1.6 dB at
-        most, while the head ±10 % moves the time difference by ±70 µs and the summed level by 0.05 dB at most.
+        most, while the head ±10 % moves the time difference by ±70 µs and the summed level by 0.05 dB at most. Figure 8 moves the head.
       </p>
-      <figure class="chart" data-figure="head">
+      <figure class="chart" data-n="8" data-figure="head">
         <div class="controls"><label><span class="label">head</span><input type="range" data-k="size" min="0.75" max="1.3" step="0.01" value="1.15" data-unit=" ×" /><output></output></label></div>
-        <div class="plot"><canvas aria-label="figure 7: The head slider at work: the time difference between the ears around the horizon, for the population’s head and a head of the slider’s size."></canvas></div>
-        <figcaption><span class="label">figure 7</span> The head slider at work: the time difference between the ears around the horizon, for the population’s head and a head of the slider’s size.</figcaption>
+        <div class="plot"><canvas aria-label="figure 8: The head slider at work: the time difference between the ears around the horizon, for the population’s head and a head of the slider’s size."></canvas></div>
+        <figcaption><span class="label">figure 8</span> The head slider at work: the time difference between the ears around the horizon, for the population’s head and a head of the slider’s size.</figcaption>
       </figure>
     </section>
 
@@ -295,11 +302,6 @@ const F = {
         A slider move rebuilds the filters off the audio thread: 240 directions at 513 frequencies take 1.28 ms on
         one core. The model ships as one file of about 0.36 MB.
       </p>
-      <figure class="chart" data-figure="ku100">
-        <div class="controls"><label><span class="label">azimuth</span><input type="range" data-k="az" min="-180" max="180" step="5" value="135" data-unit="°" /><output></output></label><label><span class="label">elevation</span><input type="range" data-k="el" min="-45" max="90" step="5" value="30" data-unit="°" /><output></output></label></div>
-        <div class="plot"><canvas aria-label="figure 8: Nobody’s head beside the KU100, both through the decoder’s chain, at one direction. Move the direction."></canvas></div>
-        <figcaption><span class="label">figure 8</span> Nobody’s head beside the KU100, both through the decoder’s chain, at one direction. Move the direction.</figcaption>
-      </figure>
     </section>
 
     <section id="limits">
@@ -336,16 +338,54 @@ const F = {
       <p class="fine">Everything the decoder builds on is credited on <a href={foundations}>foundations</a>.</p>
     </section>
   </div>
+  <aside class="held" aria-label="figures"></aside>
+  </div>
 </Page>
 
 <script>
   import { figures } from '../../lib/hrtf/figures.js';
+  import { held } from '../../lib/hrtf/held.js';
+  held(document.querySelector('.paper'), document.querySelector('.held'));
   figures(import.meta.env.BASE_URL.replace(/\/$/, ''));
 </script>
 
 <style>
   .sub {
     margin: 12px 0 var(--section);
+  }
+  /*  On a wide screen the text on the left and the figure it is reading on the right, held on screen; on a narrow one,
+      the figures inline. */
+  .layout {
+    display: block;
+  }
+  .held {
+    display: none;
+  }
+  @media (min-width: 1100px) {
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, var(--measure)) minmax(0, 1fr);
+      gap: 48px;
+      align-items: start;
+    }
+    .held {
+      display: block;
+      position: sticky;
+      top: calc(var(--header) + var(--stroke-identity) + 24px);
+      max-height: calc(100svh - var(--header) - 48px);
+      overflow-y: auto;
+    }
+    .held :global(figure) {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      margin: 0;
+      visibility: hidden;
+    }
+    .held :global(figure.shown) {
+      visibility: visible;
+    }
   }
   .paper section + section {
     margin-top: var(--section);
