@@ -26,14 +26,4 @@ const plugins = defineCollection({
   }),
 });
 
-const guidelines = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './src/content/guidelines' }),
-  schema: z.object({
-    title: z.string(),
-    summary: z.string(),
-    group: z.enum(['working', 'design']), // how to work on bambi, or how it is designed
-    order: z.number(),
-  }),
-});
-
-export const collections = { plugins, guidelines };
+export const collections = { plugins };

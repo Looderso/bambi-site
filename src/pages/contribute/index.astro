@@ -1,52 +1,215 @@
 ---
-import { getCollection } from 'astro:content';
+/*  Contribute: what a contributor can expect, on one page of screens. The rules themselves live in the bambi
+    repository, where an agent reads them; this page says what is there and links to it, so they are written once. */
 import Page from '../../layouts/Page.astro';
 import Cards from '../../components/Cards.astro';
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
-const guidelines = (await getCollection('guidelines')).sort((a, b) => a.data.order - b.data.order);
-const groups = [
-  { id: 'working', title: 'working on bambi' },
-  { id: 'design', title: 'how bambi is designed' },
-].map((group) => ({
-  ...group,
-  items: guidelines
-    .filter((g) => g.data.group === group.id)
-    .map((g) => ({ href: `${base}/contribute/${g.id}`, title: g.data.title, text: g.data.summary })),
-}));
+const repo = 'https://github.com/Looderso/bambi';
+const file = (path: string) => `${repo}/blob/main/${path}`;
+const tree = (path: string) => `${repo}/tree/main/${path}`;
+
+const context = [
+  { href: file('AGENTS.md'), kind: 'AGENTS.md', title: 'the rules', text: 'How to build, where things live and the rules every change keeps. Each module has its own for what holds there.' },
+  { href: tree('docs'), kind: 'docs/', title: 'what is true, and why', text: 'A page per concept, and the decisions behind them, with the routes already tried and rejected.' },
+  { href: tree('.claude/skills'), kind: 'skills', title: 'the procedures', text: 'Step by step for the recurring tasks: adding a parameter or a plugin, a benchmark, a pull request.' },
+  { href: tree('.claude/agents'), kind: 'reviewers', title: 'the checks', text: 'Reviewers to run over finished work: architecture, the audio thread, cost and the look.' },
+];
+
+const steps = [
+  { title: 'an issue', text: 'Say what is wrong or missing. Anything a musician would notice is agreed there first.' },
+  { title: 'a branch', text: 'One branch for the issue, named after it, with nothing else in it.' },
+  { title: 'tools/verify.sh', text: 'Tests, renders, style and layers in one command. It passes, or the change is not ready.' },
+  { title: 'a pull request', text: 'What is now true, what it did to the sound, a picture if the window changed.' },
+];
+
+const rules = [
+  ['Design each thing once.', 'A shared component grows an option; a copy of it is a defect.'],
+  ['The music lives in core/.', 'It has no JUCE and is tested in seconds, without a plugin or a host.'],
+  ['The audio thread only computes.', 'It never allocates, frees or locks, and a bounce equals what was heard.'],
+  ['Measure, do not assert.', 'A cost is benchmarked in a release build, not guessed.'],
+  ['Tests catch a mistake.', 'Each names the mistake it catches, and making that mistake makes it fail.'],
+  ['The look comes from one file.', 'Colours, sizes and strokes live in the theme and nowhere else.'],
+];
 ---
 
-<Page title="contribute" description="How to build bambi, the rules its code is written by, and how it is designed.">
-  <h1>contribute</h1>
-  <p class="sub label">how to build bambi, the rules its code is written by, and the guidelines a change is held to</p>
+<Page title="contribute" description="How to work on bambi, with or without a coding agent, and what every change is held to." wide>
+  <div class="contribute snap">
+    <section class="screen intro">
+      <h1>contribute</h1>
+      <p class="lede">
+        Everybody is welcome, whether you write the code yourself or with a coding agent. The rules are plain files
+        in the repository, for you to read or for an agent to follow, so every change stays as neat as the rest.
+      </p>
+      <div class="prose">
+        <pre><code>git clone --recurse-submodules {repo}</code></pre>
+      </div>
+      <p class="fine">What you need on each system is in <a href={file('BUILDING.md')}>BUILDING.md</a>.</p>
+    </section>
 
-  <div class="prose intro">
-    <p>
-      bambi is free and open source, and <a href="https://github.com/Looderso/bambi">its code is on GitHub</a>.
-      The first list is how to work on it: how to build and check a change, and the rules the code is written by.
-      The second is how bambi is designed, one concept to a page, so a change fits what is already there. Each
-      page leads to the next, so either list can be read in order.
-    </p>
+    <section class="screen" aria-labelledby="change">
+      <h2 id="change">how a change goes</h2>
+      <ol class="steps">
+        {
+          steps.map((step, i) => (
+            <li>
+              <span class="label">{i + 1}</span>
+              <span class="title">{step.title}</span>
+              <span class="text">{step.text}</span>
+            </li>
+          ))
+        }
+      </ol>
+      <p class="fine">
+        Pull requests merge into main with a merge commit. More in <a href={file('CONTRIBUTING.md')}>CONTRIBUTING.md</a>.
+      </p>
+    </section>
+
+    <section class="screen" aria-labelledby="agent">
+      <h2 id="agent">working with an agent</h2>
+      <p class="about">
+        Open the repository in your agent and give it the issue. It reads the rules on its own, follows the
+        procedure for the task, and runs the reviewer for what it touched. The pull request says an agent helped.
+      </p>
+      <Cards items={context} pairs />
+    </section>
+
+    <section class="screen" aria-labelledby="rules">
+      <h2 id="rules">what every change keeps</h2>
+      <dl class="rules">
+        {
+          rules.map(([rule, why]) => (
+            <div>
+              <dt>{rule}</dt>
+              <dd>{why}</dd>
+            </div>
+          ))
+        }
+      </dl>
+      <p class="fine">The rest, and why, is in <a href={file('AGENTS.md')}>AGENTS.md</a>.</p>
+    </section>
+
+    <section class="screen" aria-labelledby="other">
+      <h2 id="other">other ways to help</h2>
+      <div class="other">
+        <div>
+          <h3>report a problem</h3>
+          <p>
+            Open an <a href={`${repo}/issues`}>issue</a> with the plugin, its release and format, your system and
+            host, and what you did, expected and heard. A short session or audio file helps most.
+          </p>
+        </div>
+        <div>
+          <h3>try it in your host</h3>
+          <p>
+            Where bambi has been tried, and what does not work yet, is on <a href={`${base}/status`}>status</a>.
+            A host or a system not listed there is worth an issue.
+          </p>
+        </div>
+      </div>
+      <p class="fine">
+        bambi's own code is GPL-3.0-or-later and its plugin builds are AGPLv3. A contribution is licensed the same way.
+      </p>
+    </section>
   </div>
-
-  {
-    groups.map((group) => (
-      <section>
-        <h2>{group.title}</h2>
-        <Cards items={group.items} style="row" />
-      </section>
-    ))
-  }
 </Page>
 
 <style>
-  .sub {
-    margin: 12px 0 var(--section);
+  .contribute {
+    margin-top: calc(-1 * var(--section));
   }
-  .intro {
-    margin-bottom: var(--section);
+  .screen {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap);
   }
-  section {
-    margin-bottom: var(--section);
+  h2 {
+    margin: 0;
+  }
+  .lede,
+  .about,
+  .fine {
+    margin: 0; /* the screen's gap spaces them */
+  }
+  .about {
+    max-width: 38ch;
+  }
+  .prose {
+    max-width: 100%; /* the clone line is as wide as it is, never cut under its copy button */
+    align-self: start;
+  }
+  .prose pre {
+    margin: 0;
+  }
+
+  /*  The steps of a change: in a row, each under a rule, numbered in reading order. */
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--gap);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .steps li {
+    display: grid;
+    align-content: start;
+    gap: 6px;
+    padding-top: 12px;
+    border-top: var(--stroke-identity) solid var(--rule-strong);
+  }
+  .steps .title {
+    font-size: var(--size-card-title);
+  }
+  .steps .text {
+    color: var(--label);
+    font-size: var(--size-card-text);
+  }
+
+  /*  The rules: the rule in ink, its one line in grey, under a hairline each. */
+  .rules {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 var(--gap);
+    margin: 0;
+  }
+  .rules div {
+    padding: 12px 0;
+    border-top: var(--stroke-rule) solid var(--rule);
+  }
+  .rules dt {
+    font-size: var(--size-card-title);
+  }
+  .rules dd {
+    margin: 4px 0 0;
+    color: var(--label);
+    font-size: var(--size-card-text);
+  }
+
+  .other {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--gap);
+  }
+  .other h3 {
+    margin-bottom: 8px;
+  }
+  .other p {
+    margin: 0;
+    max-width: 38ch;
+  }
+
+  @media (max-width: 760px) {
+    .steps {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+    .rules,
+    .other {
+      grid-template-columns: 1fr;
+    }
+    .rules div {
+      padding: 8px 0;
+    }
   }
 </style>

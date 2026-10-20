@@ -1,0 +1,57 @@
+---
+/*  On a page of screens, a small arrow at the bottom says there is more below. It shows on the first screen,
+    breathing gently, until the page first moves, and then is gone: once a visitor has moved, they know. A click
+    goes to the next screen. Every page carries it, and it wakes only where the page holds a `.snap`. */
+---
+
+<button class="next-screen" type="button" aria-label="next" hidden>↓</button>
+
+<script>
+  const button = document.querySelector<HTMLButtonElement>('.next-screen');
+  const screens = [...document.querySelectorAll<HTMLElement>('.snap .screen')];
+  if (button && screens.length > 1 && scrollY < 8) {
+    button.hidden = false;
+    addEventListener('scroll', () => (button.hidden = true), { once: true, passive: true });
+    button.addEventListener('click', () => screens[1].scrollIntoView({ behavior: 'smooth' }));
+  }
+</script>
+
+<style>
+  .next-screen {
+    position: fixed;
+    left: 50%;
+    bottom: 14px;
+    transform: translateX(-50%);
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: var(--stroke-rule) solid var(--rule-strong);
+    background: var(--ground);
+    color: var(--text);
+    font: inherit;
+    font-size: var(--size-card-title);
+    cursor: pointer;
+    animation: breathe 1.6s cubic-bezier(0.37, 0, 0.63, 1) infinite alternate; /* a sine's ease, there and back */
+  }
+  /*  A swell in size with a small drop towards what is below, never a change in opacity; still for a visitor
+      who asks for less motion. */
+  @keyframes breathe {
+    from {
+      transform: translateX(-50%) translateY(0) scale(1);
+    }
+    to {
+      transform: translateX(-50%) translateY(5px) scale(1.15);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .next-screen {
+      animation: none;
+    }
+  }
+  .next-screen:hover {
+    background: var(--panel); /* as a card is under the pointer */
+  }
+  .next-screen[hidden] {
+    display: none;
+  }
+</style>

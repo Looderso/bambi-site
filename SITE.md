@@ -23,7 +23,7 @@ The header lists them in this order.
 | **tutorial** | `/tutorial`, `/tutorial/<topic>` | how to use bambi, step by step, with pictures | `src/pages/tutorial/<id>.astro`, listed in `src/lib/tutorials.ts` |
 | **research** | `/research`, `/research/<topic>` | what bambi found out, written up with its figures; and the work it builds on, credited (`/research/foundations`) | `src/pages/research/` |
 | **tools** | `/tools`, `/tools/<tool>` | small things around working with bambi that run in the browser | `src/pages/tools/`, `src/lib/<tool>/` |
-| **contribute** | `/contribute`, `/contribute/<guideline>` | how to work on bambi, and how it is designed | `src/content/guidelines/*.md` |
+| **contribute** | `/contribute` | how to work on bambi, with or without a coding agent, and what every change keeps | `src/pages/contribute/index.astro` |
 | **download** | `/download` | the newest release, the systems as tabs with the visitor's chosen, and how to install | `src/pages/download.astro` |
 | **about** | `/about` | what bambi is, the people who inspired and helped it, its licence and its notices | `src/pages/about.astro` |
 
@@ -50,8 +50,10 @@ Two pages are not in the header:
   `/research/foundations`, a person's help on about.
 - **A tool** does something: it runs in the visitor's browser and produces something, such as a printable
   file. A tool's code lives in `src/lib/<tool>/`, its page in `src/pages/tools/`, and it is listed on `/tools`.
-- **A guideline** is a rule a change is held to, or how part of bambi is designed, in two groups: *working on
-  bambi* and *how bambi is designed*. It states rules, not the findings that led to them.
+- **contribute** says on one page what a contributor can expect: how a change goes, what the repository hands
+  a coding agent, the few rules every change keeps, and other ways to help. The rules themselves are the bambi
+  repository's own files (`AGENTS.md`, `docs/`, the skills and reviewers); the page links to them and never
+  copies them, so they are written once.
 - **status** holds everything that changes with each release: what has been tried where, what does not work
   yet, and what is planned once it is decided. Other pages state how bambi is, and leave what is not done yet
   to status. A host joins its table only once bambi has been tried in it.
@@ -70,7 +72,7 @@ Two pages are not in the header:
 - **Colours are named by what they mean**: the plugin's own colour, orange for what is live or what came in,
   blue for what a plugin adds. Never by hue alone, since the palette may change.
 - **Write for the reader of that section**: musicians on plugins, tutorial, tools and download; people who
-  write code on contribute. Say each thing once; link to the page that owns it instead of repeating it.
+  write code, with or without an agent, on contribute. Say each thing once; link to the page that owns it instead of repeating it.
 
 ## Rules for the look
 
@@ -85,10 +87,17 @@ rather than boxes, no rounding, no shadows.
   then a grey line or a lede saying what the page is.
 - **A list of pages to go to is cards** (`src/components/Cards.astro`): tiles for a few entries that each
   deserve weight, rows for a longer list read in order. A plugin's card wears its colour.
-- **A page of screens** — a product page, the front page — holds a `.snap`, and each part is a `.screen`
-  (`src/styles/global.css`): it fills the screen under the header, and the page settles on it. A part's text
-  stays short enough to fit one screen, down to a small phone.
-- **A long page keeps its contents under the header**, as a second row of tabs that marks the part being read.
+- **Most pages are one of three kinds**, and a new page picks the one its reader needs; the rest — download,
+  status, about, a tool — are a single page of their own:
+  - **screens**, for a page that shows what something is: the front page, a product page, contribute. It holds
+    a `.snap`, and each part is a `.screen` (`src/styles/global.css`): it fills the screen under the header,
+    and the page settles on it. A part's text stays short enough to fit one screen, down to a small phone.
+    On the first screen a small arrow at the bottom (`src/components/NextScreen.astro`, on every page) says
+    there is another screen below, until the page first moves.
+  - **a long page**, for one read top to bottom: a tutorial, a research page. It keeps its contents under the
+    header, as a second row of tabs that marks the part being read; a research page holds the figure being
+    read beside the text on a wide screen.
+  - **cards**, for a list of pages to go to: the plugins, the tutorials, research, tools.
 - **Code is ink on the panel colour**, with no highlighting, and every block in prose has a copy button.
 - **Every page uses `src/layouts/Page.astro`**: `title` and `description` for the browser, `identity` for a
   plugin's own colour on its rules, `wide` for a page that needs the wider measure: a tool's, a product page, the front page.
@@ -136,9 +145,7 @@ rather than boxes, no rounding, no shadows.
   introduction, the whole window, a contents row, then a section per part. Until that page exists,
   `[id].astro` draws the tutorial from its entry, with its `outline`. If it needs pictures, add their shots and crops
   to `scripts/pictures.sh`.
-- **A page read in order** — a guideline, a tutorial — ends with `src/components/PrevNext.astro`.
-- **A guideline:** a Markdown file in `src/content/guidelines/` with its `title`, `summary`, `group` and
-  `order`. It appears on `/contribute` in its group.
+- **A page read in order** — a tutorial — ends with `src/components/PrevNext.astro`.
 - **A tool:** its code in `src/lib/<tool>/`, its page in `src/pages/tools/`, and an entry in the list in
   `src/pages/tools/index.astro`. Heavy libraries are loaded only by the tool's page.
 - **A device for the tracker clip:** one entry in `presets` in `src/lib/clip/grips.ts`, with its measured
@@ -153,7 +160,7 @@ An issue takes the label of the part it is about:
 | `plugins` | the plugin pages and the host’s page |
 | `tutorial` | the tutorials and their pictures |
 | `tools` | the tools page and every tool |
-| `contribute` | the guidelines |
+| `contribute` | the contribute page |
 | `status` | the status page |
 | `site` | everything else: the front page, download, about, research, the look, the build |
 
