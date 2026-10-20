@@ -10,6 +10,7 @@ interface Item {
   text: string;
   kind?: string;
   picture?: string; // a tile's picture: an inline style that sets its background
+  mark?: string; // a tile's product mark, above its title
   colour?: string;
 }
 interface Props {
@@ -26,6 +27,7 @@ const { items, style = 'tile', pairs = false } = Astro.props;
       <li style={item.colour ? `--card: ${item.colour}` : undefined} class:list={{ coloured: !!item.colour }}>
         <a href={item.href}>
           {item.picture && <span class="picture" style={item.picture} aria-hidden="true" />}
+          {item.mark && <img class="mark" src={item.mark} alt="" width="48" height="48" />}
           {item.kind && <span class="kind">{item.kind}</span>}
           <span class="title">{item.title}</span>
           <span class="text">{item.text}</span>
@@ -97,6 +99,9 @@ const { items, style = 'tile', pairs = false } = Astro.props;
     background-color: var(--panel);
     background-repeat: no-repeat;
     border-bottom: var(--stroke-rule) solid var(--rule);
+  }
+  .tile .mark {
+    margin: -4px 0 0 -6px; /* a mark's sphere sits inside its frame; this lines it up with the title */
   }
   .tile .title {
     font-size: var(--size-card-title);

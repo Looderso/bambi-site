@@ -49,11 +49,10 @@ const rules = [
 
     <section class="screen" aria-labelledby="change">
       <h2 id="change">how a change goes</h2>
-      <ol class="steps">
+      <ol class="steps across">
         {
-          steps.map((step, i) => (
+          steps.map((step) => (
             <li>
-              <span class="label">{i + 1}</span>
               <span class="title">{step.title}</span>
               <span class="text">{step.text}</span>
             </li>
@@ -142,30 +141,6 @@ const rules = [
     margin: 0;
   }
 
-  /*  The steps of a change: in a row, each under a rule, numbered in reading order. */
-  .steps {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: var(--gap);
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-  .steps li {
-    display: grid;
-    align-content: start;
-    gap: 6px;
-    padding-top: 12px;
-    border-top: var(--stroke-identity) solid var(--rule-strong);
-  }
-  .steps .title {
-    font-size: var(--size-card-title);
-  }
-  .steps .text {
-    color: var(--label);
-    font-size: var(--size-card-text);
-  }
-
   /*  The rules: the rule in ink, its one line in grey, under a hairline each. */
   .rules {
     display: grid;
@@ -200,10 +175,6 @@ const rules = [
   }
 
   @media (max-width: 760px) {
-    .steps {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 16px;
-    }
     .rules,
     .other {
       grid-template-columns: 1fr;

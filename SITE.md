@@ -24,7 +24,7 @@ The header lists them in this order.
 | **research** | `/research`, `/research/<topic>` | what bambi found out, written up with its figures; and the work it builds on, credited (`/research/foundations`) | `src/pages/research/` |
 | **tools** | `/tools`, `/tools/<tool>` | small things around working with bambi that run in the browser | `src/pages/tools/`, `src/lib/<tool>/` |
 | **contribute** | `/contribute` | how to work on bambi, with or without a coding agent, and what every change keeps | `src/pages/contribute/index.astro` |
-| **download** | `/download` | the newest release, the systems as tabs with the visitor's chosen, and how to install | `src/pages/download.astro` |
+| **download** | `/download` | the visitor's system with its download and steps, what the zip holds, every release, and the host | `src/pages/download.astro` |
 | **about** | `/about` | what bambi is, the people who inspired and helped it, its licence and its notices | `src/pages/about.astro` |
 
 Two pages are not in the header:
@@ -64,8 +64,8 @@ Two pages are not in the header:
   authors on foundations and in a research page's references, and the people thanked on about, each with their
   agreement. Text never says who decided something, never gives a date, a decision number or a reference to a private document, and never says what
   something used to be.
-- **Only plugin pages, the host's page, research pages and tutorials name plugins**, and the front page, which
-  lists them from the collection. Everywhere else a plugin is described by its role — a
+- **Only plugin pages, the host's page, research pages and tutorials name plugins**, and the front page and download, which
+  list them from the collection. Everywhere else a plugin is described by its role — a
   source plugin, a field effect, a send, a return — so a new plugin needs a new page and nothing else changes.
 - **A control's name is its name in the plugin.** Check it against the plugin's code, not against a document.
 - **Every claim is checked against the code.** A number on the site came from the code or from a run.
@@ -85,11 +85,14 @@ rather than boxes, no rounding, no shadows (except a faint one under a product's
   page's contents, a chosen option in a tool.
 - **A page opens the same way**: a small label linking back to its section (on a page inside one), the title,
   then a grey line or a lede saying what the page is.
+- **One button, one way of numbering steps**: the way to act on a page is the global `.button`, the black
+  block; steps read in order are an `ol.steps`, numbered by the list in a square, down the page or `across`.
+- **A product's mark** wears `.mark`, the site's one shadow.
 - **A list of pages to go to is cards** (`src/components/Cards.astro`): tiles for a few entries that each
   deserve weight, rows for a longer list read in order. A plugin's card wears its colour.
-- **Most pages are one of three kinds**, and a new page picks the one its reader needs; the rest — download,
-  status, about, a tool — are a single page of their own:
-  - **screens**, for a page that shows what something is: the front page, a product page, contribute. It holds
+- **Most pages are one of three kinds**, and a new page picks the one its reader needs; the rest — status,
+  about, a tool — are a single page of their own:
+  - **screens**, for a page that shows what something is: the front page, a product page, contribute, download. It holds
     a `.snap`, and each part is a `.screen` (`src/styles/global.css`): it fills the screen under the header,
     and the page settles on it. A part's text stays short enough to fit one screen, down to a small phone.
     On the first screen a small arrow at the bottom (`src/components/NextScreen.astro`, on every page) says
