@@ -26,6 +26,7 @@ const tutorials = [
     parts ? (
       <ProductPage
         name={name}
+        mark={`${base}/marks/${plugin.id}.svg`}
         summary={summary}
         section={{ href: `${base}/plugins`, name: 'plugins' }}
         shots={`${base}/product/${plugin.id}`}
