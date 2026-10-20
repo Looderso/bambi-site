@@ -104,6 +104,8 @@ rather than boxes, no rounding, no shadows (except a faint one under a product's
 - **The header stays on screen**, across the whole window: the wordmark at the left edge, the sections at the right,
   in the same place on every page. So does the footer. Anything else that stays on screen sits below the header
   (`var(--header)`).
+- **Until bambi is stable, a beta band crosses the bottom-right corner** of every page
+  (`src/components/BetaBand.astro`), leading to status; the footer keeps its links clear of it.
 - **Every page works at phone width**, with no sideways scrolling.
 
 ## Pictures
