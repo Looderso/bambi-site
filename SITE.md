@@ -77,7 +77,7 @@ Two pages are not in the header:
 ## Rules for the look
 
 The site wears the plugins' look: a light ground, black line work, lowercase labels, rules and alignment
-rather than boxes, no rounding, no shadows.
+rather than boxes, no rounding, no shadows (except a faint one under a product's mark, so it stands off the ground).
 
 - **Colours, sizes and spacing are variables** in `src/styles/global.css`. A page uses the variables and the
   shared classes (`label`, `fine`, `prose`, `lede`), never a literal colour.
@@ -113,6 +113,9 @@ rather than boxes, no rounding, no shadows.
   at four times the window's size, into `public/product/<plugin>/`. Nothing is drawn or edited by hand.
   A view the tools cannot draw gets a new mode in the tool, in the bambi repository.
 - **Run the script again whenever the plugins' window changes**, and commit the pictures with the change.
+- **A product's mark comes from the repository too.** `scripts/marks.sh` copies the plugins' marks and bambi's β,
+  the host's, from `ui/assets/marks/` into `public/marks/`, named by their pages; a product page shows it
+  beside the name.
 - **Diagrams** (a tool's measurements, for example) are inline SVG in one shared frame per tool, drawn in
   `currentColor`.
 - **A research page's figures are the model itself**, evaluated in the page from the decoder's own files and drawn
