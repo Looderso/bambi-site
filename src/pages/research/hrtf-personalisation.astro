@@ -228,10 +228,20 @@ const F = {
         those dips alone, and its presence to every direction; four turns of this settle the template. The template fits SONICOM’s heads, which
         it never saw, as well as its own held-out ones.
       </p>
-      <figure class="chart" data-figure="ears">
+<figure class="chart" data-solid="surface">
+        <div class="controls"><label><span class="label">ears</span><input type="range" data-k="shift" min="-2" max="2" step="0.1" value="0" data-unit=" ERB" /><output></output></label><span class="label hint">drag to turn</span></div>
+        <div class="plot solid"><canvas aria-label="figure 3: The summed level of nobody’s head around the median plane, as a surface: across, from below in front, over the top, to below behind; along, the frequency; up, the level. The notches are the valleys, climbing in frequency as the source rises. Turn it, and move the ears."></canvas></div>
+        <figcaption><span class="label">figure 3</span> The summed level of nobody’s head around the median plane, as a surface: across, from below in front, over the top, to below behind; along, the frequency; up, the level. The notches are the valleys, climbing in frequency as the source rises. Turn it, and move the ears.</figcaption>
+      </figure>
+      <figure class="chart" data-solid="sphere">
+        <div class="controls"><label><span class="label">ears</span><input type="range" data-k="shift" min="-2" max="2" step="0.1" value="0" data-unit=" ERB" /><output></output></label><span class="label hint">drag to turn</span></div>
+        <div class="plot solid"><canvas aria-label="figure 4: The three notches of the template on the sphere, one sphere each, the front marked: each direction coloured by where the notch sits, orange at 4 kHz to black at 16 kHz, paler where it is shallower, blank where the heads have none. Turn them, and move the ears."></canvas></div>
+        <figcaption><span class="label">figure 4</span> The three notches of the template on the sphere, one sphere each, the front marked: each direction coloured by where the notch sits, orange at 4 kHz to black at 16 kHz, paler where it is shallower, blank where the heads have none. Turn them, and move the ears.</figcaption>
+      </figure>
+            <figure class="chart" data-figure="ears">
         <div class="controls"><label><span class="label">ears</span><input type="range" data-k="shift" min="-2" max="2" step="0.1" value="0.8" data-unit=" ERB" /><output></output></label><label><span class="label">elevation</span><input type="range" data-k="el" min="-45" max="90" step="5" value="0" data-unit="°" /><output></output></label></div>
-        <div class="plot"><canvas aria-label="figure 3: The ear slider at work: the summed level in front, at an elevation, as learned and with the notches shifted. Move the ears, and the height."></canvas></div>
-        <figcaption><span class="label">figure 3</span> The ear slider at work: the summed level in front, at an elevation, as learned and with the notches shifted. Move the ears, and the height.</figcaption>
+        <div class="plot"><canvas aria-label="figure 5: The ear slider at work: the summed level in front, at an elevation, as learned and with the notches shifted. Move the ears, and the height."></canvas></div>
+        <figcaption><span class="label">figure 5</span> The ear slider at work: the summed level in front, at an elevation, as learned and with the notches shifted. Move the ears, and the height.</figcaption>
       </figure>
     </section>
 
@@ -255,8 +265,8 @@ const F = {
       </p>
       <figure class="chart" data-figure="head">
         <div class="controls"><label><span class="label">head</span><input type="range" data-k="size" min="0.75" max="1.3" step="0.01" value="1.15" data-unit=" ×" /><output></output></label></div>
-        <div class="plot"><canvas aria-label="figure 4: The head slider at work: the time difference between the ears around the horizon, for the population’s head and a head of the slider’s size."></canvas></div>
-        <figcaption><span class="label">figure 4</span> The head slider at work: the time difference between the ears around the horizon, for the population’s head and a head of the slider’s size.</figcaption>
+        <div class="plot"><canvas aria-label="figure 6: The head slider at work: the time difference between the ears around the horizon, for the population’s head and a head of the slider’s size."></canvas></div>
+        <figcaption><span class="label">figure 6</span> The head slider at work: the time difference between the ears around the horizon, for the population’s head and a head of the slider’s size.</figcaption>
       </figure>
     </section>
 
@@ -279,8 +289,8 @@ const F = {
       </p>
       <figure class="chart" data-figure="ku100">
         <div class="controls"><label><span class="label">azimuth</span><input type="range" data-k="az" min="-180" max="180" step="5" value="135" data-unit="°" /><output></output></label><label><span class="label">elevation</span><input type="range" data-k="el" min="-45" max="90" step="5" value="30" data-unit="°" /><output></output></label></div>
-        <div class="plot"><canvas aria-label="figure 5: Nobody’s head beside the KU100, both through the decoder’s chain, at one direction. Move the direction."></canvas></div>
-        <figcaption><span class="label">figure 5</span> Nobody’s head beside the KU100, both through the decoder’s chain, at one direction. Move the direction.</figcaption>
+        <div class="plot"><canvas aria-label="figure 7: Nobody’s head beside the KU100, both through the decoder’s chain, at one direction. Move the direction."></canvas></div>
+        <figcaption><span class="label">figure 7</span> Nobody’s head beside the KU100, both through the decoder’s chain, at one direction. Move the direction.</figcaption>
       </figure>
     </section>
 
@@ -361,6 +371,25 @@ const F = {
   .plot {
     position: relative;
     height: 320px;
+  }
+  .plot.solid {
+    height: 420px;
+    cursor: grab;
+  }
+  .plot.solid canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+  /*  a label kept over a point of a figure in three dimensions */
+  .plot :global(.tag3d) {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    white-space: nowrap;
+  }
+  .hint {
+    margin-left: auto;
   }
   figcaption {
     margin-top: 12px;
