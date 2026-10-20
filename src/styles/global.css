@@ -45,6 +45,7 @@
   --page: 1040px;
   --page-wide: 1360px; /* a tool's page, where a picture works beside a form */
   --header: 44px; /* the header's and the footer's height; the header stays on screen */
+  --corner: 104px; /* the square the beta band crosses, bottom right */
   --header-pad: 16px; /* the room a link to a heading keeps below the header */
   --size-card-title: 18px;
   --size-card-text: 14px;
@@ -56,6 +57,13 @@
   --stroke-identity: 2px;
 
   color-scheme: light;
+}
+
+/*  On a phone the beta band's corner is smaller. */
+@media (max-width: 760px) {
+  :root {
+    --corner: 76px;
+  }
 }
 
 * {
