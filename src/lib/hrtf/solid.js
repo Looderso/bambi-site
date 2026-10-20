@@ -1,11 +1,11 @@
-/*  The research page's two figures in three dimensions, both drawn from the head model in the page and turned with
-    the pointer: the notches on the sphere, and the summed level of the median plane as a surface. three.js loads only
+/*  The research page's figure in three dimensions, drawn from the head model in the page and turned with the
+    pointer: the summed level of the median plane as a surface. three.js loads only
     when one of them comes near the screen.
 
     The model's frame is x front, y left, z up; three.js draws y up, so a model direction (x, y, z) is drawn at
-    (−y, z, x): right is +x, up is +y, the front faces the viewer. Colours are the site's: a notch from orange at
-    4 kHz to ink at 16 kHz, paler the shallower, and blank where the head has none. */
-import { at, ears, hzOf, erbOf, notchesAt } from './model.js';
+    (−y, z, x): right is +x, up is +y, the front faces the viewer. Colours are the site's: the notches' valleys in
+    orange, the highest level in ink. */
+import { at, ears, erbOf } from './model.js';
 
 const tone = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 const rgb = (hex) => {
@@ -15,14 +15,6 @@ const rgb = (hex) => {
 const mix = (a, b, t) => a.map((v, i) => v + (b[i] - v) * t);
 /** A colour as the screen shows it, into the linear light three.js renders in, so the site's colours come out as they are. */
 const linear = (c) => c.map((v) => (v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4));
-
-/** A notch's colour: its centre from orange at 4 kHz to ink at 16 kHz, faded into the ground as it gets shallower. */
-function notchColour(centre, depth, palette) {
-  const lo = erbOf(4000), hi = erbOf(16000);
-  const t = Math.min(1, Math.max(0, (centre - lo) / (hi - lo)));
-  const full = Math.min(1, -depth / 12); // full colour at 12 dB deep
-  return mix(palette.ground, mix(palette.low, palette.high, t), full);
-}
 
 async function stage(figure, THREE, OrbitControls) {
   const canvas = figure.querySelector('canvas');
@@ -64,48 +56,6 @@ async function stage(figure, THREE, OrbitControls) {
     labels.push({ el, at: point });
   };
   return { scene, camera, controls, label };
-}
-
-const fromModel = (THREE, x, y, z) => new THREE.Vector3(-y, z, x);
-
-/*  The notches on the sphere: one sphere per notch, turned together, each vertex coloured by that notch there. */
-async function sphereFigure(figure, head, THREE, OrbitControls, palette) {
-  const { scene, camera, controls, label } = await stage(figure, THREE, OrbitControls);
-  const count = head.notches.list.length;
-  camera.position.set(1.4, 1.6, 7.5 + 1.2 * count);
-  controls.target.set(0, 0, 0);
-  const spheres = [];
-  for (let i = 0; i < count; i++) {
-    const geometry = new THREE.SphereGeometry(1, 96, 48);
-    geometry.setAttribute('color', new THREE.BufferAttribute(new Float32Array(geometry.attributes.position.count * 3), 3));
-    const mesh = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({ vertexColors: true }));
-    mesh.position.x = (i - (count - 1) / 2) * 2.4;
-    scene.add(mesh);
-    //  the equator and the front, as rules on the sphere
-    const ring = new THREE.Mesh(new THREE.TorusGeometry(1.002, 0.004, 6, 128), new THREE.MeshBasicMaterial({ color: palette.rule }));
-    ring.rotation.x = Math.PI / 2;
-    mesh.add(ring);
-    const front = new THREE.Mesh(new THREE.SphereGeometry(0.035, 12, 8), new THREE.MeshBasicMaterial({ color: palette.inkHex }));
-    front.position.copy(fromModel(THREE, 1, 0, 0));
-    mesh.add(front);
-    label(`notch ${i + 1}`, new THREE.Vector3(mesh.position.x, 1.35, 0));
-    label('front', new THREE.Vector3(mesh.position.x, -0.2, 1.2));
-    spheres.push(geometry);
-  }
-  //  every vertex's direction in the model's frame, kept for the slider
-  const position = spheres[0].attributes.position;
-  const dirs = Array.from({ length: position.count }, (_, k) => {
-    const X = position.getX(k), Y = position.getY(k), Z = position.getZ(k);
-    return [Z, -X, Y]; // three (X, Y, Z) back to the model's (x, y, z)
-  });
-  const paint = (shift) => {
-    const colours = spheres.map((g) => g.attributes.color.array);
-    dirs.forEach(([x, y, z], k) => {
-      notchesAt(head, x, y, z, shift).forEach((n, i) => colours[i].set(linear(notchColour(n.centre, n.depth, palette)), k * 3));
-    });
-    spheres.forEach((g) => (g.attributes.color.needsUpdate = true));
-  };
-  return paint;
 }
 
 /*  The summed level of the median plane as a surface: across, the polar angle from below in front, over the top, to
@@ -183,7 +133,6 @@ export function solids(head) {
         low: rgb(tone('--orange')),
         high: rgb(tone('--text')),
         rule: tone('--rule'),
-        inkHex: tone('--text'),
       },
     })));
   //  a figure is claimed the moment it is seen, before anything is awaited, so it is never set up twice
@@ -193,8 +142,7 @@ export function solids(head) {
       const figure = entry.target;
       watch.unobserve(figure);
       load().then(async ({ THREE, OrbitControls, palette }) => {
-        const make = figure.dataset.solid === 'sphere' ? sphereFigure : surfaceFigure;
-        earsSlider(figure, await make(figure, head, THREE, OrbitControls, palette));
+        earsSlider(figure, await surfaceFigure(figure, head, THREE, OrbitControls, palette));
       });
     }
   }, { rootMargin: '400px' });
