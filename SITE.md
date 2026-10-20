@@ -80,11 +80,13 @@ The site wears the plugins' look: a light ground, black line work, lowercase lab
 rather than boxes, no rounding, no shadows (except a faint one under a product's mark, so it stands off the ground).
 
 - **Colours, sizes and spacing are variables** in `src/styles/global.css`. A page uses the variables and the
-  shared classes (`label`, `fine`, `prose`, `lede`), never a literal colour.
+  shared classes (`label`, `sub`, `fine`, `prose`, `lede`), never a literal colour.
 - **Chosen is a black block with light text**: the open section in the header, the part being read in a
   page's contents, a chosen option in a tool.
-- **A page opens the same way**: a small label linking back to its section (on a page inside one), the title,
-  then a grey line or a lede saying what the page is.
+- **A page opens the same way, at the same place**: the title at `--top` under the header and at the wide
+  measure's left edge, then one grey line (`.sub label`) saying what the page is; never a lede, never a
+  second line. No label leads back to the section:
+  the header shows it.
 - **One button, one way of numbering steps**: the way to act on a page is the global `.button`, the black
   block; steps read in order are an `ol.steps`, numbered by the list in a square, down the page or `across`.
 - **A product's mark** wears `.mark`, the site's one shadow.

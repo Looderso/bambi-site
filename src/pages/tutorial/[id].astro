@@ -20,7 +20,6 @@ const link = (t?: { id: string; title: string }) => t && { href: `${base}/tutori
 ---
 
 <Page title={tutorial.title} description={tutorial.summary} identity={identity}>
-  <p class="label"><a href={`${base}/tutorial`}>tutorial</a></p>
   <h1>{tutorial.title}</h1>
   <p class="sub label">{tutorial.summary.toLowerCase().replace(/\.$/, '')}</p>
   <p class="fine">

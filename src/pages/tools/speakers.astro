@@ -10,9 +10,8 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
 <Page title="speakers" description="Find where your speakers are and how each one arrives where you listen, with a phone, and export the layout for a decoder." wide>
   <div class="speakers">
-    <p class="label"><a href={`${base}/tools`}>tools</a></p>
     <h1>speakers</h1>
-    <p class="lede summary">Where your speakers are, and how each one arrives where you listen.</p>
+    <p class="sub label">where your speakers are, and how each one arrives where you listen</p>
   <nav class="steps" id="steps">
       <button data-to="1"><b>1</b>sound</button>
       <button data-to="2" disabled><b>2</b>phone</button>
@@ -825,7 +824,6 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 </script>
 
 <style is:global>
-  .speakers .summary { margin-bottom: 24px; }
 /*  controls */
 .speakers .segments { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); }
 .speakers .segments button, .speakers .segments label {
@@ -894,7 +892,6 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
 
   
-  .speakers h1 { margin: 8px 0 16px; }
   /*  the steps: one line, the current one in ink, the ones not reached yet faint */
   .speakers .steps { display: flex; gap: 28px; border-bottom: var(--stroke-rule) solid var(--rule); margin-bottom: 28px; }
   .speakers .steps button { font: inherit; font-size: var(--size-label); letter-spacing: var(--tracking-label); color: var(--label); background: none;

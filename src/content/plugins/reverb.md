@@ -3,7 +3,6 @@ name: reverb
 summary: "One room around the whole field, reflections and tail."
 colour: "#967bb2"
 order: 3
-intro: "its room, its send and return, and where the reflections land"
 parts:
   - shot: room
     crop: [625, 82, 345, 195]

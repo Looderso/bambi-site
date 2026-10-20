@@ -3,7 +3,6 @@ name: path encoder
 summary: "A source that travels a path on the sphere, moved by what it plays."
 colour: "#d4873a"
 order: 1
-intro: "its path, how it turns, and how the track sits on it"
 parts:
   - shot: trajectory
     crop: [622, 45, 350, 330]

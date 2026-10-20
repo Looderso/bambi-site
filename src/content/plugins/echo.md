@@ -3,7 +3,6 @@ name: echo
 summary: "Four echoes that turn through the field as they repeat."
 colour: "#7cb27b"
 order: 2
-intro: "its taps, its send, and where they land"
 parts:
   - shot: window
     crop: [625, 75, 340, 185]

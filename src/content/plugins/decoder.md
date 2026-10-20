@@ -3,7 +3,6 @@ name: decoder
 summary: "The field out to loudspeakers or headphones, turned with the listener's head."
 colour: "#5e8bae"
 order: 4
-intro: "its outputs, its heads, its loudspeakers, and the head that turns"
 parts:
   - shot: headphones
     crop: [262, 4, 285, 38]

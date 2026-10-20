@@ -14,7 +14,7 @@ export async function getStaticPaths() {
 const { plugin } = Astro.props;
 const { Content } = await render(plugin);
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
-const { name, summary, colour, intro, parts } = plugin.data;
+const { name, summary, colour, parts } = plugin.data;
 const tutorials = [
   { href: `${base}/tutorial/${plugin.id}`, title: name, text: `How to use ${name}, step by step.`, kind: 'this plugin', colour },
   { href: `${base}/tutorial/the-window`, title: 'the window', text: 'The scene, the matrix, presets and the link every plugin shares.', kind: 'every plugin' },
@@ -28,9 +28,7 @@ const tutorials = [
         name={name}
         mark={`${base}/marks/${plugin.id}.svg`}
         summary={summary}
-        section={{ href: `${base}/plugins`, name: 'plugins' }}
         shots={`${base}/product/${plugin.id}`}
-        intro={intro}
         parts={parts}
         tutorials={tutorials}
       >
@@ -40,9 +38,8 @@ const tutorials = [
       </ProductPage>
     ) : (
       <>
-        <p class="label"><a href={`${base}/plugins`}>plugins</a></p>
         <h1>{name}</h1>
-        <p class="lede summary">{summary}</p>
+        <p class="sub label">{summary.replace(/\.$/, '')}</p>
         <div class="prose">
           <Content />
         </div>
@@ -56,12 +53,6 @@ const tutorials = [
 </Page>
 
 <style>
-  h1 {
-    margin: 8px 0 16px;
-  }
-  .summary {
-    margin-bottom: var(--section);
-  }
   .tutorials {
     margin-top: var(--section);
   }

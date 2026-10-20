@@ -20,26 +20,22 @@ interface Props {
   name: string;
   mark?: string;
   summary: string;
-  section: { href: string; name: string };
   shots: string;
   window?: [number, number];
-  intro?: string;
   parts: Part[];
   tutorials: { href: string; title: string; text: string; kind?: string; colour?: string }[];
 }
-const { name, mark, summary, section, shots, window = [1020, 600], intro, parts, tutorials } = Astro.props;
+const { name, mark, summary, shots, window = [1020, 600], parts, tutorials } = Astro.props;
 const [W, H] = window;
 ---
 
 <div class="product snap" data-w={W} data-h={H} data-shots={shots} style={`--ratio: ${W / H}`}>
   <article class="part screen intro" data-shot={parts[0]?.shot ?? 'window'} data-crop={`0 0 ${W} ${H}`} data-tag="">
-    <p class="label"><a href={section.href}>{section.name}</a></p>
     <div class="name">
       {mark && <img class="mark" src={mark} alt="" width="56" height="56" />}
       <h1>{name}</h1>
     </div>
-    <p class="lede">{summary}</p>
-    {intro && <p class="more label">↓ {intro}</p>}
+    <p class="sub label">{summary.replace(/\.$/, '')}</p>
   </article>
   <div class="list">
     {
@@ -142,7 +138,6 @@ const [W, H] = window;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1.9fr);
     grid-template-areas: 'intro stage' 'list stage';
     column-gap: 56px;
-    margin-top: calc(-1 * var(--section));
   }
   .intro {
     grid-area: intro;
@@ -210,7 +205,7 @@ const [W, H] = window;
     display: flex;
     align-items: center;
     gap: 12px;
-    margin: 8px 0 12px;
+    margin: 0 0 12px;
   }
   .mark {
     flex: none;
@@ -238,9 +233,6 @@ const [W, H] = window;
   }
   .part li :global(b) {
     font-weight: 500;
-  }
-  .more {
-    margin-top: 40px;
   }
   .tutorials {
     margin-top: var(--section);
