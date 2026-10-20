@@ -15,22 +15,22 @@ export const tutorials: Tutorial[] = [
   {
     id: 'the-window',
     title: 'the window',
-    summary: 'The parts every bambi plugin shares, and the gestures each takes.',
+    summary: 'The parts every bambi plugin shares, and how to use them.',
     group: 'every plugin',
     kind: 'start here',
   },
-  { id: 'path-encoder', title: 'path encoder', summary: 'Placing a sound, and moving it with what it plays.', group: 'one plugin or setup', kind: 'plugin', plugin: 'path-encoder' },
+  { id: 'path-encoder', title: 'path encoder', summary: 'Encoding a source, and moving it with automation and the audio itself.', group: 'one plugin or setup', kind: 'plugin', plugin: 'path-encoder' },
   {
     id: 'echo',
     title: 'echo',
-    summary: 'Taps that turn through the field as they repeat.',
+    summary: 'Delay taps that rotate around the listener as they repeat.',
     group: 'one plugin or setup',
     kind: 'plugin',
     plugin: 'echo',
   },
-  { id: 'reverb', title: 'reverb', summary: 'A room around the field, and where in it each reflection lands.', group: 'one plugin or setup', kind: 'plugin', plugin: 'reverb' },
-  { id: 'decoder', title: 'decoder', summary: 'The field out to loudspeakers or headphones.', group: 'one plugin or setup', kind: 'plugin', plugin: 'decoder' },
-  { id: 'host', title: 'the host', summary: 'Setting up a set to play through bambi.', group: 'one plugin or setup', kind: 'setup' },
+  { id: 'reverb', title: 'reverb', summary: 'An ambisonic room reverb, and where its reflections come from.', group: 'one plugin or setup', kind: 'plugin', plugin: 'reverb' },
+  { id: 'decoder', title: 'decoder', summary: 'Decoding to loudspeakers or binaural headphones.', group: 'one plugin or setup', kind: 'plugin', plugin: 'decoder' },
+  { id: 'host', title: 'the host', summary: 'Setting up Ableton Live to play through bambi.', group: 'one plugin or setup', kind: 'setup' },
 ];
 
 /** The tutorials either side of one, in reading order. */

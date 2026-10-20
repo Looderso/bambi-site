@@ -1,31 +1,31 @@
 ---
 name: path encoder
-summary: "A source that travels a path on the sphere, moved by what it plays."
+summary: "An ambisonic encoder that moves a source along a path, driven by automation and by the audio itself."
 colour: "#d4873a"
 order: 1
 parts:
   - shot: trajectory
     crop: [622, 45, 350, 330]
     label: trajectory
-    title: the path's shape
-    text: "Five shapes — orbit, lissajous, wave, arc and spiral — each with settings of its own, whose angles can be automated and modulated. Or a path of your own: custom."
+    title: path shapes
+    text: "Five shapes — orbit, lissajous, wave, polygon and spiral — each with its own settings, all automatable and modulatable. Or draw your own: custom."
     points:
-      - "<b>convert to custom</b> · turns the shape into nodes you drag on the sphere"
+      - "<b>convert to custom</b> · turns the shape into points you can drag"
   - shot: transform
     crop: [622, 45, 350, 300]
     label: transform
-    title: where the path sits and how it turns
-    text: "Yaw, pitch and roll, each beside a rate that keeps it turning, and extent: at 1 the path is as drawn, at 0 it closes onto its own centre, at 2 it opens out through the far side."
+    title: rotating and scaling the path
+    text: "Yaw, pitch and roll, each with a rate for continuous rotation. Extent scales the path: 1 is as drawn, 0 shrinks it to its centre, 2 stretches it through the far side."
   - shot: source
     crop: [622, 80, 350, 175]
     label: source · input
-    title: one point, or two
-    text: "Sum puts one point on the path. Mid/side puts the mid on it and the side either side of it, spread apart; stereo puts left and right on it, offset apart. Input trim sets the level before the features hear it."
+    title: mono, mid/side or stereo
+    text: "Sum encodes the input as one source on the path. Mid/side puts the mid on the path and the side on either side of it; stereo puts left and right on the path, offset from each other. Input trim sets the level before the audio analysis."
   - shot: source
     crop: [622, 265, 350, 170]
     label: source · motion
-    title: how it travels
-    text: "Speed is how fast the source travels along the path, direction which way, and displace where on the path it sits. Mode says what happens at the end."
+    title: movement
+    text: "Speed sets how fast the source moves along the path, direction which way, and displace its position on the path. Mode sets what happens at the end of the path."
     points:
       - "<b>wrap</b> · back to the start"
       - "<b>ping-pong</b> · back the way it came"
@@ -33,18 +33,18 @@ parts:
   - shot: source
     crop: [622, 435, 350, 85]
     label: source · render
-    title: how wide it sounds
-    text: "Width, how far the source spreads over the sphere, and the width range modulation may move it in."
+    title: source width
+    text: "How wide the source sounds, and the range modulation can move the width in."
   - shot: trajectory
     crop: [0, 44, 618, 301]
     label: the scene
-    title: the path, and the source on it
-    text: "The path is drawn in ink on the sphere and the map, with the source on it in the colour of what comes in; every other encoder in the session is drawn beside it in silver."
+    title: the path in the 3D view
+    text: "The path and the source on it, on the sphere and the flat map. Every other encoder in the session is shown in grey."
 ---
 
 ## three things to try
 
-1. **The kick nudges on every hit.** Choose `arc`, click `displace`, click the cell under `attack`, and drag it
+1. **The kick nudges on every hit.** Choose `polygon`, click `displace`, click the cell under `attack`, and drag it
    up.
 2. **The pad opens up when it rings.** Click `width`, click the cell under `tonal`, and drag.
 3. **It drifts slowly, and faster when it is loud.** Set `speed` to a small value, then click `speed` and give

@@ -6,70 +6,73 @@ import Page from '../layouts/Page.astro';
 import ProductPage, { type Part } from '../components/ProductPage.astro';
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
-const summary = 'A Live set’s tracks, played as a field through bambi.';
+const summary = 'Runs bambi’s ambisonic plugins beside Ableton Live.';
+//  why there is a host at all, under the title: a visitor knows plugins, not why they need one
+const why =
+  'Live’s tracks are stereo: no track or bus carries more than two channels. Ambisonics needs four channels at first order and sixteen at third, so bambi’s plugins cannot run inside Live. The host runs them beside Live instead, on an ambisonics bus. Each track leaves Live through bambi’s virtual audio driver and plays through bambi’s plugins in the host. Live keeps the arrangement, the transport, your faders and sends.';
 
 const parts: Part[] = [
   {
     shot: 'routing',
     crop: [0, 44, 72, 556],
-    label: 'the rail',
-    title: 'the suite, and the host’s own pages',
-    text: 'Down the left edge: each plugin’s own window, then the host’s routing, its timeline, and the audio sheet. At the foot, whether Live is connected, how many sources play, and the latency.',
+    label: 'sidebar',
+    title: 'the plugins and the host’s pages',
+    text: 'On the left: each plugin’s window, then the host’s routing, timeline and audio settings. At the bottom: whether Live is connected, how many sources are playing, and the latency.',
   },
   {
     shot: 'routing',
     crop: [76, 52, 380, 310],
     label: 'routing · live’s tracks',
-    title: 'every track, as Live files it',
-    text: 'Live’s tracks and groups in a column, and the host’s own inputs under them. Each track is left in Live, or played by bambi: through an encoder, with inserts after it.',
-    points: ['<b>+ encoder</b> · takes a track into bambi', '<b>+</b> · an insert after its encoder'],
+    title: 'Live’s tracks and groups',
+    text: 'Live’s tracks and groups in one column, the host’s own inputs below. Each track stays in Live, or goes into bambi through an encoder, with insert effects after it.',
+    points: ['<b>+ encoder</b> · encodes a track into the ambisonics bus', '<b>+</b> · adds an insert effect after the encoder'],
   },
   {
     shot: 'routing',
     crop: [510, 52, 320, 145],
     label: 'routing · returns and main',
-    title: 'returns and main, in the field',
-    text: 'Live’s returns and its main, each left in Live or taken into bambi with inserts of its own, as a reverb on a return.',
+    title: 'returns and main',
+    text: 'Live’s returns and main, each kept in Live or taken into bambi with its own insert effects, such as a reverb on a return.',
   },
   {
     shot: 'wires',
     crop: [76, 52, 760, 270],
-    label: 'routing · wires',
-    title: 'sends along wires',
-    text: 'Press send, and what a track may reach rings; a click there makes the wire, at 0 dB. Choose a track by its name, and its wires open under it, dragged for their level.',
-    points: ['<b>route all</b> · every track into the field at once', '<b>all to Live</b> · every track back'],
+    label: 'routing · sends',
+    title: 'sends',
+    text: 'Press send, and the destinations a track can reach light up; click one to add a send at 0 dB. Click a track’s name to show its sends below it, and drag one to set its level.',
+    points: ['<b>route all</b> · every track into bambi at once', '<b>all to Live</b> · every track back to Live'],
   },
   {
     shot: 'routing',
     crop: [880, 52, 212, 180],
     label: 'routing · decoders',
     title: 'any number of decoders',
-    text: 'Each decoder hears a mix of its own, and plays to headphones, to loudspeakers, or to both.',
+    text: 'Each decoder gets its own mix and plays to headphones, loudspeakers, or both.',
   },
   {
     shot: 'timeline',
     crop: [70, 40, 800, 400],
     label: 'timeline',
-    title: 'the arrangement, with lanes over it',
-    text: 'Live’s transport and arrangement, drawn as heard. Under each track, lanes for any parameter the host plays, set every block from the song position the plugins hear.',
+    title: 'arrangement and automation',
+    text: 'Live’s transport and arrangement, in sync. Under each track, automation lanes for any plugin parameter in the host, following Live’s song position.',
   },
   {
     shot: 'session',
     crop: [70, 40, 800, 520],
     label: 'timeline · session',
-    title: 'clips, with lanes of their own',
-    text: 'Live’s session grid. Choose a clip, and its own lanes open at the foot, following the clip as it loops.',
+    title: 'session clips with their own automation',
+    text: 'Live’s session view. Choose a clip, and its automation lanes open at the bottom, following the clip as it loops.',
   },
   {
     shot: 'outputs',
     crop: [105, 22, 880, 530],
     label: 'audio',
-    title: 'where everything goes out',
-    text: 'The audio sheet: the interfaces, then every output — Live’s main, each decoder’s headphones and speakers, on their channels — with copies on other channels, or back to Live for recording.',
+    title: 'outputs',
+    text: 'The audio settings: the audio interfaces, then every output — Live’s main, each decoder’s headphones and loudspeakers on their channels — with copies to other channels, or back into Live for recording.',
   },
 ];
 
-const tutorials = [{ href: `${base}/tutorial/host`, title: 'the host', text: 'Setting up a set to play through bambi.', kind: 'the host' }];
+const tutorials = [{ href: `${base}/tutorial/host`, title: 'the host', text: 'Setting up Ableton Live to play through bambi.', kind: 'the host' }];
 ---
 
 <Page title="host" description={summary} wide>
@@ -77,6 +80,7 @@ const tutorials = [{ href: `${base}/tutorial/host`, title: 'the host', text: 'Se
     name="host"
     mark={`${base}/marks/host.svg`}
     summary={summary}
+    about={why}
     shots={`${base}/product/host`}
     window={[1092, 600]}
     parts={parts}

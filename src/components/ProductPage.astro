@@ -20,12 +20,13 @@ interface Props {
   name: string;
   mark?: string;
   summary: string;
+  about?: string; // a paragraph under the title, for what a visitor needs before the parts
   shots: string;
   window?: [number, number];
   parts: Part[];
   tutorials: { href: string; title: string; text: string; kind?: string; colour?: string }[];
 }
-const { name, mark, summary, shots, window = [1020, 600], parts, tutorials } = Astro.props;
+const { name, mark, summary, about, shots, window = [1020, 600], parts, tutorials } = Astro.props;
 const [W, H] = window;
 ---
 
@@ -36,6 +37,7 @@ const [W, H] = window;
       <h1>{name}</h1>
     </div>
     <p class="sub label">{summary.replace(/\.$/, '')}</p>
+    {about && <p class="about">{about}</p>}
   </article>
   <div class="list">
     {

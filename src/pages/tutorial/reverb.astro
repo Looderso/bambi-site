@@ -10,26 +10,26 @@ const window = `${base}/tutorial/the-window`;
 const parts: [string, string][] = [
   ['room', 'the room'],
   ['send-return', 'send and return'],
-  ['scene', 'the scene'],
+  ['scene', 'the 3D view'],
   ['try', 'things to try'],
 ];
 ---
 
 <TutorialPage
   id="reverb"
-  sub="one room around the whole field, reflections and tail"
+  sub="one room around the whole sound scene: early reflections and reverb tail"
   parts={parts}
-  window={{ src: img('reverb-window'), alt: 'A reverb window: the scene with the send and return regions and the reflections, the matrix, and the send tab.', caption: 'a reverb window' }}
+  window={{ src: img('reverb-window'), alt: 'A reverb window: the 3D view with the send and return regions and the reflections, the matrix, and the send tab.', caption: 'a reverb window' }}
 >
   <div class="prose" slot="intro">
     <p class="lede">
-      Reverb puts an ambisonic field in a room: early reflections from the room's walls, each arriving from its
-      own direction, and a diffuse tail after them.
+      Reverb puts an ambisonic signal in a room: early reflections from the room's walls, each arriving from its
+      own direction, and a diffuse reverb tail after them.
     </p>
     <p>
-      Its window is the one every bambi plugin has; the scene, the matrix, presets and the link are explained in
+      Its window is the one every bambi plugin has; the 3D view, the matrix, presets and the link are explained in
       <a href={window}>the window</a>. This page covers what is Reverb's own: its three tabs, <code>room</code>,
-      <code>send</code> and <code>return</code>, and what it draws on the scene.
+      <code>send</code> and <code>return</code>, and what it shows in the 3D view.
     </p>
   </div>
 
@@ -42,28 +42,28 @@ const parts: [string, string][] = [
       <p>
         The row at the top is six rooms to start from: <code>ambience</code>, <code>room</code>,
         <code>chamber</code>, <code>hall</code>, <code>large hall</code> and <code>cathedral</code>. Choosing one
-        sets the room's numbers except pre-delay, and the input's cuts; it leaves pre-delay, the levels, the
-        quality and the regions as they are. The room stays lit
-        while you change its numbers, and a <strong>double-click</strong> brings them back.
+        sets the room's settings except pre-delay, and the input filters; it leaves pre-delay, the levels, the
+        quality and the regions as they are. The room stays highlighted
+        while you edit its settings, and a <strong>double-click</strong> restores them.
       </p>
       <ul>
         <li><strong><code>size</code></strong>, 3 to 40 metres: when the reflections arrive and how dense they are.</li>
-        <li><strong><code>decay</code></strong>, 0.2 to 10 seconds: how long the room rings.</li>
-        <li><strong><code>tone</code></strong>: how much faster the highs die than the lows.</li>
+        <li><strong><code>decay</code></strong>, 0.2 to 10 seconds: how long the reverb tail lasts.</li>
+        <li><strong><code>tone</code></strong>: how much faster the highs decay than the lows.</li>
         <li>
-          <strong><code>roughness</code></strong>: how much the walls scatter. Smooth walls give clear mirror
+          <strong><code>roughness</code></strong>: how much the walls diffuse the sound. Smooth walls give clear mirror
           reflections; rough ones send more into the tail.
         </li>
         <li>
-          <strong><code>distance</code></strong>, 0.5 to 20 metres: how far away the sound is taken to be, heard
-          mostly as how loud the dry is against the room. It is one value for everything that comes in, since a
+          <strong><code>distance</code></strong>, 0.5 to 20 metres: how far away the sound seems, which comes
+          across mostly as the balance of dry signal and reverb. It is one value for the whole input, since a
           reverb on a bus cannot know each source's distance.
         </li>
         <li>
-          <strong><code>pre-delay</code></strong>, up to 200 milliseconds: holds the tail back further, on top of
-          where it already starts. The reflections stay where they are.
+          <strong><code>pre-delay</code></strong>, up to 200 milliseconds: delays the reverb tail further, on top of
+          where it already starts. The early reflections are not moved.
         </li>
-        <li><strong>input</strong>: a <code>low cut</code> and a <code>high cut</code> on what goes into the room.</li>
+        <li><strong>input</strong>: a <code>low cut</code> and a <code>high cut</code> on the signal going into the reverb.</li>
       </ul>
     </div>
   </section>
@@ -76,29 +76,29 @@ const parts: [string, string][] = [
       <h2>send and return</h2>
       <p>Reverb has two regions, each on its own tab:</p>
       <ul>
-        <li><strong><code>send</code></strong> is the part of the field that goes into the room.</li>
-        <li><strong><code>return</code></strong> is where the room comes back.</li>
+        <li><strong><code>send</code></strong> is the part of the sound scene that goes into the reverb.</li>
+        <li><strong><code>return</code></strong> is where the reverb comes back from.</li>
       </ul>
       <p>
-        Both are <code>everywhere</code> to start with. Narrow the send, and only what arrives from there is put
-        in the room; narrow the return, and the room is heard only from there. The dry level still carries the
-        whole field. Shaping and moving a region works the same in every plugin: see
+        Both are <code>everywhere</code> to start with. Narrow the send, and only sound arriving from there goes
+        into the reverb; narrow the return, and the reverb comes only from there. The dry signal still carries the
+        whole sound scene. Shaping and moving a region works the same in every plugin: see
         <a href={`${window}#regions`}>regions</a>.
       </p>
     </div>
   </section>
 
   <section id="scene">
-    <h2>the scene</h2>
+    <h2>the 3D view</h2>
     <figure>
-      <img src={img('reverb-scene')} alt="The scene with the probe placed: marks in Reverb's colour where the reflections arrive, inside the send and return regions." width="1236" height="602" />
+      <img src={img('reverb-scene')} alt="The 3D view with the probe placed: marks in Reverb's colour where the reflections arrive, inside the send and return regions." width="1236" height="602" />
     </figure>
     <div class="prose">
       <p>
-        Place the <a href={`${window}#scene`}>probe</a> on the scene and Reverb answers with the room: a mark for
-        each reflection a sound from there would get, where it arrives from and at its weight. Only the mirror
-        reflections are drawn. What the walls scatter goes into the tail, which comes from everywhere and has no
-        direction to draw. The answer is worked out from the room the plugin is in, so it changes as you change
+        Place the <a href={`${window}#scene`}>probe</a> in the 3D view and Reverb shows the early reflections a
+        sound from there would get: a mark for each, where it arrives from and how strong it is. Only the mirror
+        reflections are drawn. What the walls diffuse goes into the tail, which comes from everywhere and has no
+        direction to draw. The display is computed from the plugin's current room, so it changes as you change
         the room.
       </p>
     </div>
@@ -110,15 +110,15 @@ const parts: [string, string][] = [
       <ol>
         <li>
           <strong>A bigger room.</strong> Place the probe, choose <code>hall</code>, then <code>large hall</code>:
-          the marks spread further apart and the tail grows longer.
+          the marks spread further apart and the reverb tail gets longer.
         </li>
         <li>
           <strong>Clear walls, then rough ones.</strong> Turn <code>roughness</code> down and the reflections stand
-          out as echoes off the walls; turn it up and they shrink as more of them goes into the tail.
+          out as echoes off the walls; turn it up and they shrink as more of the sound goes into the tail.
         </li>
         <li>
           <strong>A room behind you.</strong> In <code>return</code>, choose a spot and put it behind the
-          listener. Whatever goes in, the room is heard from behind.
+          listener. Whatever goes in, the reverb comes from behind.
         </li>
       </ol>
     </div>

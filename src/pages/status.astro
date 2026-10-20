@@ -50,14 +50,14 @@ const tested: Row[] = [
 const gaps = [
   {
     what: 'the host',
-    text: 'The host runs on macOS, where Live plays through bambi’s loop device, built on BlackHole. Its device in Live is a Max for Live device, so it needs Live Suite. Windows, and DAWs other than Live, are open: say on GitHub which one you work in.',
+    text: 'The host runs on macOS, where Live sends its tracks through bambi’s virtual audio driver, built on BlackHole. Its device in Live is a Max for Live device, so it needs Live Suite, or Live Standard with Max for Live. Windows, and DAWs other than Live, are open: say on GitHub which one you work in.',
   },
   {
     what: 'signing',
     text: 'The builds are not signed yet. macOS needs one extra step before a host will load them, and Windows may warn when the zip is unpacked; the download page has both.',
   },
   {
-    what: 'personalising a head',
+    what: 'HRTF personalisation',
     text: 'The decoder’s personalise page gives its instructions only: finding the head and ears sliders by ear, against a real loudspeaker, is not built yet. The sliders themselves work.',
   },
   {
@@ -105,7 +105,7 @@ const gaps = [
       </table>
     </div>
     <p class="legend">
-      <span><span class="mark heard"></span>used and listened to in the host</span>
+      <span><span class="mark heard"></span>used and listened to in the DAW</span>
       <span><span class="mark checked"></span>built and checked automatically on every change, not listened to</span>
       <span><span class="mark none"></span>not tried yet</span>
     </p>

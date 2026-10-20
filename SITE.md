@@ -67,6 +67,10 @@ Two pages are not in the header:
 - **Only plugin pages, the host's page, research pages and tutorials name plugins**, and the front page and download, which
   list them from the collection. Everywhere else a plugin is described by its role — a
   source plugin, a field effect, a send, a return — so a new plugin needs a new page and nothing else changes.
+- **Say it the way the audio world says it.** Use the terms a musician would search for — ambisonics, the
+  ambisonics bus, encoder, decoder, binaural, HRTF, head tracking, send and return, insert effect, automation lane,
+  modulation, delay tap, early reflections, reverb tail, virtual audio driver — never a word of the site's own for
+  something that has a common name ("the field", "lanes", "wires", "a pass"). Say what a control does, plainly.
 - **A control's name is its name in the plugin.** Check it against the plugin's code, not against a document.
 - **Every claim is checked against the code.** A number on the site came from the code or from a run.
 - **Colours are named by what they mean**: the plugin's own colour, orange for what is live or what came in,

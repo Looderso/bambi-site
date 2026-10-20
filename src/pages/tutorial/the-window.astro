@@ -8,7 +8,7 @@ const img = (name: string) => `${base}/tutorial/${name}.webp`;
 
 const parts: [string, string][] = [
   ['header', 'the header'],
-  ['scene', 'the scene'],
+  ['scene', 'the 3D view'],
   ['matrix', 'the modulation matrix'],
   ['source', "a source's page"],
   ['panel', 'the panel and a value'],
@@ -25,12 +25,12 @@ const parts: [string, string][] = [
   sub="the parts of a bambi window, and how to use them"
   description="The parts of a bambi window, and how to use them."
   parts={parts}
-  window={{ src: img('window'), alt: 'An echo window: header, scene, matrix, the taps tab and the level column.', caption: 'an echo window' }}
+  window={{ src: img('window'), alt: 'An echo window: header, 3D view, matrix, the taps tab and the level column.', caption: 'an echo window' }}
 >
   <div class="prose" slot="intro">
     <p class="lede">Every bambi plugin is laid out the same way, so what you learn in one works in the others.</p>
     <p>
-      At the top is the header. Below it on the left is the scene, a picture of the sphere around you, and
+      At the top is the header. Below it on the left is the 3D view, a picture of the sphere around you, and
       under that the modulation matrix. On the right are the plugin's own tabs, and at the far right its
       levels. This page walks through each part: what it is for, and what you can do with it.
     </p>
@@ -50,7 +50,7 @@ const parts: [string, string][] = [
         </li>
         <li>
           <strong>Undo and redo</strong>, the two arrows. Every edit can be undone, including a preset load and a
-          drag in the scene.
+          drag in the 3D view.
         </li>
         <li>
           <strong>The instances, as tabs.</strong> Every instance of this plugin in your project has a tab, named
@@ -70,13 +70,13 @@ const parts: [string, string][] = [
   </section>
 
   <section id="scene">
-    <h2>the scene</h2>
+    <h2>the 3D view</h2>
     <figure>
       <img src={img('scene')} alt="The globe and the equirect side by side, with the energy picture on and the probe placed." width="1236" height="602" />
     </figure>
     <div class="prose">
       <p>
-        The scene shows the sphere around the listener twice. On the left is the <strong>globe</strong>, a ball
+        The 3D view shows the sphere around the listener twice. On the left is the <strong>globe</strong>, a ball
         you look at from outside. On the right is the <strong>equirect</strong>, the whole sphere unrolled flat:
         left to right is all the way round, bottom to top is floor to ceiling. The letters along the top mark
         back, left, front and right.
@@ -110,7 +110,7 @@ const parts: [string, string][] = [
     </figure>
     <div class="prose">
       <p>
-        The matrix is how something moves by itself. Its <strong>columns are sources</strong>, things that change
+        The matrix is where you set up modulation. Its <strong>columns are sources</strong>, things that change
         over time. Its <strong>rows are targets</strong>, the parameters they move. A cell is how much one source
         moves one target.
       </p>
@@ -135,7 +135,7 @@ const parts: [string, string][] = [
       <p>
         There is always at least one row. To add another, <strong>click any value</strong> on the plugin's tabs.
         Its row appears with a dashed outline, as a <em>provisional row</em>. Clicking another value replaces it,
-        and giving it any depth keeps it. Two clicks and a drag is the whole vocabulary:
+        and giving it any depth keeps it. Two clicks and a drag are all it takes:
       </p>
       <ol>
         <li>Click the value you want to move, say <code>width</code>. A row appears.</li>
@@ -237,12 +237,12 @@ const parts: [string, string][] = [
   <section id="regions">
     <h2>regions</h2>
     <figure>
-      <img src={img('regions')} alt="Echo's send tab: a spot region drawn in the scene with its handles, the kind row and its settings." width="2040" height="1200" />
+      <img src={img('regions')} alt="Echo's send tab: a spot region drawn in the 3D view with its handles, the kind row and its settings." width="2040" height="1200" />
     </figure>
     <div class="prose">
       <p>
-        A region says <strong>where on the sphere</strong> something happens: which part of the field the echo
-        hears, or where the reverb's room comes back. Each plugin has a fixed set, each on a tab of its own: the
+        A region says <strong>where on the sphere</strong> something happens: which part of the sound scene feeds the
+        echo, or where the reverb's room comes back. Each plugin has a fixed set, each on a tab of its own: the
         echo has a <code>send</code>, the reverb a <code>send</code> and a <code>return</code>. In the path encoder the
         region is a source in the matrix instead (below).
       </p>
@@ -261,8 +261,8 @@ const parts: [string, string][] = [
           is <code>inside</code> or what is <code>outside</code>, and how much.
         </li>
         <li>
-          <strong>In the scene</strong>, a region is drawn in ink: its edge where it is half open, and a light wash
-          where it fades. While its tab is open it has handles, in ink. Drag the one at its centre to aim it and the
+          <strong>In the 3D view</strong>, a region is drawn as an outline where it is half open, and lightly shaded
+          where it fades. While its tab is open it has handles. Drag the one at its centre to aim it and the
           others to roll it or move its edge; the one you hold turns orange. Double-click a handle to reset it.
         </li>
         <li>
@@ -301,7 +301,7 @@ const parts: [string, string][] = [
         plugin's own settings. It does not include the instance's name or its place in the session.
       </p>
       <p>
-        Click the preset name in the header and the browser opens over the panel, so the scene and the matrix
+        Click the preset name in the header and the browser opens over the panel, so the 3D view and the matrix
         stay in sight while you try things.
       </p>
       <ul>
@@ -338,7 +338,7 @@ const parts: [string, string][] = [
           the whole window turns to it; undo acts on the instance shown.
         </li>
         <li>
-          <strong>Other instances appear in the scene</strong> in grey: in the path encoder, every source and its path;
+          <strong>Other instances appear in the 3D view</strong> in grey: in the path encoder, every source and its path;
           in every plugin, other instances' regions as dotted outlines. They are only drawn; nothing about them
           reaches the sound.
         </li>
@@ -383,8 +383,8 @@ const parts: [string, string][] = [
         instance's name, its order, and the share of one processor core it is using. With
         <code>rates continue</code> off, as it starts, everything that turns at a rate (a path, a rotating
         region) holds while the transport is stopped and starts from the same place every time you press play,
-        so a bounce sounds like what you heard. Switched on, they run all the time, and a bounce no longer
-        repeats what you heard.
+        so a bounce matches playback. Switched on, they run all the time, and a bounce no longer
+        matches playback.
       </p>
     </div>
   </section>

@@ -1,6 +1,6 @@
 ---
 name: decoder
-summary: "The field out to loudspeakers or headphones, turned with the listener's head."
+summary: "An ambisonic decoder for loudspeakers and binaural headphones, with head tracking."
 colour: "#5e8bae"
 order: 4
 parts:
@@ -8,26 +8,26 @@ parts:
     crop: [262, 4, 285, 38]
     label: outputs
     title: headphones, speakers, or both
-    text: "The header holds the decoder's outputs, each switched on by its box and opened by its name. Both can play at once, each on channels of its own."
+    text: "The outputs sit in the header: tick a box to turn one on, click its name to open its settings. Both can play at once, on their own channels."
   - shot: headphones
     crop: [622, 45, 350, 165]
     label: headphones
-    title: a head made for you
-    text: "The model is learned from measured heads, and two sliders make it yours."
+    title: personalised binaural
+    text: "An HRTF model learned from measured heads, fitted to you with two sliders."
     points:
-      - "<b>head</b> · the size of the head"
-      - "<b>ears</b> · where the ears' notches sit"
-      - "<b>ku100 · sofa file</b> · a measured head instead"
+      - "<b>head</b> · head size"
+      - "<b>ears</b> · where the ear's spectral notches sit"
+      - "<b>ku100 · sofa file</b> · a measured HRTF instead"
   - shot: headphones
     crop: [622, 220, 350, 175]
     label: headphones · channels and options
-    title: where they play, and how they are found
-    text: "The pair of channels the headphones play on, the layout heard through them if you like, and personalise: the head's sliders set against a real loudspeaker."
+    title: channels and personalisation
+    text: "The output channel pair, an optional virtual loudspeaker layout, and personalise: set the head sliders by comparing with a real loudspeaker."
   - shot: speakers
     crop: [622, 45, 350, 125]
     label: speakers
-    title: any layout
-    text: "What the loudspeakers are."
+    title: loudspeaker layouts
+    text: "Where the loudspeaker layout comes from."
     points:
       - "<b>itu</b> · ten layouts built in"
       - "<b>file</b> · an AllRADecoder or AmbDec layout, or a decoder as SOFA filters"
@@ -35,30 +35,30 @@ parts:
   - shot: speakers
     crop: [622, 190, 350, 280]
     label: speakers · channels and options
-    title: the channels, and who is listening
-    text: "Which channel the first loudspeaker plays on, and the channels in use."
+    title: channels and listening area
+    text: "The first output channel, and the channels in use."
     points:
-      - "<b>one listener · audience</b> · how the field is weighted"
+      - "<b>one listener · audience</b> · optimised for the sweet spot, or for a wider audience"
       - "<b>distance compensation</b> · each loudspeaker's gain and delay matched to the farthest"
   - shot: loudspeakers
     crop: [622, 45, 350, 410]
     label: loudspeakers
-    title: every loudspeaker in a row
-    text: "Each loudspeaker's direction, distance, gain and delay, a test button for each, and one more added on the next free channel."
+    title: loudspeaker list
+    text: "Direction, distance, gain and delay for each loudspeaker, a test button for each, and a button to add one on the next free channel."
   - shot: headphones
     crop: [0, 352, 612, 228]
     label: orientation
-    title: the head that turns
-    text: "Where the other plugins have their matrix, the decoder has the head: none, OSC, AirPods or a phone, AirPods and the phone through a helper on macOS. Yaw, pitch and roll turn the scene by hand, each with a rate."
+    title: head tracking
+    text: "In place of the modulation matrix: head tracking from OSC, AirPods or a phone (AirPods and phone via a helper app on macOS). Yaw, pitch and roll rotate the scene by hand, each with a rate."
     points:
-      - "<b>head · scene</b> · whether a tracker turns the head or the scene"
-      - "<b>recentre</b> · the way you face becomes the front"
-      - "<b>static</b> · holds the scene still"
+      - "<b>head · scene</b> · whether the tracker rotates the listener or the scene"
+      - "<b>recentre</b> · sets the direction you face as the front"
+      - "<b>static</b> · stops the yaw, pitch and roll rotation"
   - shot: speakers
     crop: [0, 44, 618, 301]
     label: the scene
-    title: the loudspeakers around you
-    text: "The sources, the loudspeakers and the hull between them, drawn on the sphere and the map."
+    title: the layout in the 3D view
+    text: "The sources, the loudspeakers and the triangulation between them, on the sphere and the flat map."
 ---
 
 This page is being written.
