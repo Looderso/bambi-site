@@ -124,8 +124,8 @@ const gaps = [
     <h2>ask for something</h2>
     <p>Found a problem, or missing something? Both go to GitHub, where what comes next is planned in the open.</p>
     <div class="ask">
-      <a class="button main" href={`${issues}/new?template=report.yml`}>report a problem</a>
-      <a class="button" href={`${issues}/new?template=feature.yml`}>suggest a feature</a>
+      <a class="button" href={`${issues}/new?template=report.yml`}>report a problem</a>
+      <a class="button quiet" href={`${issues}/new?template=feature.yml`}>suggest a feature</a>
     </div>
   </section>
 </Page>
@@ -223,20 +223,6 @@ const gaps = [
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
-  }
-  .button {
-    display: inline-block;
-    padding: 10px 16px;
-    border: var(--stroke-rule) solid var(--rule-strong);
-    color: var(--text);
-  }
-  .button:hover {
-    background: var(--panel);
-    text-decoration: none;
-  }
-  .button.main {
-    background: var(--chosen);
-    color: var(--text-inverse);
   }
   @media (max-width: 640px) {
     .rows li {

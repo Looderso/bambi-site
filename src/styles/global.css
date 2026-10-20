@@ -241,3 +241,90 @@ p {
   color: var(--label);
   border-bottom-color: var(--rule-strong);
 }
+
+/*  The way to act on a page — download, for one: the black block the site chooses with. `quiet` is the
+    same button in outline, for an action beside the main one. A link or a button. */
+.button {
+  display: inline-block;
+  padding: 12px var(--gap);
+  border: var(--stroke-rule) solid var(--chosen);
+  background: var(--chosen);
+  color: var(--text-inverse);
+  font: inherit;
+  cursor: pointer;
+}
+.button:hover {
+  text-decoration: none;
+  background: var(--text);
+}
+.button.quiet {
+  background: var(--ground);
+  color: var(--text);
+}
+.button.quiet:hover {
+  background: var(--panel);
+}
+
+/*  Steps read in order, an `ol`, numbered by the list itself in a square; a `ul` of the same is parts, unnumbered. Down the page, each a row beside its number,
+    with room for a table or a code block; `across`, side by side, each a title and a line under an ink rule. */
+.steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  counter-reset: step;
+  border-top: var(--stroke-rule) solid var(--rule-strong);
+}
+.steps > li {
+  counter-increment: step;
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  gap: 16px;
+  margin: 0;
+  padding: 14px 0;
+  border-bottom: var(--stroke-rule) solid var(--sand-light);
+}
+ul.steps > li {
+  grid-template-columns: minmax(0, 1fr); /* parts, not steps: no number */
+}
+ol.steps > li::before {
+  content: counter(step);
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: var(--stroke-rule) solid var(--rule-strong);
+  font-size: var(--size-label);
+}
+.steps .title {
+  font-size: var(--size-card-title);
+}
+.steps .text {
+  color: var(--label);
+  font-size: var(--size-card-text);
+}
+.steps.across {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+  gap: var(--gap);
+  border-top: 0;
+}
+.steps.across > li {
+  grid-template-columns: none;
+  align-content: start;
+  gap: 8px;
+  padding: 12px 0 0;
+  border-bottom: 0;
+  border-top: var(--stroke-identity) solid var(--rule-strong);
+}
+@media (max-width: 760px) {
+  .steps.across {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+}
+
+/*  A product's mark: a faint shadow that follows its own shape stands it off the ground, the one shadow on the
+    site. */
+.mark {
+  filter: drop-shadow(0 1px 2px color-mix(in srgb, var(--text) 30%, transparent));
+}
