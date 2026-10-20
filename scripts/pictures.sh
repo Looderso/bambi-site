@@ -126,6 +126,7 @@ whole echo window     "$echo"
 whole echo axis       "$echo" --axis
 whole echo every-pass "$echo" --every-pass
 whole echo regions    "$echo" --regions
+whole echo skew       "$echo" --skew
 whole path-encoder trajectory "$encoder" --tab 0
 whole path-encoder transform  "$encoder" --tab 1
 whole path-encoder source     "$encoder" --tab 2
