@@ -42,7 +42,7 @@ async function stage(figure, THREE, OrbitControls) {
       const v = p.clone().project(camera);
       el.style.left = `${((v.x + 1) / 2) * canvas.clientWidth}px`;
       el.style.top = `${((1 - v.y) / 2) * canvas.clientHeight}px`;
-      el.style.visibility = v.z < 1 ? 'visible' : 'hidden';
+      el.style.visibility = v.z < 1 ? '' : 'hidden'; // '' inherits, so a label hides with its figure
     }
     requestAnimationFrame(frame);
   };
