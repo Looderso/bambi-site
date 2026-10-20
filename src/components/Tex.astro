@@ -32,6 +32,8 @@ const html = katex.renderToString(tex, { displayMode: display, throwOnError: tru
     gap: var(--gap);
     margin: 18px 0;
     overflow-x: auto;
+    overflow-y: hidden; /* a wide formula scrolls sideways; its tall glyphs get room below instead of a scrollbar */
+    padding-block: 4px;
     scrollbar-width: thin;
   }
   .body {

@@ -372,8 +372,18 @@ const F = {
       display: block;
       position: sticky;
       top: calc(var(--header) + var(--stroke-identity) + 24px);
-      max-height: calc(100svh - var(--header) - 48px);
-      overflow-y: auto;
+      --room: calc(100svh - var(--header) - 48px); /* the screen below the header: a held figure never needs to scroll */
+    }
+    /*  a held figure fits the screen: its picture gets what its sliders and caption leave */
+    .held :global(.plot) {
+      height: min(360px, calc(var(--room) - 170px));
+    }
+    .held :global(.plot.heat),
+    .held :global(.plot.solid) {
+      height: min(440px, calc(var(--room) - 170px));
+    }
+    .held :global(.quad > div) {
+      grid-template-rows: auto min(240px, calc((var(--room) - 230px) / 2));
     }
     .held :global(figure) {
       position: absolute;
