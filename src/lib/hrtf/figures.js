@@ -53,9 +53,9 @@ function chart(canvas, datasets, { x = 'frequency', y = 'dB', log = true, min, m
           title: { display: true, text: x },
           grid: { color: RULE },
           ticks: log
-            ? { maxRotation: 0, autoSkip: false, callback: (v) => ([300, 500, 1000, 2000, 5000, 10000, 16000].includes(v) ? (v >= 1000 ? `${v / 1000}k` : v) : '') }
+            ? { maxRotation: 0, autoSkip: false, callback: (v) => ([300, 500, 1000, 2000, 5000, 10000, 20000].includes(v) ? (v >= 1000 ? `${v / 1000}k` : v) : '') }
             : { stepSize: 45, maxRotation: 0 },
-          ...(log ? { min: 300, max: 16000 } : { min: -180, max: 180 }), // the model's axis starts at 300 Hz
+          ...(log ? { min: 300, max: 20000 } : { min: -180, max: 180 }), // the model's axis: 300 Hz to 20 kHz
         },
         y: { title: { display: true, text: y }, grid: { color: RULE }, min, max, ticks: { stepSize: step ?? (y === 'µs' ? 300 : 10) } },
       },

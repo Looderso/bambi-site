@@ -1,0 +1,53 @@
+---
+/*  A formula, typeset by KaTeX when the site is built, so the page ships the result and no script. `display` sets
+    it on a line of its own, with its number `n` at the right edge when one is given. A formula that does not parse
+    fails the build. */
+import katex from 'katex';
+import 'katex/dist/katex.min.css';
+
+interface Props {
+  tex: string;
+  display?: boolean;
+  n?: number;
+}
+const { tex, display = false, n } = Astro.props;
+const html = katex.renderToString(tex, { displayMode: display, throwOnError: true, output: 'html', strict: 'error' });
+---
+
+{
+  display ? (
+    <div class="equation" id={n ? `eq-${n}` : undefined}>
+      <span class="body" set:html={html} />
+      {n && <span class="number label">({n})</span>}
+    </div>
+  ) : (
+    <span set:html={html} />
+  )
+}
+
+<style>
+  .equation {
+    display: flex;
+    align-items: center;
+    gap: var(--gap);
+    margin: 18px 0;
+    overflow-x: auto;
+    scrollbar-width: thin;
+  }
+  .body {
+    flex: 1;
+    min-width: 0;
+  }
+  .equation :global(.katex-display) {
+    margin: 0;
+  }
+  .number {
+    flex: none;
+  }
+  /*  On a phone a formula is set a little smaller, and a wide one scrolls in its own box, never the page. */
+  @media (max-width: 760px) {
+    .equation {
+      font-size: 0.85em;
+    }
+  }
+</style>
