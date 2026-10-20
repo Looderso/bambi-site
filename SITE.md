@@ -110,6 +110,9 @@ rather than boxes, no rounding, no shadows.
   with Chart.js, loaded by that page alone. `scripts/research-data.sh` copies the files in; `scripts/hrtf-check.mjs`
   holds the page's evaluation (`src/lib/hrtf/model.js`) to the decoder's fixtures. A figure's sliders are the
   decoder's own, and its colours are named by meaning: ink for the model, grey for what it is compared with.
+- **Formulas are typeset when the site is built**, with `src/components/Tex.astro` (KaTeX): the page ships the
+  result and no script, and a formula that does not parse fails the build. A formula on its own line is numbered
+  in reading order and referred to by its number.
 
 ## Links
 
