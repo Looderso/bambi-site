@@ -14,13 +14,13 @@ const context = [
   { href: file('AGENTS.md'), kind: 'AGENTS.md', title: 'the rules', text: 'How to build, where things live and the rules every change keeps. Some directories have their own for what holds there.' },
   { href: tree('docs'), kind: 'docs/', title: 'what is true, and why', text: 'A page per concept, and the decisions behind them, with the routes already tried and rejected.' },
   { href: tree('.claude/skills'), kind: 'skills', title: 'the procedures', text: 'Step by step for the recurring tasks: adding a parameter or a plugin, writing a doc, a comment pass, a prototype, issues and pull requests.' },
-  { href: tree('.claude/agents'), kind: 'reviewers', title: 'the checks', text: 'Review agents to run over finished work: architecture, real-time safety, DSP cost and UI uniformity.' },
+  { href: tree('.claude/agents'), kind: 'reviewers', title: 'the checks', text: 'Five reviewers to run over finished work: architecture, real-time safety, DSP cost, UI uniformity and wording.' },
 ];
 
 const steps = [
   { title: 'an issue', text: 'What is wrong or missing, and how to change it, agreed before the code. Only a typo or a one-line fix can go straight to a pull request.' },
   { title: 'a branch', text: 'One branch for the issue, named after it.' },
-  { title: 'tools/verify.sh', text: 'Tests, golden audio renders, formatting and style checks in one command. It passes, or the change is not ready.' },
+  { title: 'the checks', text: 'Hooks on every commit, tools/verify.sh before the pull request, and the sanitizers and plugin validators for what the change reaches. CI runs the same.' },
   { title: 'a pull request', text: 'What is now true, what it did to the golden renders, a picture from the plugin’s picture tool if the window changed, and whether it was tried in a host.' },
 ];
 
@@ -31,6 +31,7 @@ const rules = [
   ['Tests are mutation-checked.', 'Each names the mistake it catches, and making that mistake makes it fail.'],
   ['Comments say what the code does.', 'Units, invariants, threads, a reason true now; never history, names or references.'],
   ['The look comes from one file.', 'Colours, sizes and strokes live in the theme and nowhere else.'],
+  ['Say it the way the audio world says it.', 'Automation lane, send, delay tap, HRTF: the words a musician would search for.'],
 ];
 ---
 
@@ -62,7 +63,8 @@ const rules = [
         }
       </ol>
       <p class="fine">
-        Pull requests merge into main with a merge commit. More in <a href={file('CONTRIBUTING.md')}>CONTRIBUTING.md</a>.
+        Pull requests merge into main with a merge commit. The checks, and how to set them up, are in
+        <a href={file('AGENTS.md#before-a-pull-request')}>AGENTS.md</a>; more in <a href={file('CONTRIBUTING.md')}>CONTRIBUTING.md</a>.
       </p>
     </section>
 
