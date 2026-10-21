@@ -11,25 +11,25 @@ const file = (path: string) => `${repo}/blob/main/${path}`;
 const tree = (path: string) => `${repo}/tree/main/${path}`;
 
 const context = [
-  { href: file('AGENTS.md'), kind: 'AGENTS.md', title: 'the rules', text: 'How to build, where things live and the rules every change keeps. Each module has its own for what holds there.' },
+  { href: file('AGENTS.md'), kind: 'AGENTS.md', title: 'the rules', text: 'How to build, where things live and the rules every change keeps. Some directories have their own for what holds there.' },
   { href: tree('docs'), kind: 'docs/', title: 'what is true, and why', text: 'A page per concept, and the decisions behind them, with the routes already tried and rejected.' },
-  { href: tree('.claude/skills'), kind: 'skills', title: 'the procedures', text: 'Step by step for the recurring tasks: adding a parameter or a plugin, a benchmark, a pull request.' },
-  { href: tree('.claude/agents'), kind: 'reviewers', title: 'the checks', text: 'Review agents to run over finished work: architecture, real-time safety, DSP performance and UI consistency.' },
+  { href: tree('.claude/skills'), kind: 'skills', title: 'the procedures', text: 'Step by step for the recurring tasks: adding a parameter or a plugin, writing a doc, a comment pass, a prototype, issues and pull requests.' },
+  { href: tree('.claude/agents'), kind: 'reviewers', title: 'the checks', text: 'Review agents to run over finished work: architecture, real-time safety, DSP cost and UI uniformity.' },
 ];
 
 const steps = [
-  { title: 'an issue', text: 'Say what is wrong or missing. Anything a musician would notice is agreed there first.' },
-  { title: 'a branch', text: 'One branch for the issue, named after it, with nothing else in it.' },
-  { title: 'tools/verify.sh', text: 'Tests, audio renders, formatting and style checks in one command. It passes, or the change is not ready.' },
-  { title: 'a pull request', text: 'What changed, what it did to the sound, and a screenshot if the UI changed.' },
+  { title: 'an issue', text: 'What is wrong or missing. A change to the design, to how something behaves or to a parameter key is agreed there first; a bug fix can go straight to a pull request.' },
+  { title: 'a branch', text: 'One branch for the issue, named after it.' },
+  { title: 'tools/verify.sh', text: 'Tests, golden audio renders, formatting and style checks in one command. It passes, or the change is not ready.' },
+  { title: 'a pull request', text: 'What is now true, what it did to the golden renders, a picture from the plugin’s picture tool if the window changed, and whether it was tried in a host.' },
 ];
 
 const rules = [
   ['Design each thing once.', 'A shared component grows an option; a copy of it is a defect.'],
-  ['The music lives in core/.', 'It has no JUCE and is tested in seconds, without a plugin or a host.'],
-  ['The audio thread only computes.', 'It never allocates, frees or locks, and a bounce equals what was heard.'],
-  ['Measure, do not assert.', 'A cost is benchmarked in a release build, not guessed.'],
-  ['Tests catch a mistake.', 'Each names the mistake it catches, and making that mistake makes it fail.'],
+  ['The musical logic lives in core/.', 'It has no JUCE and is tested in seconds, without a plugin or a host.'],
+  ['The audio thread only computes.', 'It never allocates, frees or locks, and an offline bounce matches playback, sample for sample.'],
+  ['Tests are mutation-checked.', 'Each names the mistake it catches, and making that mistake makes it fail.'],
+  ['Comments say what the code does.', 'Units, invariants, threads, a reason true now; never history, names or references.'],
   ['The look comes from one file.', 'Colours, sizes and strokes live in the theme and nowhere else.'],
 ];
 ---
@@ -69,8 +69,10 @@ const rules = [
     <section class="screen" aria-labelledby="agent">
       <h2 id="agent">working with an agent</h2>
       <p class="about">
-        Open the repository in your agent and give it the issue. It reads the rules on its own, follows the
-        procedure for the task, and runs the reviewer for what it touched. The pull request says an agent helped.
+        Open the repository in your agent and give it the issue. Most agents read <code>AGENTS.md</code> on their own,
+        Claude Code through <code>CLAUDE.md</code>. The agent follows the task’s procedure and runs the matching reviewer; its
+        commits carry its <code>Co-Authored-By</code> line. Trying a change in a host stays a person’s job:
+        <a href={file('docs/HOST-CHECKS.md')}>docs/HOST-CHECKS.md</a>.
       </p>
       <Cards items={context} pairs />
     </section>
