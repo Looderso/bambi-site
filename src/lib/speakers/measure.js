@@ -1,7 +1,9 @@
-// Measuring speakers with a phone: exponential sine sweeps, played one speaker after another, recorded by the
-// phone, deconvolved into an impulse response per speaker. The phone's clock is not the computer's, so every
-// speaker is timed against a reference sweep in the same recording -- at the start and again at the end, which
-// also gives how far the two clocks drift apart. Shared by the computer's page and the test.
+// Measuring speakers: exponential sine sweeps, played one speaker after another, recorded by the phone's microphone
+// or one on the computer, deconvolved into an impulse response per speaker. The microphone's clock need not be the
+// output's, so every speaker is timed against a reference sweep in the same recording -- at the start and again at
+// the end, which also gives how far the two clocks drift apart. Shared by the computer's page and the phone's.
+
+import { correction } from './calibration.js';
 
 /** In place, radix 2: `re` and `im` of a length that is a power of two. `inverse` divides by the length. */
 export function fft(re, im, inverse = false) {
@@ -171,7 +173,8 @@ export const thirds = [50, 63, 80, 100, 125, 160, 200, 250, 315, 400, 500, 630, 
  *  Delays are relative to the reference speaker, corrected for the drift between the two clocks; levels are
  *  in dB, 500 Hz to 2 kHz of the direct sound, relative to the loudest; a response is the curve over the first half
  *  second, smoothed over 1/`want.smoothing` of an octave (3 if not given), with a cut-only correction: matching the
- *  speakers to each other, or with `want.match` false flattening each on its own. */
+ *  speakers to each other, or with `want.match` false flattening each on its own. `want.calibration`, a microphone's
+ *  calibration points, is taken off every response first, so the curve is the speaker's and not the microphone's. */
 export function analyse(recording, fs, sweepSpec, events, want) {
   const { seconds, f1, f2 } = sweepSpec;
   const inv = inverse(fs, seconds, f1, f2);
@@ -200,6 +203,7 @@ export function analyse(recording, fs, sweepSpec, events, want) {
     if (want.response) {
       //  half a second: long enough to resolve the lows, the room included as the ear hears it
       out.response = smoothed(powerSpectrum(r.h, r.peak.at, fs, 500, 65536), want.smoothing ?? 3);
+      if (want.calibration) out.response.db = out.response.db.map((d, i) => d - correction(want.calibration, out.response.freqs[i]));
       out.cuts = cuts(out.response);
     }
     return out;
@@ -213,6 +217,14 @@ export function analyse(recording, fs, sweepSpec, events, want) {
     for (const r of results) r.levelDb -= top;
   }
   return { driftPpm, referenceMatch: end.peak.value / p0.value, speakers: results };
+}
+
+/** The response of the one sweep in `recording`: deconvolved, the half second from its strongest peak, smoothed over
+ *  1/`fraction` of an octave. For a check of one speaker, where no reference sweep times it. */
+export function responseOf(recording, fs, sweepSpec, fraction = 12) {
+  const { seconds, f1, f2 } = sweepSpec, inv = inverse(fs, seconds, f1, f2);
+  const h = convolve(recording, inv), peak = peakIn(h, inv.length - 1, h.length);
+  return smoothed(powerSpectrum(h, peak.at, fs, 500, 65536), fraction);
 }
 
 /** `values` with those that differ by no more than `tolerance` made equal: sorted, each group spans `tolerance` at

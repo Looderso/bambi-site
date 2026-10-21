@@ -1,6 +1,7 @@
 ---
 /*  The speakers tool's phone: joins the session the computer's page shows as a code, points at front and at each
-    speaker while it plays noise, a picture at each, and records the sweeps from where the listener sits. */
+    speaker while it plays noise, a picture at each, and records the sweeps from where the listener sits -- unless a
+    microphone on the computer records them, when the phone only points. */
 import Page from '../../../layouts/Page.astro';
 ---
 
@@ -33,6 +34,7 @@ import Page from '../../../layouts/Page.astro';
   import { deviceToEnu } from '../../../lib/speakers/orientation.js';
   import { plan, sweepGap, sweepLead, sweepSpec } from '../../../lib/speakers/measure.js';
   import { MEETING_POINT, openLink } from '../../../lib/speakers/link.js';
+  import { openInput, peakDb, record } from '../../../lib/speakers/record.js';
 
   const $ = (id) => document.getElementById(id);
   //  the site's colours, for what is drawn over the camera
@@ -56,21 +58,27 @@ import Page from '../../../layouts/Page.astro';
   const idle = () => step === 'waiting' && show('connected: follow the computer', 'it checks the level, then sends you on', []);
   link?.onMessage(async (m) => {
     if (m.type === 'hello') {
-      outputs = { count: m.outputs, names: m.names };
+      outputs = { count: m.outputs, names: m.names, recorder: m.recorder ?? 'phone' };
       idle();
+      if (step === 'ready') ready(); // who records may have changed
     }
     if (m.type === 'check' && step === 'waiting') {
       show('checking the level…', 'hold the phone where you listen', []);
-      const samples = await record(m.seconds, () => link.send({ type: 'checking', id: m.id }));
-      const peak = samples.data.reduce((x, v) => Math.max(x, Math.abs(v)), 0);
-      link.send({ type: 'checked', id: m.id, peakDb: 20 * Math.log10(peak + 1e-9) });
+      const samples = await record(audio, mic, m.seconds, () => link.send({ type: 'checking', id: m.id }));
+      link.send({ type: 'checked', id: m.id, peakDb: peakDb(samples.data) });
       idle();
     }
     if (m.type === 'go' && outputs && step === 'waiting') front();
     if (m.type === 'speakers' && waiting) {
-      waiting(m.channels);
+      waiting(m);
       waiting = null;
     }
+    //  the computer's microphone records: the phone shows how far it is, whoever started it
+    //  never while the phone is aiming: the computer's measurement waits for nothing on the phone
+    const free = ['waiting', 'ready', 'measured', 'asking'].includes(step) || (step === 'measuring' && outputs?.recorder === 'computer');
+    if (m.type === 'measuring' && free) { step = 'measuring'; show('measuring: hold still and stay quiet', 'the microphone at the computer records', []); }
+    if (m.type === 'measured' && free) measured();
+    if (m.type === 'measure-again' && step === 'asking') measure();
   });
 
   function show(text, small, buttons) {
@@ -90,8 +98,7 @@ import Page from '../../../layouts/Page.astro';
     try {
       if (typeof DeviceOrientationEvent !== 'undefined' && DeviceOrientationEvent.requestPermission)
         await DeviceOrientationEvent.requestPermission();
-      // the microphone without the phone's voice processing, which would shape the sweeps
-      mic = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false } });
+      mic = await openInput();
       video.srcObject = await navigator.mediaDevices.getUserMedia({ audio: false, video: { facingMode: { ideal: 'environment' }, width: { ideal: 1920 }, height: { ideal: 1080 } } });
       await video.play();
       audio = new AudioContext(); // opened by this tap: a phone lets a page record later only from a context opened so
@@ -155,54 +162,38 @@ import Page from '../../../layouts/Page.astro';
 
   function ready() {
     step = 'ready';
-    show('stand still and hold the phone where your head is', 'every speaker plays a sweep, one after the other', [
+    const here = outputs.recorder === 'phone';
+    show(here ? 'stand still and hold the phone where your head is' : 'put the microphone where your head is, and stay quiet',
+      'every speaker plays a sweep, one after the other', [
       ['measure', measure, true],
       ['point again', front],
     ]);
   }
 
   async function measure() {
+    step = 'asking';
     show('asking the computer which speakers…', '', []);
-    const channels = await new Promise((resolve) => { // the computer's list: speakers may have been added or removed there
+    const answer = await new Promise((resolve) => { // the computer's list: speakers may have been added or removed there
       waiting = resolve;
       link.send({ type: 'measure-ask' });
     });
+    const channels = answer.channels;
     if (!channels.length) return show('no speakers to measure: point at them first', '', [['point again', front, true]]);
+    if (answer.recorder === 'computer') return link.send({ type: 'measure-here', channels }); // it answers measuring, then measured
     const reference = channels[0];
     const events = plan(channels, reference, sweepSpec.seconds, sweepGap);
     const seconds = sweepLead + events.at(-1).start + sweepSpec.seconds + 2; // the message's delay and the room's tail
     step = 'measuring';
     show('measuring: hold still and stay quiet', `${Math.ceil(seconds)} s`, []);
     const id = `${Date.now()}`;
-    const samples = await record(seconds, () => link.send({ type: 'sweeps', id, channels, reference }));
+    const samples = await record(audio, mic, seconds, () => link.send({ type: 'sweeps', id, channels, reference }));
     show('sending the recording…', '', []);
     await link.sendData({ type: 'recording', id, sampleRate: samples.rate }, samples.data.buffer);
+    measured();
+  }
+  function measured() {
     step = 'measured';
     show('measured: the results are on the computer', '', [['measure again', measure, true], ['point again', front]]);
-  }
-
-  //  Records the microphone for some seconds; begins() runs once the recording has started.
-  function record(seconds, begins) {
-    return new Promise(async (resolve) => {
-      await audio.resume();
-      const source = audio.createMediaStreamSource(mic);
-      const node = audio.createScriptProcessor(4096, 1, 1);
-      const want = Math.round(seconds * audio.sampleRate), data = new Float32Array(want);
-      let at = 0, started = false;
-      node.onaudioprocess = (e) => {
-        if (!started) { started = true; begins(); }
-        const input = e.inputBuffer.getChannelData(0), n = Math.min(input.length, want - at);
-        data.set(input.subarray(0, n), at);
-        at += n;
-        if (at >= want) {
-          node.disconnect();
-          source.disconnect();
-          resolve({ data, rate: audio.sampleRate });
-        }
-      };
-      source.connect(node);
-      node.connect(audio.destination); // a script processor runs only when connected
-    });
   }
 
   /* ---- the overlay: the aiming circle ---- */

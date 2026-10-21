@@ -70,6 +70,10 @@
 * {
   box-sizing: border-box;
 }
+/*  what is hidden stays hidden, whatever display its class gives it */
+[hidden] {
+  display: none !important;
+}
 
 html {
   -webkit-text-size-adjust: 100%;
@@ -281,6 +285,18 @@ p {
 }
 .button.quiet:hover {
   background: var(--panel);
+}
+/*  `small`, for a button among a tool's controls; a button that cannot be pressed yet is drawn in grey */
+.button.small {
+  padding: 5px 10px;
+  font-size: var(--size-label);
+  letter-spacing: 0.04em;
+}
+.button:disabled {
+  background: var(--ground);
+  color: var(--label);
+  border-color: var(--rule);
+  cursor: default;
 }
 
 /*  Steps read in order, an `ol`, numbered by the list itself in a square; a `ul` of the same is parts, unnumbered. Down the page, each a row beside its number,
