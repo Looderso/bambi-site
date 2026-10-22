@@ -1,6 +1,6 @@
 ---
 /*  The host's page: a product page like a plugin's, its own window held beside the text, one screen per part.
-    The host's window is wider than a plugin's, 1092 x 600 points, and its pictures are drawn by its picture
+    The host's window is wider than a plugin's, 1103 x 600 points, and its pictures are drawn by its picture
     tool (scripts/pictures.sh). */
 import Page from '../layouts/Page.astro';
 import ProductPage, { type Part } from '../components/ProductPage.astro';
@@ -14,14 +14,14 @@ const why =
 const parts: Part[] = [
   {
     shot: 'routing',
-    crop: [0, 44, 72, 556],
+    crop: [0, 0, 84, 600],
     label: 'sidebar',
-    title: 'the plugins and the host’s pages',
-    text: 'On the left: each plugin’s window, then the host’s routing, timeline and audio settings. At the bottom: whether Live is connected, how many sources are playing, and the latency.',
+    title: 'the transport, the plugins and the host’s pages',
+    text: 'On the left: play and stop for Live’s transport, each plugin’s window, then the host’s I/O, routing and timeline pages. At the bottom: whether Live is connected, how many sources are playing, and the latency.',
   },
   {
     shot: 'routing',
-    crop: [76, 52, 380, 310],
+    crop: [92, 55, 375, 310],
     label: 'routing · live’s tracks',
     title: 'Live’s tracks and groups',
     text: 'Live’s tracks and groups in one column, the host’s own inputs below. Each track stays in Live, or goes into bambi through an encoder, with insert effects after it.',
@@ -29,14 +29,14 @@ const parts: Part[] = [
   },
   {
     shot: 'routing',
-    crop: [510, 52, 320, 145],
+    crop: [505, 55, 318, 140],
     label: 'routing · returns and main',
     title: 'returns and main',
     text: 'Live’s returns and main, each kept in Live or taken into bambi with its own insert effects, such as a reverb on a return.',
   },
   {
     shot: 'wires',
-    crop: [76, 52, 760, 270],
+    crop: [92, 55, 732, 310],
     label: 'routing · sends',
     title: 'sends',
     text: 'Press send, and the destinations a track can reach light up; click one to add a send at 0 dB. Click a track’s name to show its sends below it, and drag one to set its level.',
@@ -44,31 +44,31 @@ const parts: Part[] = [
   },
   {
     shot: 'routing',
-    crop: [880, 52, 212, 180],
+    crop: [860, 55, 235, 180],
     label: 'routing · decoders',
     title: 'any number of decoders',
     text: 'Each decoder gets its own mix and plays to headphones, loudspeakers, or both.',
   },
   {
     shot: 'timeline',
-    crop: [70, 40, 800, 400],
+    crop: [80, 0, 800, 420],
     label: 'timeline',
     title: 'arrangement and automation',
     text: 'Live’s transport and arrangement, in sync. Under each track, automation lanes for any plugin parameter in the host, following Live’s song position.',
   },
   {
     shot: 'session',
-    crop: [70, 40, 800, 520],
+    crop: [80, 0, 800, 520],
     label: 'timeline · session',
     title: 'session clips with their own automation',
     text: 'Live’s session view. Choose a clip, and its automation lanes open at the bottom, following the clip as it loops.',
   },
   {
     shot: 'outputs',
-    crop: [105, 22, 880, 530],
-    label: 'audio',
-    title: 'outputs',
-    text: 'The audio settings: the audio interfaces, then every output — Live’s main, each decoder’s headphones and loudspeakers on their channels — with copies to other channels, or back into Live for recording.',
+    crop: [80, 0, 1023, 380],
+    label: 'I/O',
+    title: 'inputs and outputs',
+    text: 'The I/O page: the interface, its outputs, inputs and MIDI as tabs. Every output — Live’s main, each decoder’s headphones and loudspeakers — is placed by a click on the interface’s channels, with copies to other channels or back into Live for recording.',
   },
 ];
 
@@ -82,7 +82,7 @@ const tutorials = [{ href: `${base}/tutorial/host`, title: 'the host', text: 'Se
     summary={summary}
     about={why}
     shots={`${base}/product/host`}
-    window={[1092, 600]}
+    window={[1103, 600]}
     parts={parts}
     tutorials={tutorials}
   >
