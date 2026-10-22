@@ -54,8 +54,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
           <p class="hint" id="inputNote">the phone records the sweeps; a microphone on this computer, where you listen, records a truer response · list the devices to choose one</p>
           <div class="bar next">
             <button class="button small" id="startSound">test</button>
-            <button class="button small" id="toPhone" disabled>next: the phone</button>
-            <button class="button small quiet" id="anyway" hidden>go on anyway</button>
+            <button class="button small" id="toPhone">next: the phone</button>
           </div>
         </section>
         <section class="cell">
@@ -82,6 +81,8 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
         <div id="qr"></div>
         <div><div class="address" id="url"></div><div class="label" id="phone">no phone yet</div></div>
       </div>
+      <p class="verdict" id="unreachable" hidden><span class="warn">The phone found this computer but cannot reach it
+        directly.</span> On the same Wi-Fi, switch off a VPN on either device, then reload the page on the phone.</p>
       <p class="verdict" id="verdict"></p>
       <div class="bar" id="phoneLevel">
         <span class="label">level</span>
@@ -275,8 +276,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
       return b;
     }));
     if (mic) notReady(); // a microphone here is checked again on the new device
-    $('toPhone').disabled = !!mic && !micReady;
-    if (!mic || micReady) reach(2);
+    reach(2);
     $('check').disabled = !phoneHere || !!mic;
     hello();
     showCode();
@@ -284,7 +284,19 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
   }
   const tiles = () => [...$('outputs').children].forEach((b, i) => b.classList.toggle('on', noise?.channel === i + 1));
   function stopTiles() { stopNoise(); tiles(); }
-  $('toPhone').addEventListener('click', () => show(2));
+  //  Next opens the device if test has not; a microphone here goes on unchecked if it was not tested. The browser is
+  //  asked for the microphone once either way: only then does it tell the phone this computer's own address on the
+  //  network, rather than a name the phone may not resolve, so the two can reach each other directly.
+  let allowed = false;
+  $('toPhone').addEventListener('click', async () => {
+    if (!ctx) await route();
+    if (!allowed) {
+      try { (await navigator.mediaDevices.getUserMedia({ audio: true })).getTracks().forEach((t) => t.stop()); } catch {}
+      allowed = true;
+    }
+    if (mic && !micReady) ready(true, true);
+    show(2);
+  });
 
 
   /*  Pink noise, looped on one output (Paul Kellet's filter). */
@@ -390,20 +402,16 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     listen();
   }
 
-  //  Whether the microphone passed its check: until it has, the next step waits, unless asked to go on anyway.
+  //  Whether the microphone passed its check. Testing is worth it, never required: next goes on without.
   function notReady() {
     micReady = false;
     $('micSteps').innerHTML = '';
-    $('micVerdict').textContent = mic ? 'press test: the room, then noise and a sweep on the first output, through the microphone' : '';
-    $('anyway').hidden = true;
+    $('micVerdict').textContent = mic ? 'test checks it before you measure: the room, then noise and a sweep on the first output, through the microphone' : '';
     measuredOne = heard = kept = null;
-    $('toPhone').disabled = !ctx || !!mic;
     if (mic) { $('toPoint').disabled = true; $('verdict').textContent = ''; }
   }
   function ready(yes, unchecked = false) {
     micReady = yes;
-    $('toPhone').disabled = !yes;
-    $('anyway').hidden = yes;
     if (yes) {
       reach(2);
       $('verdict').textContent = unchecked ? 'the microphone was not checked: the phone only points' : 'the microphone is checked: the phone only points';
@@ -411,7 +419,6 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
       reach(3);
     }
   }
-  $('anyway').addEventListener('click', () => ready(true, true));
 
   /* ---- the microphone's level and spectrum, live, on the first step ---- */
 
@@ -527,7 +534,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
       rows.push([name, text, state]);
       $('micSteps').innerHTML = rows.map(([n, t, st]) => `<li${st === 'bad' ? ' class="bad"' : ''}><span>${n}</span><span class="state">${t}</span></li>`).join('');
     };
-    const fail = (text) => { $('micVerdict').innerHTML = `<span class="warn">${text}</span>`; ready(false); };
+    const fail = (text) => { $('micVerdict').innerHTML = `<span class="warn">${text}</span> Or go on without: next.`; ready(false); };
     try {
       stopTiles();
       $('micVerdict').textContent = 'measuring the noise floor: stay quiet…';
@@ -592,8 +599,11 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     qr.make();
     $('qr').innerHTML = qr.createSvgTag({ cellSize: 4, margin: 2 });
   }
+  //  The hint for a connection that cannot be made shows only then, and goes once the two are connected.
   link.onState((s) => {
+    $('unreachable').hidden = s !== 'failed';
     if (s === 'away' || s === 'lost') phoneIs(false, s === 'away' ? 'the phone left' : 'the connection to the phone was lost');
+    if (s === 'failed') phoneIs(false, 'the connection to the phone failed');
     if (s === 'connecting') $('phone').textContent = 'the phone is connecting…';
   });
   function phoneIs(here, text) {
