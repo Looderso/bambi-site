@@ -12,6 +12,8 @@ const parts: [string, string][] = [
   ['outputs', 'outputs'],
   ['headphones', 'headphones'],
   ['speakers', 'speakers'],
+  ['decoding', 'decoding'],
+  ['fill', 'fill'],
   ['loudspeakers', 'loudspeakers'],
   ['orientation', 'orientation'],
   ['scene', 'the 3D view'],
@@ -55,7 +57,7 @@ const parts: [string, string][] = [
 
   <section id="headphones" class="split">
     <figure class="panel">
-      <img src={img('decoder-headphones')} alt="The headphones page: model, ku100 or sofa file; head and ears; the channel pair; through the layout; personalise." width="696" height="720" />
+      <img src={img('decoder-headphones')} alt="The headphones page: model, ku100 or sofa file; head and ears; the channel pair; through the layout." width="696" height="720" />
     </figure>
     <div class="prose">
       <h2>headphones</h2>
@@ -76,21 +78,21 @@ const parts: [string, string][] = [
           <strong><code>through the layout</code></strong> plays the speaker layout virtually on the headphones, so you
           can hear the loudspeakers without them.
         </li>
-        <li>
-          <strong><code>personalise…</code></strong> opens a page for setting the two sliders by ear, compared against a
-          real loudspeaker.
-        </li>
       </ul>
     </div>
   </section>
 
   <section id="speakers" class="split">
     <figure class="panel">
-      <img src={img('decoder-speakers')} alt="The speakers page: itu, file or typed; ten layouts with 4+7+0 chosen; from channel; the channel map; one listener or audience; distance compensation; loudspeakers." width="696" height="860" />
+      <img src={img('decoder-speakers')} alt="The speakers page on its layout sub-tab: itu, file or typed; ten layouts with 4+7+0 chosen; loudspeakers…; the channels and what plays on each." width="696" height="720" />
     </figure>
     <div class="prose">
       <h2>speakers</h2>
-      <p>The loudspeaker layout, set in one of three ways:</p>
+      <p>
+        The speakers page opens on three sub-tabs: <strong><code>layout</code></strong>, below,
+        <strong><code>decoding</code></strong> and <strong><code>fill</code></strong>, <a href="#decoding">next</a>.
+        On <code>layout</code>, the loudspeaker layout is set in one of three ways:
+      </p>
       <ul>
         <li><strong><code>itu</code></strong>: ten layouts built in, from <code>0+2+0</code> to <code>9+10+3</code>.</li>
         <li>
@@ -103,16 +105,68 @@ const parts: [string, string][] = [
         </li>
       </ul>
       <p>
-        <strong>channels</strong>: <code>from channel</code> is the first host channel of the layout; its
-        channels move as a block, so a headphone pair or an interface's own outputs can come before them. Under it,
-        every channel shows which output uses it.
+        <strong><code>loudspeakers…</code></strong> opens the <a href="#loudspeakers">table</a>. <strong>channels</strong>
+        shows the bus's channels and what plays on each, and a line names each output's channels: the layout's move
+        as a block, so a headphone pair or an interface's own outputs can come before them. An output that does not
+        fit is marked <code>not playing</code>.
       </p>
+    </div>
+  </section>
+
+  <section id="decoding" class="split">
+    <figure class="panel">
+      <img src={img('decoder-decoding')} alt="The decoding sub-tab: one listener or audience, and distance compensation." width="696" height="280" />
+    </figure>
+    <div class="prose">
+      <h2>decoding</h2>
       <p>
-        <strong>options</strong>: whether the decoding is weighted for <code>one listener</code> or an
-        <code>audience</code>, and <code>distance compensation</code>, which gives every loudspeaker the gain and
-        delay that bring it to the farthest one's distance. A layout of two loudspeakers has its own choice instead of the weighting:
+        Whether the decoding is weighted for <code>one listener</code> in the sweet spot or an <code>audience</code>,
+        and <code>distance compensation</code>, which gives every loudspeaker the gain and delay that bring it to the
+        farthest one's distance. A layout of two loudspeakers has its own choice instead of the weighting:
         <code>fold</code> puts the whole sound scene on the pair, and <code>slice</code> plays only what the listener
         faces, between them.
+      </p>
+    </div>
+  </section>
+
+  <section id="fill" class="split">
+    <figure class="panel">
+      <img src={img('decoder-fill')} alt="The fill sub-tab: fill the gaps binaurally switched on with its channel separation, the hrtf, and the tiles for the crossfade and the crosstalk cancellation." width="696" height="1000" />
+    </figure>
+    <div class="prose">
+      <h2>fill</h2>
+      <p>
+        Most layouts leave part of the sphere uncovered: a stereo pair everything outside the arc between its two
+        loudspeakers, a 5.1 or 7.1 ring what is above and below, a dome what is below. <strong><code>fill the gaps binaurally</code></strong> plays those directions
+        binaurally on the same loudspeakers, through crosstalk cancellation, so each ear hears its own channel. What the
+        layout covers plays exactly as before. It is for one listener in the sweet spot, facing the layout as it was
+        measured, and it is off by default.
+      </p>
+      <ul>
+        <li>
+          <strong>The channel separation</strong>: with the fill on, the line under the switch shows how well the
+          loudspeakers keep each ear’s channel out of the other ear. Below 25 dB (all loudspeakers on one side, or on the
+          median plane) the fill is refused, and the line says so.
+        </li>
+        <li>
+          <strong><code>hrtf</code></strong>: the HRTF the binaural part uses, the same choice and sliders as on the
+          headphones page.
+        </li>
+        <li>
+          <strong>crossfade</strong>: within <code>no fill within</code> of the covered directions only the loudspeaker
+          decode plays (20°); <code>crossfade width</code> is how wide the fade to binaural is beyond that (60°).
+        </li>
+        <li>
+          <strong>crosstalk cancellation</strong>: <code>depth</code> is how hard it cancels (25 dB): less sounds closer
+          to plain binaural on loudspeakers, more relies more on the listener sitting exactly in place.
+          <code>up to</code> is the highest frequency it cancels (4.5 kHz): above about 6 kHz the cancellation of a
+          narrow pair rings.
+        </li>
+      </ul>
+      <p>
+        With the fill on, the decoder's latency is 256 samples instead of 64, on every output, and your DAW is told.
+        The fill keeps the level: switching it changes the sound, not how loud it is. A pair whose gaps are filled
+        plays its <code>fold</code>.
       </p>
     </div>
   </section>
@@ -142,12 +196,13 @@ const parts: [string, string][] = [
   <section id="orientation">
     <h2>orientation</h2>
     <figure>
-      <img src={img('decoder-orientation')} alt="The orientation strip: none, osc, airpods and phone; head or scene, recentre, setup and static; yaw, pitch and roll with their rates." width="1236" height="420" />
+      <img src={img('decoder-orientation')} alt="The orientation strip: none, osc, airpods and phone; recentre and setup; yaw, pitch and roll, each with a flip, and their rates." width="1236" height="420" />
     </figure>
     <div class="prose">
       <p>
         Where the effects have their matrix, the decoder has head tracking, always on screen. The sliders and rates
-        rotate the sound scene for every output; a tracker set to <code>head</code> rotates the headphones, and a two-loudspeaker layout set to <code>slice</code>.
+        rotate the sound scene for every output; a tracker that tracks the head rotates the headphones, and a
+        two-loudspeaker layout set to <code>slice</code>.
       </p>
       <ul>
         <li>
@@ -156,22 +211,16 @@ const parts: [string, string][] = [
           Beside the tabs, the tracker shows whether it is sending data, and at what rate.
         </li>
         <li>
-          <strong><code>head</code></strong> or <strong><code>scene</code></strong>: whether the tracker compensates
-          your head movement, so the sound stays put in the room while you turn, or adds one more rotation to the sound scene.
-        </li>
-        <li>
           <strong><code>recentre</code></strong> makes the direction you face now the front, and <strong><code>setup…</code></strong>
-          opens the tracker's own page: the OSC port and message, the AirPods' look-and-nod, or the code a phone
-          scans.
+          opens the tracker's own page beside the output's: the OSC port and message, the AirPods' look-and-nod, or the
+          code a phone scans. There it <strong><code>tracks the head</code></strong>, compensating your head movement so
+          the sound stays put in the room while you turn, or <strong><code>rotates the scene</code></strong>, one more
+          rotation of the sound scene for every output.
         </li>
         <li>
           <strong><code>yaw</code></strong>, <strong><code>pitch</code></strong> and <strong><code>roll</code></strong>
           rotate the sound scene manually, each with a rate under it. <code>flip</code> beside an angle inverts the
-          tracker on that axis.
-        </li>
-        <li>
-          <strong><code>static</code></strong> holds the sound scene still whatever the sliders and rates say, so
-          you can hear a mix without the rotation its automation adds.
+          tracker on that axis, and a double-click on an angle resets it and what its rate has added.
         </li>
       </ul>
     </div>
@@ -203,11 +252,15 @@ const parts: [string, string][] = [
       <ol>
         <li>
           <strong>A stereo pair that follows your head.</strong> On the speakers page choose <code>0+2+0</code> and
-          <code>slice</code>, then a tracker set to <code>head</code>: the pair plays only what you face.
+          <code>slice</code> on <code>decoding</code>, then a tracker that tracks the head: the pair plays only what you face.
         </li>
         <li>
           <strong>Loudspeakers on headphones.</strong> Choose a layout on the speakers page, then switch on
           <code>through the layout</code> on the headphones page to hear it before you set it up.
+        </li>
+        <li>
+          <strong>Sound from above on a 7.1 ring.</strong> Choose <code>0+7+0</code>, open <code>fill</code> and switch
+          on <code>fill the gaps binaurally</code>, then sit in the sweet spot and move a source over your head.
         </li>
         <li>
           <strong>Rotate the sound scene, not the head.</strong> Give <code>yaw rate</code> a value and press play: the
