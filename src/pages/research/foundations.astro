@@ -1,0 +1,300 @@
+---
+/*  The work bambi builds on: what each gave, and where to read it. */
+import Page from '../../layouts/Page.astro';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+interface Work {
+  who: string;
+  what: string;
+  where: string;
+  href?: string;
+  gave: string;
+}
+
+const groups: { title: string; works: Work[] }[] = [
+  {
+    title: 'the inspiration',
+    works: [
+      {
+        who: 'Institute of Electronic Music and Acoustics (IEM), Graz — Daniel Rudrich, lead developer',
+        what: 'IEM Plug-in Suite',
+        where: 'free and open source, GPLv3',
+        href: 'https://plugins.iem.at/',
+        gave:
+          'The open reference for higher-order ambisonics in a DAW: how a plugin suite for the whole sphere can work, from encoding to visualising a sound field. bambi was written from the published theory rather than from its code, and would not exist in this form without it.',
+      },
+    ],
+  },
+  {
+    title: 'ambisonics',
+    works: [
+      {
+        who: 'Jérôme Daniel',
+        what: 'Représentation de champs acoustiques, application à la transmission et à la restitution de scènes sonores complexes dans un contexte multimédia',
+        where: 'doctoral thesis, Université Paris 6, 2000',
+        href: 'https://theses.fr/2000PA066581',
+        gave: 'Higher-order ambisonics, and the max-rE weighting bambi reads and places fields with.',
+      },
+      {
+        who: 'Franz Zotter and Matthias Frank',
+        what: 'Ambisonics: A Practical 3D Audio Theory for Recording, Studio Production, Sound Reinforcement, and Virtual Reality',
+        where: 'Springer, 2019, open access',
+        href: 'https://doi.org/10.1007/978-3-030-17207-7',
+        gave: 'The reference for the spherical harmonics, rotations and decoding under everything bambi does.',
+      },
+      {
+        who: 'Christian Nachbar, Franz Zotter, Etienne Deleflie and Alois Sontacchi',
+        what: 'ambiX — A Suggested Ambisonics Format',
+        where: 'Ambisonics Symposium, Lexington, 2011',
+        href: 'https://ambisonics.iem.at/proceedings-of-the-ambisonics-symposium-2011/ambix-a-suggested-ambisonics-format',
+        gave: 'The channel order and normalisation bambi speaks: ACN, SN3D.',
+      },
+    ],
+  },
+  {
+    title: 'warping the sound field',
+    works: [
+      {
+        who: 'Hannes Pomberger and Franz Zotter',
+        what: 'Warping of 3D Ambisonic Recordings',
+        where: 'Ambisonics Symposium, Lexington, 2011',
+        href: 'https://ambisonics.iem.at/proceedings-of-the-ambisonics-symposium-2011/warping-of-3d-ambisonic-recordings',
+        gave: 'The warp that pulls a sound field towards one pole of an axis.',
+      },
+    ],
+  },
+  {
+    title: 'rooms and reverberation',
+    works: [
+      {
+        who: 'Jont B. Allen and David A. Berkley',
+        what: 'Image method for efficiently simulating small-room acoustics',
+        where: 'Journal of the Acoustical Society of America 65(4), 1979',
+        gave: "The early reflections: a room's walls as mirror images of the source.",
+      },
+      {
+        who: 'Carl F. Eyring',
+        what: 'Reverberation time in “dead” rooms',
+        where: 'Journal of the Acoustical Society of America 1(2), 1930',
+        gave: 'How long a room of a given size and absorption rings.',
+      },
+      {
+        who: 'Jean-Marc Jot and Antoine Chaigne',
+        what: 'Digital delay networks for designing artificial reverberators',
+        where: 'AES 90th Convention, Paris, 1991, preprint 3030',
+        href: 'https://aes2.org/publications/elibrary-page/?id=5663',
+        gave: 'The feedback delay network the tail is built on, and how to give it a decay per band.',
+      },
+      {
+        who: 'Sebastian J. Schlecht and Emanuël A. P. Habets',
+        what: 'Feedback Delay Networks: Echo Density and Mixing Time',
+        where: 'IEEE/ACM Transactions on Audio, Speech, and Language Processing 25(2), 2017',
+        gave: 'How dense a delay network’s echoes grow, and when.',
+      },
+      {
+        who: 'Alexander Lindau, Linda Kosanke and Stefan Weinzierl',
+        what: 'Perceptual Evaluation of Model- and Signal-Based Predictors of the Mixing Time in Binaural Room Impulse Responses',
+        where: 'Journal of the Audio Engineering Society 60(11), 2012',
+        href: 'https://www.aes.org/e-lib/browse.cfm?elib=16633',
+        gave: 'When the reflections stop being heard one by one, and the tail takes over.',
+      },
+      {
+        who: 'Julius O. Smith III',
+        what: 'Physical Audio Signal Processing',
+        where: 'online book, CCRMA, Stanford',
+        href: 'https://ccrma.stanford.edu/~jos/pasp/FDN_Reverberation.html',
+        gave: 'Delay-network reverberation in practice: mode density and tonal correction.',
+      },
+      {
+        who: 'Geraint Luff, Signalsmith Audio',
+        what: 'Let’s Write a Reverb',
+        where: 'article, 2021',
+        href: 'https://signalsmith-audio.co.uk/writing/2021/lets-write-a-reverb/',
+        gave: 'A clear, practical path from diffusion to a working tail.',
+      },
+    ],
+  },
+  {
+    title: 'decoding to loudspeakers',
+    works: [
+      {
+        who: 'International Telecommunication Union',
+        what: 'Recommendation ITU-R BS.2051: Advanced sound system for programme production',
+        where: 'ITU-R',
+        href: 'https://www.itu.int/rec/R-REC-BS.2051',
+        gave: 'The ten loudspeaker layouts built into the decoder, by name and in the recommendation’s channel order.',
+      },
+      {
+        who: 'Franz Zotter and Matthias Frank',
+        what: 'All-Round Ambisonic Panning and Decoding',
+        where: 'Journal of the Audio Engineering Society 60(10), 2012',
+        gave: 'AllRAD: a loudspeaker decoder designed from the loudspeakers’ positions alone, with the weighting the decoder calls audience.',
+      },
+      {
+        who: 'Franz Zotter, Stefan Riedel and Matthias Frank',
+        what: 'All-Round Ambisonic Decoding: Spread and Correlation',
+        where: 'DAGA, Stuttgart, 2022',
+        href: 'https://pub.dega-akustik.de/DAGA_2022/data/articles/000344.pdf',
+        gave: 'What mixing imaginary loudspeakers back into their neighbours costs, and why the decoder drops them instead.',
+      },
+    ],
+  },
+  {
+    title: 'binaural rendering',
+    works: [
+      {
+        who: 'Christian Schörkhuber, Markus Zaunschirm and Robert Höldrich',
+        what: 'Binaural Rendering of Ambisonic Signals via Magnitude Least Squares',
+        where: 'DAGA, Munich, 2018',
+        gave: 'MagLS: above the frequency where the order can still hold the phase, the decoder fits the magnitudes alone.',
+      },
+      {
+        who: 'Markus Zaunschirm, Christian Schörkhuber and Robert Höldrich',
+        what: 'Binaural rendering of Ambisonic signals by head-related impulse response time alignment and a diffuseness constraint',
+        where: 'Journal of the Acoustical Society of America 143(6), 2018',
+        href: 'https://doi.org/10.1121/1.5040489',
+        gave: 'The diffuse-field constraint the decoder’s binaural decode keeps: a diffuse sound field reaches the ears with the head’s own spectra and coherence between the ears.',
+      },
+    ],
+  },
+  {
+    title: 'heads',
+    works: [
+      {
+        who: 'Lorenz Häusler',
+        what: 'Data-Driven HRTF Individualization: Towards Enhanced Elevation Perception Using Interactive User Optimization',
+        where: 'master’s thesis, University of Music and Performing Arts Graz, 2024',
+        gave: 'Where the decoder’s head model starts: a head split into what all heads share and what is one listener’s, two sliders for the listener’s part, and finding them by ear against a real loudspeaker.',
+      },
+      {
+        who: 'Fabian Brinkmann et al.',
+        what: 'A Cross-Evaluated Database of Measured and Simulated HRTFs Including 3D Head Meshes, Anthropometric Features, and Headphone Impulse Responses',
+        where: 'Journal of the Audio Engineering Society 67(9), 2019',
+        href: 'https://doi.org/10.17743/jaes.2019.0024',
+        gave: 'HUTUBS, one of the two databases the decoder’s learned head comes from.',
+      },
+      {
+        who: 'Rahulram Sridhar, Joseph G. Tylka and Edgar Choueiri',
+        what: 'A Database of Head-Related Transfer Functions and Morphological Measurements',
+        where: 'AES 143rd Convention, New York, 2017',
+        gave: 'The 3D3A database, the other one.',
+      },
+      {
+        who: 'Cal Armstrong, Lewis Thresh, Damian Murphy and Gavin Kearney',
+        what: 'A Perceptual Evaluation of Individual and Non-Individual HRTFs: A Case Study of the SADIE II Database',
+        where: 'Applied Sciences 8(11), 2018',
+        href: 'https://doi.org/10.3390/app8112029',
+        gave: 'The Neumann KU100 as SADIE II measured it, the decoder’s second head.',
+      },
+      {
+        who: 'Audio Engineering Society',
+        what: 'AES69: Spatial acoustic data file format (SOFA)',
+        where: 'AES standard',
+        href: 'https://www.sofaconventions.org/',
+        gave: 'The file a measured head, or a whole decoder as filters, arrives in.',
+      },
+      {
+        who: 'Sebastian A. Ausili et al.',
+        what: 'Sound Localization with Hearables in Transparency Mode',
+        where: 'Audiology Research 15(3), 2025',
+        href: 'https://doi.org/10.3390/audiolres15030048',
+        gave: 'Why personalising a head is done on open headphones: an earbud’s transparency mode shifts the level difference between the ears and loses the spectral cues.',
+      },
+    ],
+  },
+  {
+    title: 'head tracking',
+    works: [
+      {
+        who: 'Daniel Rudrich',
+        what: 'Headitude',
+        where: 'AirPods orientation to OSC, macOS, MIT licence',
+        href: 'https://github.com/DanielRudrich/Headitude',
+        gave: 'The frame the AirPods report in, and the look-and-nod calibration that replaces it when a pair sits askew.',
+      },
+      {
+        who: 'Leo McCormack and Archontis Politis',
+        what: 'SPARTA & COMPASS: Real-time implementations of linear and parametric spatial audio reproduction and processing methods',
+        where: 'AES Conference on Immersive and Interactive Audio, York, 2019',
+        href: 'https://leomccormack.github.io/sparta-site/',
+        gave: 'The orientation messages over OSC the decoder’s tracker reads, and the layout files it shares with the IEM suite.',
+      },
+    ],
+  },
+  {
+    title: 'layouts, filters and files',
+    works: [
+      {
+        who: 'Fons Adriaensen',
+        what: 'AmbDec and jconvolver',
+        where: 'free software',
+        href: 'https://kokkinizita.linuxaudio.org/linuxaudio/',
+        gave: 'AmbDec’s decoder configuration, read as a layout, and jconvolver’s filter sets, which a loudspeaker array’s maker ships, converted to the SOFA filters the decoder plays.',
+      },
+      {
+        who: 'Christian Hoene et al.',
+        what: 'libmysofa',
+        where: 'free software, BSD licence',
+        href: 'https://github.com/hoene/libmysofa',
+        gave: 'How the decoder reads a SOFA file.',
+      },
+    ],
+  },
+];
+---
+
+<Page title="foundations" description="The research and the software bambi builds on.">
+  <h1>foundations</h1>
+  <p class="sub label">the research and the software bambi builds on</p>
+
+  {
+    groups.map((group) => (
+      <section>
+        <h2>{group.title}</h2>
+        <ul class="works">
+          {group.works.map((w) => (
+            <li>
+              <p class="who label">{w.who}</p>
+              <p class="what">{w.href ? <a href={w.href}>{w.what}</a> : w.what}</p>
+              <p class="where label">{w.where}</p>
+              <p class="gave">{w.gave}</p>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))
+  }
+</Page>
+
+<style>
+  section {
+    margin-bottom: var(--section);
+  }
+  .works {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 28px;
+  }
+  li p {
+    margin: 0;
+  }
+  .who {
+    text-transform: none;
+  }
+  .what {
+    font-size: 18px;
+    line-height: 1.35;
+    margin: 4px 0 2px;
+    max-width: 52ch;
+  }
+  .where {
+    text-transform: none;
+  }
+  .gave {
+    margin-top: 8px;
+    max-width: var(--measure);
+  }
+</style>

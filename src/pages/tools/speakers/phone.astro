@@ -1,0 +1,247 @@
+---
+/*  The speakers tool's phone: joins the session the computer's page shows as a code, points at front and at each
+    speaker while it plays noise, a picture at each, and records the sweeps from where the listener sits -- unless a
+    microphone on the computer records them, when the phone only points. */
+import Page from '../../../layouts/Page.astro';
+---
+
+<Page title="speakers · phone" description="The phone's half of the speakers tool." band={false}>
+  <div class="phone-tool">
+<video id="video" playsinline muted autoplay></video>
+  <canvas id="overlay"></canvas>
+  
+  <div class="start" id="start">
+    <p class="label">speakers</p>
+    <h1>point, then measure</h1>
+    <p>Stand where you listen, the phone at the height of your ears, held upright, its rotation locked.</p>
+    <ol>
+      <li>Point at front, then at every speaker while it plays noise. Each tap takes a picture.</li>
+      <li>Hold still where your head is while every speaker plays a sweep.</li>
+    </ol>
+    <button class="button main" id="go">start</button>
+    <p class="hint" id="secure"></p>
+  </div>
+  
+  <div class="bar">
+    <div id="status">…</div>
+    <div id="small"></div>
+    <div class="row" id="buttons"></div>
+  </div>
+  </div>
+</Page>
+
+<script>
+  import { deviceToEnu } from '../../../lib/speakers/orientation.js';
+  import { plan, sweepGap, sweepLead, sweepSpec } from '../../../lib/speakers/measure.js';
+  import { MEETING_POINT, openLink } from '../../../lib/speakers/link.js';
+  import { openInput, peakDb, record } from '../../../lib/speakers/record.js';
+
+  const $ = (id) => document.getElementById(id);
+  //  the site's colours, for what is drawn over the camera
+  const tone = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  const GROUND = tone('--ground');
+  const video = $('video'), overlay = $('overlay'), g = overlay.getContext('2d');
+  const session = new URLSearchParams(location.search).get('s');
+  $('secure').textContent = !session ? 'Open this page from the code the speakers tool shows on your computer.' : window.isSecureContext ? '' : 'This page is not secure: open it over https.';
+  const params = new URLSearchParams(location.search);
+  const link = session && openLink(session, 'phone', params.get('signal') ?? MEETING_POINT);
+  link?.onState((s) => s !== 'open' && step !== 'start' && ($('small').textContent = { connecting: 'connecting to the computer…', away: 'the computer left', lost: 'the connection was lost' }[s]));
+
+  let orientation = null, mic = null, audio = null, outputs = null; // outputs: { count, names } from the computer
+  let step = 'start';
+  window.addEventListener('deviceorientation', (e) => {
+    if (e.alpha != null) orientation = { alpha: e.alpha, beta: e.beta, gamma: e.gamma };
+  });
+  const rotation = () => orientation && deviceToEnu(orientation.alpha, orientation.beta, orientation.gamma);
+  let waiting = null; // the measurement waiting to hear which speakers to measure
+  //  until the computer says go, the phone waits, and answers the computer's check of the level
+  const idle = () => step === 'waiting' && show('connected: follow the computer', 'it checks the level, then sends you on', []);
+  link?.onMessage(async (m) => {
+    if (m.type === 'hello') {
+      outputs = { count: m.outputs, names: m.names, recorder: m.recorder ?? 'phone' };
+      idle();
+      if (step === 'ready') ready(); // who records may have changed
+    }
+    if (m.type === 'check' && step === 'waiting') {
+      show('checking the level…', 'hold the phone where you listen', []);
+      const samples = await record(audio, mic, m.seconds, () => link.send({ type: 'checking', id: m.id }));
+      link.send({ type: 'checked', id: m.id, peakDb: peakDb(samples.data) });
+      idle();
+    }
+    if (m.type === 'go' && outputs && step === 'waiting') front();
+    if (m.type === 'speakers' && waiting) {
+      waiting(m);
+      waiting = null;
+    }
+    //  the computer's microphone records: the phone shows how far it is, whoever started it
+    //  never while the phone is aiming: the computer's measurement waits for nothing on the phone
+    const free = ['waiting', 'ready', 'measured', 'asking'].includes(step) || (step === 'measuring' && outputs?.recorder === 'computer');
+    if (m.type === 'measuring' && free) { step = 'measuring'; show('measuring: hold still and stay quiet', 'the microphone at the computer records', []); }
+    if (m.type === 'measured' && free) measured();
+    if (m.type === 'measure-again' && step === 'asking') measure();
+  });
+
+  function show(text, small, buttons) {
+    $('status').textContent = text;
+    $('small').textContent = small ?? '';
+    $('buttons').replaceChildren(...buttons.map(([label, act, main]) => {
+      const b = document.createElement('button');
+      b.textContent = label;
+      if (main) b.className = 'main';
+      b.addEventListener('click', act);
+      return b;
+    }));
+  }
+
+  $('go').addEventListener('click', async () => {
+    if (!session) return;
+    try {
+      if (typeof DeviceOrientationEvent !== 'undefined' && DeviceOrientationEvent.requestPermission)
+        await DeviceOrientationEvent.requestPermission();
+      mic = await openInput();
+      video.srcObject = await navigator.mediaDevices.getUserMedia({ audio: false, video: { facingMode: { ideal: 'environment' }, width: { ideal: 1920 }, height: { ideal: 1080 } } });
+      await video.play();
+      audio = new AudioContext(); // opened by this tap: a phone lets a page record later only from a context opened so
+      await audio.resume();
+    } catch (e) {
+      $('secure').textContent = `could not start: ${e.message}`;
+      return;
+    }
+    $('start').remove();
+    requestAnimationFrame(frame);
+    step = 'waiting';
+    show('connecting to the computer…', '', []);
+    link.send({ type: 'join' });
+    idle();
+  });
+
+  //  the picture where the phone points, as JPEG, with the orientation it was taken at
+  async function picture() {
+    const at = { ...orientation, t: performance.now() };
+    const w = video.videoWidth, h = video.videoHeight, scale = Math.min(1, 1600 / Math.max(w, h));
+    const c = document.createElement('canvas');
+    c.width = Math.round(w * scale);
+    c.height = Math.round(h * scale);
+    c.getContext('2d').drawImage(video, 0, 0, c.width, c.height);
+    flash = performance.now();
+    return { meta: { ...at, w: c.width, h: c.height }, jpeg: await new Promise((r) => c.toBlob(r, 'image/jpeg', 0.88)) };
+  }
+  let flash = 0;
+
+  /* ---- 1. front and every speaker: the computer plays noise on one output, the phone points at it and takes a
+     picture there ---- */
+
+  function front() {
+    step = 'front';
+    show('point at front', 'the direction you face when you listen', [['this is front', async () => {
+      if (!rotation()) return;
+      const p = await picture();
+      link.sendData({ type: 'front', ...p.meta }, p.jpeg);
+      speaker(1);
+    }, true], ['skip pointing', () => { link.send({ type: 'stop' }); ready(); }]]);
+  }
+
+  function speaker(channel) {
+    if (channel > outputs.count) { link.send({ type: 'stop' }); return ready(); }
+    step = 'speaker';
+    const name = outputs.names[channel - 1];
+    link.send({ type: 'noise', channel });
+    show(`point at the speaker playing: ${name}`, `output ${channel} of ${outputs.count}`, [
+      ['this one', async () => {
+        if (!rotation()) return;
+        const p = await picture();
+        link.sendData({ type: 'pointed', channel, ...p.meta }, p.jpeg);
+        speaker(channel + 1);
+      }, true],
+      ['none', () => { link.send({ type: 'none', channel }); speaker(channel + 1); }],
+      ['again', () => speaker(channel)],
+    ]);
+  }
+
+  /* ---- 2. the sweeps, from one position ---- */
+
+  function ready() {
+    step = 'ready';
+    const here = outputs.recorder === 'phone';
+    show(here ? 'stand still and hold the phone where your head is' : 'put the microphone where your head is, and stay quiet',
+      'every speaker plays a sweep, one after the other', [
+      ['measure', measure, true],
+      ['point again', front],
+    ]);
+  }
+
+  async function measure() {
+    step = 'asking';
+    show('asking the computer which speakers…', '', []);
+    const answer = await new Promise((resolve) => { // the computer's list: speakers may have been added or removed there
+      waiting = resolve;
+      link.send({ type: 'measure-ask' });
+    });
+    const channels = answer.channels;
+    if (!channels.length) return show('no speakers to measure: point at them first', '', [['point again', front, true]]);
+    if (answer.recorder === 'computer') return link.send({ type: 'measure-here', channels }); // it answers measuring, then measured
+    const reference = channels[0];
+    const events = plan(channels, reference, sweepSpec.seconds, sweepGap);
+    const seconds = sweepLead + events.at(-1).start + sweepSpec.seconds + 2; // the message's delay and the room's tail
+    step = 'measuring';
+    show('measuring: hold still and stay quiet', `${Math.ceil(seconds)} s`, []);
+    const id = `${Date.now()}`;
+    const samples = await record(audio, mic, seconds, () => link.send({ type: 'sweeps', id, channels, reference }));
+    show('sending the recording…', '', []);
+    await link.sendData({ type: 'recording', id, sampleRate: samples.rate }, samples.data.buffer);
+    measured();
+  }
+  function measured() {
+    step = 'measured';
+    show('measured: the results are on the computer', '', [['measure again', measure, true], ['point again', front]]);
+  }
+
+  /* ---- the overlay: the aiming circle ---- */
+
+  function frame(now) {
+    requestAnimationFrame(frame);
+    const s = devicePixelRatio, W = (overlay.width = innerWidth * s), H = (overlay.height = innerHeight * s);
+    g.clearRect(0, 0, W, H);
+    if (now - flash < 150) { g.globalAlpha = 0.6; g.fillStyle = GROUND; g.fillRect(0, 0, W, H); g.globalAlpha = 1; }
+    g.strokeStyle = GROUND;
+    g.lineWidth = 2 * s;
+    g.beginPath();
+    g.arc(W / 2, H / 2, 22 * s, 0, Math.PI * 2);
+    g.stroke();
+    const R = rotation();
+    if (!R) return;
+    const angle = screen.orientation ? screen.orientation.angle : window.orientation || 0;
+    if (angle) {
+      g.fillStyle = GROUND;
+      g.font = `${15 * s}px Helvetica Neue, Helvetica, Arial, sans-serif`;
+      g.fillText('hold the phone upright and lock its rotation', 16 * s, 40 * s);
+      return;
+    }
+  }
+</script>
+
+<style is:global>
+  .phone-tool .button { font: inherit; padding: 9px 10px; color: var(--text); background: none; border: var(--stroke-rule) solid var(--rule-strong); border-radius: 0; cursor: pointer; }
+  .phone-tool .button.main { background: var(--chosen); color: var(--text-inverse); }
+  .phone-tool .hint { color: var(--label); font-size: var(--size-small); }
+
+  .phone-tool video, .phone-tool canvas { position: fixed; inset: var(--header) 0 0 0; width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+  /*  the bar: ink, the site's off-white on it, square buttons */
+  .phone-tool .bar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 10; padding: 14px var(--gutter) calc(18px + env(safe-area-inset-bottom));
+    background: color-mix(in srgb, var(--text) 86%, transparent); color: var(--text-inverse); display: grid; gap: 10px; touch-action: manipulation; }
+  .phone-tool #status { min-height: 1.4em; font-size: 18px; font-weight: 500; }
+  .phone-tool #small { min-height: 1.2em; font-size: var(--size-label); letter-spacing: var(--tracking-label); text-transform: lowercase; color: var(--silver); }
+  .phone-tool .row { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 8px; }
+  .phone-tool .row button { font: inherit; font-size: 15px; min-height: 48px; padding: 10px 12px; border: var(--stroke-rule) solid var(--text-inverse);
+    border-radius: 0; background: none; color: var(--text-inverse); }
+  .phone-tool .row button.main { background: var(--text-inverse); color: var(--text); }
+  /*  the start: a page of the site */
+  .phone-tool .start { position: fixed; inset: var(--header) 0 0 0; z-index: 20; background: var(--ground); color: var(--text); overflow: auto;
+    padding: 32px var(--gutter) calc(32px + env(safe-area-inset-bottom)); display: grid; align-content: center; gap: 4px; }
+  .phone-tool .start h1 { margin: 6px 0 12px; }
+  .phone-tool .start p { font-size: var(--size-body); }
+  .phone-tool .start ol { padding-left: 1.2em; margin: 0 0 20px; }
+  .phone-tool .start li { margin-bottom: 6px; }
+  .phone-tool .start .button { width: 100%; min-height: 48px; font-size: 16px; }
+
+</style>

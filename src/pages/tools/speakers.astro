@@ -1,0 +1,1314 @@
+---
+/*  The speakers tool: where a listener's speakers are and how each arrives where they listen, in four steps --
+    the sound, a phone, pointing and measuring, the result -- and a layout file for a decoder out. The computer
+    plays, the phone (tools/speakers/phone) points and takes the pictures, and the sweeps are recorded by the
+    phone's microphone or by one on the computer; the two talk directly once a meeting point has passed their
+    handshake. Everything runs in the two browsers; the code is in src/lib/speakers. */
+import Page from '../../layouts/Page.astro';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<Page title="speakers" description="Find where your speakers are and how each one arrives where you listen, with a phone, and export the layout for a decoder." wide>
+  <div class="speakers">
+    <h1>speakers</h1>
+    <p class="sub label">where your speakers are, and how each one arrives where you listen</p>
+  <nav class="steps" id="steps">
+      <button data-to="1"><b>1</b>sound</button>
+      <button data-to="2" disabled><b>2</b>phone</button>
+      <button data-to="3" disabled><b>3</b>point and measure</button>
+      <button data-to="4" disabled><b>4</b>result</button>
+    </nav>
+
+    <section class="step wide" data-step="1">
+      <div class="result setup">
+        <section class="cell">
+          <h2>sound</h2>
+          <p class="intro">Choose where the speakers are connected and what records them, then test. Each output plays noise when clicked: it should come from that speaker, clearly audible but comfortable.</p>
+          <div class="rows">
+            <div class="bar">
+              <span class="label">speakers</span>
+              <select id="device"><option value="">the system output</option></select>
+              <button class="button small quiet" id="list">list the devices</button>
+            </div>
+            <div class="bar">
+              <span class="label">microphone</span>
+              <select id="input"><option value="phone">the phone's</option></select>
+              <select id="inputChannel" hidden></select>
+              <button class="button small quiet" id="calFile" hidden>calibration file</button>
+              <input type="file" id="calInput" accept=".txt,.cal,.frd,text/plain" hidden />
+            </div>
+            <div class="bar">
+              <span class="label">level</span>
+              <span class="level">
+                <input type="range" class="dbfs" min="-60" max="-12" step="1" value="-30" aria-label="level" />
+                <span class="field small"><input type="number" class="dbfs" value="-30" min="-60" max="-12" step="1" /><span class="unit">dBFS, never above −12</span></span>
+              </span>
+            </div>
+            <div class="bar">
+              <span class="label">outputs</span>
+              <div class="outputs" id="outputs"><span class="hint">test, then click one to hear it</span></div>
+            </div>
+          </div>
+          <p class="hint" id="deviceNote">list the devices to choose one; without, the sound goes to the system output</p>
+          <p class="hint" id="inputNote">the phone records the sweeps; a microphone on this computer, where you listen, records a truer response · list the devices to choose one</p>
+          <div class="bar next">
+            <button class="button small" id="startSound">test</button>
+            <button class="button small" id="toPhone" disabled>next: the phone</button>
+            <button class="button small quiet" id="anyway" hidden>go on anyway</button>
+          </div>
+        </section>
+        <section class="cell">
+          <h2>microphone</h2>
+          <div id="micCheck" hidden>
+            <div class="bar">
+              <span class="label">input</span>
+              <div class="meter live" id="liveMeter"><div></div></div>
+              <span class="hint" id="liveNote"></span>
+            </div>
+            <div class="plot"><canvas id="spectrum"></canvas></div>
+            <ul class="progress plain" id="micSteps"></ul>
+            <p class="verdict" id="micVerdict"></p>
+          </div>
+          <p class="hint" id="phoneCheck">The phone's microphone is checked on the next step, once the phone is where you listen. A microphone on this computer is checked here: test plays noise and a sweep through it and shows what it hears.</p>
+        </section>
+      </div>
+    </section>
+
+    <section class="step" data-step="2" hidden>
+      <p class="title">Phone</p>
+      <p class="intro" id="phoneIntro">Scan the code with the phone and take it to where you listen. The page checks the level once the phone is there.</p>
+      <div class="join">
+        <div id="qr"></div>
+        <div><div class="address" id="url"></div><div class="label" id="phone">no phone yet</div></div>
+      </div>
+      <p class="verdict" id="verdict"></p>
+      <div class="bar" id="phoneLevel">
+        <span class="label">level</span>
+        <span class="field small"><input type="number" class="dbfs" value="-30" max="-12" step="1" /><span class="unit">dBFS</span></span>
+        <button class="button small quiet" id="check" disabled>check again</button>
+      </div>
+      <button class="button next" id="toPoint" disabled>next: point and measure</button>
+    </section>
+
+    <section class="step" data-step="3" hidden>
+      <p class="title">Point and measure</p>
+      <p class="intro" id="pointIntro">Follow the phone: point at front, then at each speaker while it plays noise. Then hold still where your head is while every speaker plays a sweep.</p>
+      <ul class="progress" id="progress"></ul>
+      <p class="verdict" id="measuring"></p>
+      <div class="meter" id="meter" hidden><div></div></div>
+      <button class="button small quiet" id="measureHere" hidden>measure from here</button>
+      <button class="button next" id="toResult" disabled>see the result</button>
+    </section>
+
+    <section class="step wide" data-step="4" hidden>
+      <div class="result">
+        <section class="cell">
+          <h2>room</h2>
+          <div class="bar">
+            <span class="label">grid</span><span class="segments small" id="grid"></span>
+            <span class="sep"></span>
+            <span class="label">layout</span><span class="segments small" id="layouts"></span>
+            <button class="button small quiet" id="toLayout">move to it</button>
+          </div>
+          <div class="pano"><canvas id="gl" width="1440" height="720"></canvas><canvas id="over" width="1440" height="720"></canvas></div>
+          <div class="bar">
+            <button class="button small quiet" id="level">level</button>
+            <button class="button small quiet" id="onGrid">all onto the grid</button>
+            <button class="button small quiet" id="reset">back to pointed</button>
+            <span class="sep"></span>
+            <span class="pair" title="the first speaker's distance from where you listen; the others follow from their delays"><span class="label">first speaker</span>
+              <span class="field small"><input type="number" id="base" value="2" step="0.05" /><span class="unit">m</span></span></span>
+            <span class="sep"></span>
+            <span class="pair" title="the phone camera's field of view along its long side: change it if the pictures do not line up"><span class="label">view</span>
+              <span class="field small"><input type="number" id="fov" value="64" step="0.5" /><span class="unit">°</span></span></span>
+          </div>
+          <p class="hint" id="panoNote">drag the picture to turn and tilt the room until the grid fits it · drag a speaker onto the grid (alt: freely) · double-click to add one · hold p to see what was pointed</p>
+        </section>
+        <section class="cell">
+          <h2>response</h2>
+          <div class="bar">
+              <span class="label">smoothing</span><span class="segments small" id="smoothing"></span>
+              <span class="sep"></span>
+              <span class="label">equalise</span><span class="segments small" id="match"></span>
+            </div>
+          <div class="plot"><canvas id="curves"></canvas></div>
+          <p class="hint" id="cuts"></p>
+          <p class="hint" id="byPhone" hidden>Measured through the phone's microphone, which colours the curve: a measurement microphone on the computer records a truer one.</p>
+        </section>
+          <section class="cell">
+            <h2>speakers</h2>
+            <div class="bar">
+              <span class="pair" title="delays this close count as equal: a listener a little off the sweet spot is not a speaker further away"><span class="label">equal within</span>
+                <span class="field small"><input type="number" id="tolMs" value="0.3" min="0" step="0.05" /><span class="unit">ms</span></span></span>
+              <span class="pair" title="levels this close count as equal"><span class="field small"><input type="number" id="tolDb" value="0.5" min="0" step="0.1" /><span class="unit">dB</span></span></span>
+            </div>
+            <div class="scroll"><table>
+              <thead><tr><th>output</th><th>azimuth</th><th>elevation</th><th>distance</th><th>gain</th><th></th></tr></thead>
+              <tbody id="speakers"></tbody>
+            </table></div>
+            <p class="hint" id="notes"></p>
+          </section>
+          <section class="cell">
+            <h2>export</h2>
+            <div class="checks">
+              <label><input type="checkbox" id="inclDelay" checked />distances from the delays</label>
+              <label><input type="checkbox" id="inclLevel" checked />gains</label>
+              <label><input type="checkbox" id="inclCuts" checked />cuts</label>
+            </div>
+            <button class="button" id="export" style="width: 100%">export layout · json</button>
+            <p class="hint">An IEM AllRADecoder file, which most ambisonic decoders load: each speaker's direction, distance and
+              gain, and its cuts under <code>bambiCuts</code>, which other decoders ignore. Which of them bambi's decoder applies
+              yet is on <a href={`${base}/status`}>status</a>.</p>
+            <details><summary>the file</summary><pre id="json"></pre></details>
+          </section>
+      </div>
+    </section>
+  </div>
+</Page>
+
+<script>
+  import qrcode from 'qrcode-generator';
+  import { analyse, curveAt, evened, plan, responseOf, sweep, sweepGap, sweepLead, sweepSpec } from '../../lib/speakers/measure.js';
+  import { apply as enu, cameraAngles, deviceToEnu, fovOf, wrap } from '../../lib/speakers/orientation.js';
+  import { angles, apply, facing, layouts, levelled, matchLayout, snap, tilted, times, turned, vec } from '../../lib/speakers/frame.js';
+  import { MEETING_POINT, openLink } from '../../lib/speakers/link.js';
+  import { channelsOf, openInput, peakDb, record } from '../../lib/speakers/record.js';
+  import { correction, parseCalibration } from '../../lib/speakers/calibration.js';
+
+  const $ = (id) => document.getElementById(id);
+  const session = crypto.randomUUID().slice(0, 8);
+  //  ?signal=<ws url> uses another meeting point, one running locally for instance
+  const params = new URLSearchParams(location.search);
+  const signal = params.get('signal') ?? MEETING_POINT;
+  const link = openLink(session, 'computer', signal);
+  const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+  //  the site's colours, for what is drawn on canvases
+  const tone = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  const INK = tone('--text'), LABEL = tone('--label'), RULE = tone('--rule'), GROUND = tone('--ground'), HELD = tone('--orange');
+  const tint = (alpha) => { const n = parseInt(INK.slice(1), 16); return `rgba(${n >> 16}, ${(n >> 8) & 255}, ${n & 255}, ${alpha})`; };
+  let ctx = null, outputs = 0, names = [], noise = null, phoneHere = false;
+  let measured = null, take = null, waitingFor = null, smoothing = 3, match = true; // take: the last recording, kept to analyse again
+  //  the room: Q0 as pointed (front level, where the phone said), Q as turned and tilted since
+  let Q0 = facing(0), Q = Q0, frontSet = false;
+  //  { channel, world: the pointed direction in east-north-up, or null; placed: {azimuth, elevation} once moved by
+  //  hand or snapped, or null to follow the room }
+  let speakers = [];
+  let pointing = { now: null, none: new Set() }; // which output plays now, and those the phone said have no speaker
+  let levelDb = -30;
+  const gain = () => 10 ** (Math.min(-12, levelDb) / 20); // never above -12 dBFS
+  const nameOf = (channel) => names[channel - 1] ?? `${channel}`;
+  for (const input of document.querySelectorAll('.dbfs'))
+    input.addEventListener('input', () => {
+      levelDb = Math.min(-12, Number(input.value) || -30);
+      for (const other of document.querySelectorAll('.dbfs')) if (other !== input) other.value = levelDb;
+      if (noise) startNoise(noise.channel); // heard at the new level at once
+      if (mic && micReady) notReady(); // the headroom was checked at the old level
+    });
+
+  /* ---- the steps ---- */
+
+  let current = 1;
+  function show(n) {
+    current = n;
+    for (const s of document.querySelectorAll('.step')) s.hidden = Number(s.dataset.step) !== n;
+    for (const b of document.querySelectorAll('.steps button')) b.classList.toggle('current', Number(b.dataset.to) === n);
+    if (n !== 1) stopTiles();
+    if (n === 1) listen(); else stopListening(); // the microphone's meter runs only where it is read
+    if (n === 4) { drawn = null; draw(); }
+  }
+  const reach = (n) => ($('steps').querySelector(`[data-to="${n}"]`).disabled = false);
+  $('steps').addEventListener('click', (e) => { const b = e.target.closest('button'); if (b && !b.disabled) show(Number(b.dataset.to)); });
+
+  /* ---- 1. sound: the chosen device, all its outputs ---- */
+
+  //  The context is opened on the chosen device, new AudioContext({ sinkId }), and opened again when the device
+  //  changes: that reaches every output of the device, each on its own (a tone on output 12 of a 16-output loopback
+  //  came back on 12 only). Not switched with setSinkId, which on macOS Chrome stayed on the system output, and not
+  //  through an <audio> element, which carries 8 channels at most.
+  //  The device list needs the microphone allowed, asked once and let go; that also lets the browser offer the phone
+  //  this computer's local address rather than only its default route's, which may be a VPN.
+  let devicesFound = [];
+  const labelOf = (id) => (id ? devicesFound.find((d) => d.deviceId === id)?.label || 'an unnamed output' : 'the system output');
+  const note = (text, warn) => ($('deviceNote').innerHTML = warn ? `<span class="warn">${text}</span>` : text);
+
+  $('list').addEventListener('click', async () => {
+    try {
+      (await navigator.mediaDevices.getUserMedia({ audio: true })).getTracks().forEach((t) => t.stop());
+    } catch (e) {
+      return note(`the microphone was not allowed (${e.message}): no device names, and the phone may not reach this computer`, true);
+    }
+    const all = await navigator.mediaDevices.enumerateDevices();
+    devicesFound = all.filter((d) => d.kind === 'audiooutput' && d.deviceId && d.deviceId !== 'default');
+    listInputs(all.filter((d) => d.kind === 'audioinput' && d.deviceId && d.deviceId !== 'default'));
+    if (!devicesFound.length) return note('this browser gave no output devices to choose from: open the page in Chrome and allow the microphone', true);
+    const keep = $('device').value;
+    $('device').innerHTML = '<option value="">the system output</option>' + devicesFound.map((d) => `<option value="${d.deviceId}">${d.label || 'unnamed output'}</option>`).join('');
+    $('device').value = devicesFound.some((d) => d.deviceId === keep) ? keep : '';
+    note(`${devicesFound.length} outputs found: choose the one the speakers are connected to, then use it`);
+  });
+  $('device').addEventListener('change', () => ctx && !testing && route());
+
+  //  The chosen device, with as many outputs as it has, and a word on where the sound really goes.
+  async function route() {
+    if (testing) return; // the test records in this context
+    stopNoise();
+    const id = $('device').value;
+    const old = ctx;
+    try {
+      ctx = new AudioContext({ sampleRate: 48000, ...(id ? { sinkId: id } : {}) });
+    } catch (e) {
+      note(`could not open ${labelOf(id)} (${e.message}): the sound goes to the system output`, true);
+      ctx = new AudioContext({ sampleRate: 48000 });
+    }
+    await old?.close();
+    await ctx.resume();
+    outputs = ctx.destination.maxChannelCount;
+    ctx.destination.channelCount = outputs;
+    ctx.destination.channelInterpretation = 'discrete';
+    names = outputs === 2 ? ['left', 'right'] : [...Array(outputs)].map((_, i) => `${i + 1}`);
+    if (!id || ctx.sinkId === id) note(`the sound goes to ${labelOf(ctx.sinkId)} · ${outputs} output${outputs === 1 ? '' : 's'} · click one to hear it`);
+    $('outputs').replaceChildren(...names.map((n, i) => {
+      const b = document.createElement('button');
+      b.textContent = n;
+      b.addEventListener('click', () => (noise?.channel === i + 1 ? stopTiles() : (startNoise(i + 1), tiles())));
+      return b;
+    }));
+    if (mic) notReady(); // a microphone here is checked again on the new device
+    $('toPhone').disabled = !!mic && !micReady;
+    if (!mic || micReady) reach(2);
+    $('check').disabled = !phoneHere || !!mic;
+    hello();
+    showCode();
+    if (mic) listen(); // the microphone's meter, in the new context
+  }
+  const tiles = () => [...$('outputs').children].forEach((b, i) => b.classList.toggle('on', noise?.channel === i + 1));
+  function stopTiles() { stopNoise(); tiles(); }
+  $('toPhone').addEventListener('click', () => show(2));
+
+
+  /*  Pink noise, looped on one output (Paul Kellet's filter). */
+  function startNoise(channel) {
+    stopNoise();
+    if (!ctx || channel > outputs) return;
+    const fs = ctx.sampleRate, n = 3 * fs, buffer = ctx.createBuffer(outputs, n, fs), d = buffer.getChannelData(channel - 1), g = gain() * 0.25;
+    let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+    for (let i = 0; i < n; ++i) {
+      const w = Math.random() * 2 - 1;
+      b0 = 0.99886 * b0 + w * 0.0555179; b1 = 0.99332 * b1 + w * 0.0750759; b2 = 0.969 * b2 + w * 0.153852;
+      b3 = 0.8665 * b3 + w * 0.3104856; b4 = 0.55 * b4 + w * 0.5329522; b5 = -0.7616 * b5 - w * 0.016898;
+      d[i] = g * (b0 + b1 + b2 + b3 + b4 + b5 + b6 + w * 0.5362);
+      b6 = w * 0.115926;
+    }
+    noise = { channel, src: play(buffer, true) };
+  }
+  function stopNoise() {
+    noise?.src.stop();
+    noise = null;
+  }
+  function play(buffer, loop = false) {
+    const src = ctx.createBufferSource();
+    src.buffer = buffer;
+    src.loop = loop;
+    src.channelInterpretation = 'discrete';
+    src.connect(ctx.destination);
+    src.start();
+    return src;
+  }
+  function playSweeps(events) {
+    const fs = ctx.sampleRate, s = sweep(fs, sweepSpec.seconds, sweepSpec.f1, sweepSpec.f2), g = gain();
+    const buffer = ctx.createBuffer(outputs, Math.round((events.at(-1).start + sweepSpec.seconds + 0.5) * fs), fs);
+    for (const e of events) {
+      const data = buffer.getChannelData(e.channel - 1), o = Math.round(e.start * fs);
+      for (let i = 0; i < s.length; ++i) data[o + i] += s[i] * g;
+    }
+    play(buffer);
+  }
+
+  /* ---- the microphone: the phone's, or one on this computer that records the sweeps here ---- */
+
+  //  mic: the computer's microphone while one is chosen, or null for the phone's; its channel 0-based; calibration:
+  //  a measurement microphone's points, taken off what it reads
+  let mic = null, micChannel = 0, calibration = null, micReady = false;
+  const recorder = () => (mic ? 'computer' : 'phone');
+  const hello = () => link.send({ type: 'hello', outputs, names, recorder: recorder() });
+  const inputNote = (text, warn) => ($('inputNote').innerHTML = warn ? `<span class="warn">${text}</span>` : text);
+  function listInputs(found) {
+    const keep = $('input').value;
+    $('input').innerHTML = `<option value="phone">the phone's</option>` + found.map((d) => `<option value="${d.deviceId}">${d.label || 'unnamed input'}</option>`).join('');
+    $('input').value = found.some((d) => d.deviceId === keep) ? keep : 'phone';
+  }
+  $('input').addEventListener('change', chooseInput);
+  $('inputChannel').addEventListener('change', () => { micChannel = Number($('inputChannel').value); notReady(); listen(); });
+  $('calFile').addEventListener('click', () => $('calInput').click());
+  $('calInput').addEventListener('change', async () => {
+    const file = $('calInput').files[0];
+    if (!file) return;
+    try {
+      calibration = parseCalibration(await file.text());
+      $('calFile').textContent = `calibration: ${file.name}`;
+      inputNote(`the calibration is taken off the spectrum and the result: ${calibration.length} points, ${Math.round(calibration[0][0])} Hz to ${Math.round(calibration.at(-1)[0] / 1000)} kHz`);
+      reanalyse();
+    } catch (e) {
+      inputNote(`that file is not a microphone calibration (${e.message})`, true);
+    }
+  });
+
+  async function chooseInput() {
+    if (testing) return;
+    mic?.getTracks().forEach((t) => t.stop());
+    mic = null;
+    const id = $('input').value;
+    if (id !== 'phone') {
+      try {
+        mic = await openInput(id);
+      } catch (e) {
+        $('input').value = 'phone';
+        inputNote(`could not open that microphone (${e.message}): the phone records`, true);
+      }
+    }
+    const n = mic ? channelsOf(mic) : 0;
+    micChannel = 0;
+    $('inputChannel').hidden = n < 2;
+    $('inputChannel').innerHTML = [...Array(n)].map((_, i) => `<option value="${i}">input ${i + 1}</option>`).join('');
+    if (mic) inputNote('this computer records the sweeps: put the microphone where your head is, pointing up (with its 90° calibration file, if it came with two) · test checks it · the phone only points');
+    else if (id === 'phone') inputNote('the phone records the sweeps; a microphone on this computer, where you listen, records a truer response');
+    $('phoneIntro').textContent = mic
+      ? 'Scan the code with the phone to point at the speakers. The microphone is checked already: the phone only points.'
+      : 'Scan the code with the phone and take it to where you listen. The page checks the level once the phone is there.';
+    $('pointIntro').textContent = mic
+      ? 'Follow the phone: point at front, then at each speaker while it plays noise. Then stay quiet while every speaker plays a sweep, recorded by the microphone. Without a phone, measure from here and place the speakers on the result.'
+      : 'Follow the phone: point at front, then at each speaker while it plays noise. Then hold still where your head is while every speaker plays a sweep.';
+    for (const el of ['micCheck', 'calFile']) $(el).hidden = !mic;
+    $('phoneCheck').hidden = !!mic;
+    if (mic) requestAnimationFrame(() => spectrum(null)); // the empty plot, once the cell shows
+    $('measureHere').hidden = !mic;
+    $('phoneLevel').hidden = !!mic;
+    $('check').disabled = !phoneHere;
+    notReady();
+    if (ctx) hello();
+    listen();
+  }
+
+  //  Whether the microphone passed its check: until it has, the next step waits, unless asked to go on anyway.
+  function notReady() {
+    micReady = false;
+    $('micSteps').innerHTML = '';
+    $('micVerdict').textContent = mic ? 'press test: the room, then noise and a sweep on the first output, through the microphone' : '';
+    $('anyway').hidden = true;
+    measuredOne = heard = kept = null;
+    $('toPhone').disabled = !ctx || !!mic;
+    if (mic) { $('toPoint').disabled = true; $('verdict').textContent = ''; }
+  }
+  function ready(yes, unchecked = false) {
+    micReady = yes;
+    $('toPhone').disabled = !yes;
+    $('anyway').hidden = yes;
+    if (yes) {
+      reach(2);
+      $('verdict').textContent = unchecked ? 'the microphone was not checked: the phone only points' : 'the microphone is checked: the phone only points';
+      $('toPoint').disabled = false;
+      reach(3);
+    }
+  }
+  $('anyway').addEventListener('click', () => ready(true, true));
+
+  /* ---- the microphone's level and spectrum, live, on the first step ---- */
+
+  const BANDS = []; // a point every 1/12 octave, 50 Hz to 20 kHz
+  for (let f = 50; f <= 20000; f *= 2 ** (1 / 12)) BANDS.push(f);
+  //  what the test leaves on the live plot: the noise's shape at its end, and the first output's measured response
+  let heard = null, measuredOne = null, axisTop = null;
+  let liveTimer = null, liveNodes = [], probe = null, playing = null; // playing: what is played, to draw it beside
+  function stopListening() {
+    clearInterval(liveTimer);
+    liveNodes.forEach((n) => n.disconnect());
+    liveNodes = [];
+    probe = null;
+  }
+  function listen() {
+    stopListening();
+    if (!mic || !ctx || current !== 1) return;
+    const source = ctx.createMediaStreamSource(mic), split = ctx.createChannelSplitter(Math.max(1, channelsOf(mic)));
+    const mute = ctx.createGain();
+    probe = ctx.createAnalyser();
+    probe.fftSize = 8192; // a sixth of a second at 48 kHz: it follows the sound as it changes
+    probe.smoothingTimeConstant = 0.5;
+    mute.gain.value = 0; // the analyser is pulled through a silent path to the output, so it runs
+    source.connect(split);
+    split.connect(probe, Math.min(micChannel, channelsOf(mic) - 1));
+    probe.connect(mute).connect(ctx.destination);
+    liveNodes = [source, split, probe, mute];
+    const wave = new Float32Array(probe.fftSize), bar = $('liveMeter');
+    liveTimer = setInterval(() => {
+      if (!probe) return;
+      probe.getFloatTimeDomainData(wave);
+      const db = peakDb(wave);
+      bar.firstElementChild.style.width = `${Math.max(0, Math.min(1, (db + 60) / 60)) * 100}%`; // -60 to 0 dBFS
+      $('liveNote').innerHTML = db > -1 ? '<span class="warn">clipping: turn the input gain down</span>' : `${dbText(db)} dBFS peak`;
+      spectrum(bands());
+    }, 100);
+  }
+  //  The input's level in each 1/12 octave band, in dBFS, with the calibration taken off: the band's mean power a bin
+  //  times its width in bins, so a band narrower than a bin (the lows) reads its share, and pink noise reads flat.
+  function bands() {
+    if (!probe) return null;
+    const bins = new Float32Array(probe.frequencyBinCount), hz = ctx.sampleRate / probe.fftSize, half = 2 ** (1 / 24);
+    probe.getFloatFrequencyData(bins);
+    return BANDS.map((f) => {
+      const lo = Math.max(1, Math.floor(f / half / hz)), hi = Math.max(lo, Math.ceil((f * half) / hz) - 1);
+      let power = 0;
+      for (let i = lo; i <= hi; ++i) power += 10 ** (bins[i] / 10);
+      const width = (f * half - f / half) / hz;
+      return 10 * Math.log10((power / (hi - lo + 1)) * width + 1e-20) - correction(calibration, f);
+    });
+  }
+  //  The spectrum at the microphone, live, drawn as the result's responses are. While noise plays, the line it should
+  //  follow: pink noise has the same power in every band, so a flat line through the middle bands. After a test, the
+  //  first output's measured response beside it, lined up with the noise as it reached the microphone over 250 Hz to
+  //  2.5 kHz, so the two read on one axis -- and that curve sets the axis, held still so it stays in view. Before, the
+  //  axis follows the loudest band with ballistics: up at once, down slowly.
+  const RANGE = 60;
+  const middleOf = (db) => { const m = db.filter((_, i) => BANDS[i] >= 250 && BANDS[i] <= 2500).sort((a, b) => a - b); return m[m.length >> 1]; };
+  let kept = null; // { curve, axis }: the measured response as drawn, and the axis it holds
+  function keepMeasured() {
+    kept = null;
+    if (!measuredOne || !heard) return;
+    const from = measuredOne.freqs.map((f) => f >= 50);
+    const shift = middleOf(heard) - middleOf(BANDS.map((f) => curveAt(measuredOne, f)));
+    const curve = { freqs: measuredOne.freqs.filter((_, i) => from[i]), db: measuredOne.db.filter((_, i) => from[i]).map((d) => d + shift), name: nameOf(1) };
+    const hi = Math.max(...curve.db), lo = Math.min(...curve.db.filter((_, i) => curve.freqs[i] >= 100)); // below the sweep's start it falls away
+    const range = Math.max(RANGE, hi - lo + 18);
+    kept = { curve, axis: { top: hi + 8, range } };
+  }
+  function spectrum(levels) {
+    const list = [];
+    if (levels) {
+      if (!kept) {
+        const target = Math.max(...levels) + 8;
+        axisTop = axisTop == null ? target : axisTop + (target - axisTop) * (target > axisTop ? 0.5 : 0.04);
+      }
+      list.push({ freqs: BANDS, db: levels, name: 'input', colour: HELD });
+      if (playing === 'noise') list.push({ freqs: BANDS, db: BANDS.map(() => middleOf(levels)), name: 'played', dashed: true });
+    }
+    if (kept) list.push(kept.curve);
+    plot($('spectrum'), 240, list, kept ? `dBFS at the microphone, live · ${nameOf(1)} as the test measured it, beside` : 'dBFS at the microphone, live, in bands of 1/12 octave',
+      kept?.axis ?? { top: axisTop ?? -20, range: RANGE });
+  }
+
+  //  The test's sweep as a response, kept on the live plot: the first output as this microphone measures it.
+  function checkResponse(data, rate) {
+    measuredOne = responseOf(data, rate, sweepSpec, 12);
+    if (calibration) measuredOne.db = measuredOne.db.map((d, i) => d - correction(calibration, measuredOne.freqs[i]));
+    keepMeasured();
+  }
+
+  /* ---- the test: the device opened, and a microphone on this computer checked in one go ---- */
+
+  const dbText = (db) => { const n = Math.round(db); return `${n < 0 ? '−' : ''}${Math.abs(n)}`; }; // never "−0"
+  const rmsDb = (data) => 10 * Math.log10(data.reduce((s, x) => s + x * x, 0) / data.length + 1e-20);
+  const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+  let testing = false;
+  $('startSound').addEventListener('click', async () => {
+    await route();
+    if (mic) micTest();
+  });
+  //  The room with nothing playing, then pink noise and one sweep on the first output, each recorded: whether there
+  //  is a microphone at all (no signal is a microphone unplugged or without its phantom power), whether the sound
+  //  clears the room's noise, and whether the sweep's level leaves headroom.
+  async function micTest() {
+    if (testing || !mic || !ctx) return;
+    testing = true;
+    const held = ['startSound', 'device', 'list', 'input', 'inputChannel', 'calFile'].map($).concat([...$('outputs').children]);
+    held.forEach((el) => (el.disabled = true)); // nothing changes the device, the input or what plays while it records
+    notReady();
+    const rows = [];
+    const mark = (name, text, state) => {
+      rows.push([name, text, state]);
+      $('micSteps').innerHTML = rows.map(([n, t, st]) => `<li${st === 'bad' ? ' class="bad"' : ''}><span>${n}</span><span class="state">${t}</span></li>`).join('');
+    };
+    const fail = (text) => { $('micVerdict').innerHTML = `<span class="warn">${text}</span>`; ready(false); };
+    try {
+      stopTiles();
+      $('micVerdict').textContent = 'measuring the noise floor: stay quiet…';
+      const quiet = await record(ctx, mic, 1.2, () => {}, micChannel);
+      const floor = rmsDb(quiet.data.subarray(Math.round(0.2 * quiet.rate))), floorPeak = peakDb(quiet.data);
+      if (floorPeak < -96) {
+        mark('noise floor', 'no signal at all', 'bad');
+        return fail('No signal at the input. Is the microphone plugged in, its phantom power (48 V) on if it is a condenser microphone, and the input gain up? Then test again.');
+      }
+      mark('noise floor', `${dbText(floor)} dBFS${floor > -45 ? ': a noisy room' : ''}`, floor > -45 ? 'warn' : 'good');
+
+      $('micVerdict').textContent = 'pink noise on the first output…';
+      playing = 'noise';
+      startNoise(1);
+      const loud = await record(ctx, mic, 2.5, () => {}, micChannel);
+      await wait(100);
+      const shape = bands();
+      heard = shape;
+      stopNoise();
+      playing = null;
+      const noiseDb = rmsDb(loud.data.subarray(Math.round(0.5 * loud.rate))), above = noiseDb - floor;
+      if (above < 15) {
+        mark('pink noise', `only ${dbText(above)} dB above the noise floor`, 'bad');
+        return fail('The noise barely reaches the microphone: turn the volume or the input gain up, or check that the microphone is the one at the speakers. Then test again.');
+      }
+      const mean = (lo, hi) => { const v = shape.filter((_, i) => BANDS[i] >= lo && BANDS[i] <= hi); return v.reduce((a, b) => a + b, 0) / v.length; };
+      const mids = shape ? mean(500, 1000) : 0, lows = shape ? mean(100, 160) : 0;
+      const thin = shape && lows < mids - 20;
+      mark('pink noise', `${dbText(above)} dB above the noise floor${thin ? ', hardly any lows' : ''}`, thin ? 'warn' : 'good');
+
+      $('micVerdict').textContent = 'one sweep on the first output…';
+      const swept = await record(ctx, mic, 0.4 + sweepSpec.seconds + 0.6, () => setTimeout(playCheck, 400), micChannel);
+      const peak = peakDb(swept.data);
+      checkResponse(swept.data, swept.rate);
+      if (peak > -3) {
+        mark('sweep', `${dbText(peak)} dBFS: clipping`, 'bad');
+        return fail('The sweep clips at the input: turn the input gain or the volume down, then test again.');
+      }
+      if (peak < -45) {
+        mark('sweep', `${dbText(peak)} dBFS: too quiet`, 'bad');
+        return fail('The sweep is too quiet at the microphone: turn the input gain or the volume up, then test again.');
+      }
+      mark('sweep', `${dbText(peak)} dBFS at its loudest, ${dbText(-peak)} dB of headroom`, peak > -10 ? 'warn' : 'good');
+      $('micVerdict').textContent = `ready: the sweep reaches ${dbText(peak)} dBFS, ${dbText(peak - floor)} dB above the noise floor${thin ? ' · the microphone hears hardly any lows: is it a laptop\'s?' : ''}`;
+      ready(true);
+    } finally {
+      stopNoise();
+      playing = null;
+      testing = false;
+      held.forEach((el) => (el.disabled = false));
+    }
+  }
+
+  /* ---- 2. the phone: the code, and a check of the level the phone hears ---- */
+
+  function showCode() {
+    if ($('url').textContent) return;
+    const url = `${location.origin}${base}/tools/speakers/phone/?s=${session}${params.get('signal') ? `&signal=${encodeURIComponent(signal)}` : ''}`;
+    $('url').textContent = url;
+    const qr = qrcode(0, 'M');
+    qr.addData(url);
+    qr.make();
+    $('qr').innerHTML = qr.createSvgTag({ cellSize: 4, margin: 2 });
+  }
+  link.onState((s) => {
+    if (s === 'away' || s === 'lost') phoneIs(false, s === 'away' ? 'the phone left' : 'the connection to the phone was lost');
+    if (s === 'connecting') $('phone').textContent = 'the phone is connecting…';
+  });
+  function phoneIs(here, text) {
+    phoneHere = here;
+    $('phone').textContent = text;
+    $('check').disabled = !here || !!mic;
+  }
+  //  one sweep on the first output, recorded by the phone: its loudest point says whether to turn up or down
+  let checking = null;
+  function check() {
+    if (!ctx || !phoneHere || mic) return; // a microphone here was checked on the first step
+    stopTiles();
+    checking = `${Date.now()}`;
+    $('verdict').textContent = 'checking the level: one sweep on the first output…';
+    link.send({ type: 'check', id: checking, seconds: 0.4 + sweepSpec.seconds + 0.6 });
+  }
+  function playCheck() {
+    const s = sweep(ctx.sampleRate, sweepSpec.seconds, sweepSpec.f1, sweepSpec.f2), b = ctx.createBuffer(outputs, s.length, ctx.sampleRate);
+    b.getChannelData(0).set(s.map((x) => x * gain()));
+    play(b);
+  }
+  $('check').addEventListener('click', check);
+  function checked(peakDb) {
+    const db = peakDb.toFixed(0), at = mic ? 'the microphone' : 'the phone';
+    $('verdict').innerHTML = peakDb < -45 ? `<span class="warn">too quiet at ${at} (${db} dBFS): turn the volume or the input gain up, then check again</span>`
+      : peakDb > -6 ? `<span class="warn">too loud at ${at} (${db} dBFS): turn the volume or the input gain down, then check again</span>`
+      : `the level is right: ${db} dBFS at ${at}`;
+    $('toPoint').disabled = false;
+    reach(3);
+  }
+  $('toPoint').addEventListener('click', () => { show(3); link.send({ type: 'go' }); });
+
+  /* ---- 3. point and measure: the phone leads, this page plays and shows how far it is ---- */
+
+  function progress() {
+    const row = (pic, name, state, now) => `<li${now ? ' class="now"' : ''}>${pic ? `<img src="${pic}" alt="" />` : '<span class="none"></span>'}<span>${name}</span><span class="state">${state}</span></li>`;
+    const pointed = (c) => speakers.find((s) => s.channel === c && s.world);
+    $('progress').innerHTML = row(pictures.front?.thumb, 'front', frontSet ? 'pointed' : 'point at front first', !frontSet) +
+      names.map((n, i) => {
+        const c = i + 1;
+        const state = pointed(c) ? 'pointed' : pointing.none.has(c) ? 'no speaker' : pointing.now === c ? 'playing noise: point at it' : 'waiting';
+        return row(pictures[c]?.thumb, n, state, pointing.now === c);
+      }).join('');
+  }
+  let meterTimer = null;
+  function meter(seconds) {
+    $('meter').hidden = false;
+    const bar = $('meter').firstElementChild, t0 = performance.now();
+    clearInterval(meterTimer);
+    meterTimer = setInterval(() => {
+      const f = Math.min(1, (performance.now() - t0) / (seconds * 1000));
+      bar.style.width = `${f * 100}%`;
+      if (f >= 1) clearInterval(meterTimer);
+    }, 100);
+  }
+  $('toResult').addEventListener('click', () => show(4));
+
+  /* ---- the phone's messages ---- */
+
+  const rotationOf = (m) => m.R ?? deviceToEnu(m.alpha, m.beta, m.gamma); // a stand-in phone sends its rotation itself
+  link.onMessage(async (m, bytes) => {
+    if (m.type === 'join') {
+      phoneIs(true, 'the phone is connected');
+      if (ctx) hello();
+      if (current === 2 && ctx && !mic) check();
+      return;
+    }
+    if (!ctx) return;
+    if (m.type === 'checking' && m.id === checking) setTimeout(playCheck, 400);
+    if (m.type === 'checked' && m.id === checking) checked(m.peakDb);
+    if (m.type === 'front') {
+      if (current < 3) show(3);
+      reach(3);
+      Q0 = Q = facing(cameraAngles(rotationOf(m)).heading);
+      frontSet = true;
+      speakers = []; // pointing again starts again
+      pointing = { now: null, none: new Set() };
+      clearPictures();
+      if (bytes) await keep('front', rotationOf(m), bytes);
+      progress();
+    }
+    if (m.type === 'noise') { startNoise(m.channel); pointing.now = m.channel; pointing.none.delete(m.channel); progress(); }
+    if (m.type === 'stop') { stopNoise(); pointing.now = null; progress(); }
+    if (m.type === 'none') { pointing.none.add(m.channel); progress(); }
+    if (m.type === 'pointed') {
+      const R = rotationOf(m);
+      speakers = speakers.filter((s) => s.channel !== m.channel).concat({ channel: m.channel, world: enu(R, [0, 0, -1]), placed: null });
+      reach(4);
+      if (bytes) await keep(m.channel, R, bytes);
+      progress();
+      draw();
+    }
+    if (m.type === 'measure-ask') link.send({ type: 'speakers', channels: toMeasure(), recorder: recorder() });
+    //  the phone asked the computer to record, but it no longer can: the phone measures again, and records itself
+    if (m.type === 'measure-here') mic ? measureHere(m.channels) : (hello(), link.send({ type: 'measure-again' }));
+    if (m.type === 'sweeps') {
+      const events = plan(m.channels, m.reference, sweepSpec.seconds, sweepGap);
+      setTimeout(() => playSweeps(events), sweepLead * 1000);
+      waitingFor = { id: m.id, events };
+      measuring(events);
+    }
+    if (m.type === 'recording' && waitingFor?.id === m.id) {
+      const { events } = waitingFor;
+      waitingFor = null;
+      taken(new Float32Array(bytes), m.sampleRate, events);
+    }
+  });
+
+  const toMeasure = () => (speakers.length ? speakers.map((s) => s.channel) : [...Array(outputs)].map((_, i) => i + 1));
+  function measuring(events) {
+    stopNoise();
+    pointing.now = null;
+    progress();
+    $('measuring').textContent = mic ? 'measuring: every speaker plays a sweep, the microphone records…' : 'measuring: every speaker plays a sweep, the phone holds still…';
+    meter(sweepLead + events.at(-1).start + sweepSpec.seconds + 2.5);
+  }
+  function taken(samples, rate, events) {
+    take = { samples, rate, events, byMic: !!mic };
+    $('byPhone').hidden = take.byMic;
+    reanalyse();
+    clearInterval(meterTimer);
+    $('meter').firstElementChild.style.width = '100%';
+    $('measuring').textContent = 'measured';
+    $('toResult').disabled = false;
+    reach(4);
+    show(4);
+  }
+  //  The computer's microphone records the sweeps in the context that plays them, started from either side.
+  let busy = false;
+  async function measureHere(channels = toMeasure()) {
+    if (!mic || !ctx || busy || !channels.length) return;
+    busy = true;
+    $('measureHere').disabled = true;
+    const events = plan(channels, channels[0], sweepSpec.seconds, sweepGap);
+    const seconds = sweepLead + events.at(-1).start + sweepSpec.seconds + 2; // the room's tail after the last
+    link.send({ type: 'measuring' });
+    measuring(events);
+    try {
+      const r = await record(ctx, mic, seconds, () => setTimeout(() => playSweeps(events), sweepLead * 1000), micChannel);
+      link.send({ type: 'measured' });
+      taken(r.data, r.rate, events);
+    } finally {
+      busy = false;
+      $('measureHere').disabled = false;
+    }
+  }
+  $('measureHere').addEventListener('click', () => { if (current < 3) show(3); measureHere(); });
+
+  //  the last recording analysed with the chosen smoothing and equalising: they change how it reads, not what it is
+  function reanalyse() {
+    if (!take) return;
+    const want = { delay: true, level: true, response: true, smoothing, match, calibration: take.byMic ? calibration : null };
+    measured = { ...analyse(take.samples, take.rate, sweepSpec, take.events, want), want,
+      peakDb: 20 * Math.log10(take.samples.reduce((x, v) => Math.max(x, Math.abs(v)), 0) + 1e-9) };
+    for (const s of measured.speakers) if (!speakers.some((x) => x.channel === s.channel)) speakers.push({ channel: s.channel, world: null, placed: { azimuth: 0, elevation: 0 } });
+    drawn = null;
+    draw();
+  }
+
+  /* ---- the pictures: drawn on the panorama by WebGL, in the room as it is turned and tilted ---- */
+
+  const LAYERS = 32, SIDE = 512; // pictures at most, and each one's size on the graphics card (stretched square)
+  const gl = $('gl').getContext('webgl2');
+  const W = $('gl').width, H = $('gl').height;
+  let pictures = {}; // by 'front' or channel: { R (the phone's rotation), w, h, layer }
+  let program = null;
+  if (!gl) $('panoNote').textContent = 'this browser has no WebGL 2: the pictures cannot be shown';
+  else {
+    const shader = (type, source) => {
+      const sh = gl.createShader(type);
+      gl.shaderSource(sh, source);
+      gl.compileShader(sh);
+      if (!gl.getShaderParameter(sh, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(sh));
+      return sh;
+    };
+    program = gl.createProgram();
+    gl.attachShader(program, shader(gl.VERTEX_SHADER, `#version 300 es
+      void main() { gl_Position = vec4(vec2(gl_VertexID == 1 ? 3.0 : -1.0, gl_VertexID == 2 ? 3.0 : -1.0), 0.0, 1.0); }`));
+    //  each pixel: its direction in the room, into each picture's camera, the pictures weighted towards their middles
+    gl.attachShader(program, shader(gl.FRAGMENT_SHADER, `#version 300 es
+      precision highp float;
+      precision highp sampler2DArray;
+      uniform sampler2DArray pictures;
+      uniform mat3 toCamera[${LAYERS}]; // a direction in the room into a picture's camera axes
+      uniform vec2 tans[${LAYERS}];
+      uniform int layers[${LAYERS}];
+      uniform int count;
+      uniform vec2 size;
+      out vec4 colour;
+      void main() {
+        vec2 f = gl_FragCoord.xy / size;
+        float az = radians((0.5 - f.x) * 360.0), el = radians(f.y * 180.0 - 90.0);
+        vec3 v = vec3(cos(el) * cos(az), cos(el) * sin(az), sin(el));
+        vec3 sum = vec3(0.0);
+        float w = 0.0;
+        for (int k = 0; k < ${LAYERS}; ++k) {
+          if (k >= count) break;
+          vec3 d = toCamera[k] * v;
+          if (d.z > -1e-4) continue; // behind the camera
+          vec2 p = d.xy / -d.z / tans[k];
+          if (abs(p.x) >= 1.0 || abs(p.y) >= 1.0) continue;
+          float wt = (1.0 - abs(p.x)) * (1.0 - abs(p.y));
+          sum += textureLod(pictures, vec3((p.x + 1.0) * 0.5, (1.0 - p.y) * 0.5, float(layers[k])), 0.0).rgb * wt;
+          w += wt;
+        }
+        colour = w > 0.0 ? vec4(sum / w, 1.0) : vec4(0.0); // clear: the panel shows through
+      }`));
+    gl.linkProgram(program);
+    const texture = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D_ARRAY, texture);
+    gl.texStorage3D(gl.TEXTURE_2D_ARRAY, 1, gl.RGBA8, SIDE, SIDE, LAYERS);
+    gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  }
+
+  async function keep(key, R, bytes) {
+    if (!gl) return void (pictures[key] = { R, thumb: URL.createObjectURL(new Blob([bytes], { type: 'image/jpeg' })) });
+    const img = await createImageBitmap(new Blob([bytes]));
+    const square = await createImageBitmap(img, { resizeWidth: SIDE, resizeHeight: SIDE, resizeQuality: 'high' });
+    const used = new Set(Object.values(pictures).map((p) => p.layer));
+    const layer = pictures[key]?.layer ?? [...Array(LAYERS).keys()].find((l) => !used.has(l));
+    if (layer === undefined) return;
+    gl.texSubImage3D(gl.TEXTURE_2D_ARRAY, 0, 0, 0, layer, SIDE, SIDE, 1, gl.RGBA, gl.UNSIGNED_BYTE, square);
+    pictures[key] = { R, w: img.width, h: img.height, layer, thumb: URL.createObjectURL(new Blob([bytes], { type: 'image/jpeg' })) };
+    progress();
+    draw();
+  }
+  function clearPictures() {
+    pictures = {};
+  }
+
+  function paint(room) {
+    if (!gl) return;
+    const list = Object.values(pictures), fov = Number($('fov').value);
+    gl.viewport(0, 0, W, H);
+    gl.useProgram(program);
+    const u = (name) => gl.getUniformLocation(program, name);
+    //  room direction -> world (Q transposed) -> camera (R transposed): (Q R) transposed, which is Q R's rows
+    //  read as the columns WebGL expects
+    if (list.length) {
+      gl.uniformMatrix3fv(u('toCamera'), false, new Float32Array(list.flatMap((p) => times(room, p.R).flat())));
+      gl.uniform2fv(u('tans'), new Float32Array(list.flatMap((p) => { const f = fovOf(p.w, p.h, fov); return [f.tanX, f.tanY]; })));
+      gl.uniform1iv(u('layers'), new Int32Array(list.map((p) => p.layer)));
+    }
+    gl.uniform1i(u('count'), list.length);
+    gl.uniform2f(u('size'), W, H);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+  }
+
+  /* ---- over the pictures: the grid, the layout's places, and the speakers, dragged by mouse ---- */
+
+  const over = $('over'), g = over.getContext('2d');
+  let step = 10, target = null, before = false, dragging = null;
+  const xOf = (azimuth) => ((((0.5 - wrap(azimuth) / 360) % 1) + 1) % 1) * W;
+  const yOf = (elevation) => (0.5 - elevation / 180) * H;
+  const anglesAt = (x, y) => ({ azimuth: wrap((0.5 - x / W) * 360), elevation: Math.max(-90, Math.min(90, 90 - (y / H) * 180)) });
+  const at = (e) => { const r = over.getBoundingClientRect(); return [((e.clientX - r.left) / r.width) * W, ((e.clientY - r.top) / r.height) * H]; };
+
+  function segmented(id, options, value, set) {
+    $(id).replaceChildren(...options.map(([label, v]) => {
+      const b = document.createElement('button');
+      b.textContent = label;
+      b.classList.toggle('on', v === value);
+      b.addEventListener('click', () => { set(v); segmented(id, options, v, set); draw(); });
+      return b;
+    }));
+  }
+  segmented('grid', [['off', 0], ['5°', 5], ['10°', 10], ['15°', 15]], step, (v) => (step = v));
+  segmented('layouts', [['none', null], ...Object.keys(layouts).map((n) => [n, n])], target, (v) => (target = v));
+  segmented('smoothing', [['1/3', 3], ['1/6', 6], ['1/12', 12]], 3, (v) => { smoothing = v; reanalyse(); });
+  segmented('match', [['to each other', true], ['each flat', false]], true, (v) => { match = v; reanalyse(); });
+
+  //  where a speaker is now, and where it was pointed in this room (before any dragging)
+  const pointedIn = (room, s) => (s.world ? angles(apply(room, s.world)) : null);
+  const finalOf = (s) => (before ? pointedIn(Q0, s) ?? s.placed : s.placed ?? pointedIn(Q, s));
+  const hit = (x, y) => speakers.find((s) => { const f = finalOf(s); return Math.hypot(xOf(f.azimuth) - x, yOf(f.elevation) - y) < 12 * u; });
+
+  over.addEventListener('pointerdown', (e) => {
+    const [x, y] = at(e), s = hit(x, y);
+    dragging = s ? { speaker: s } : { room: true, x, y };
+    over.setPointerCapture(e.pointerId);
+  });
+  over.addEventListener('pointermove', (e) => {
+    const [x, y] = at(e);
+    if (!dragging) return void (over.style.cursor = hit(x, y) ? 'grab' : 'move');
+    if (dragging.speaker) {
+      const a = anglesAt(x, y);
+      dragging.speaker.placed = e.altKey ? a : { azimuth: wrap(snap(a.azimuth, step)), elevation: snap(a.elevation, step) };
+    } else {
+      //  across turns the room, up and down tilts it where the pointer is
+      Q = turned(Q, -((x - dragging.x) * 360) / W);
+      Q = tilted(Q, anglesAt(x, y).azimuth, -((y - dragging.y) * 180) / H);
+      [dragging.x, dragging.y] = [x, y];
+    }
+    draw();
+  });
+  over.addEventListener('pointerup', () => { dragging = null; draw(); });
+  over.addEventListener('dblclick', (e) => {
+    if (hit(...at(e))) return;
+    const a = anglesAt(...at(e));
+    const free = [...Array(Math.max(outputs, speakers.length + 1))].map((_, i) => i + 1).find((c) => !speakers.some((s) => s.channel === c));
+    speakers.push({ channel: free, world: null, placed: { azimuth: wrap(snap(a.azimuth, step)), elevation: snap(a.elevation, step) } });
+    draw();
+  });
+  const holdingP = (e) => e.key.toLowerCase() === 'p' && !['INPUT', 'SELECT'].includes(document.activeElement?.tagName);
+  window.addEventListener('keydown', (e) => { if (holdingP(e) && !before) { before = true; draw(); } });
+  window.addEventListener('keyup', (e) => { if (holdingP(e)) { before = false; draw(); } });
+
+  $('level').addEventListener('click', () => {
+    Q = levelled(Q, speakers.filter((s) => s.world).map((s) => s.world));
+    draw();
+  });
+  $('onGrid').addEventListener('click', () => {
+    for (const s of speakers) { const f = finalOf(s); s.placed = { azimuth: wrap(snap(f.azimuth, step)), elevation: snap(f.elevation, step) }; }
+    draw();
+  });
+  $('toLayout').addEventListener('click', () => {
+    if (!target) return;
+    const matched = matchLayout(speakers.map(finalOf), layouts[target]);
+    speakers.forEach((s, i) => { if (matched[i]) s.placed = matched[i]; });
+    draw();
+  });
+  $('reset').addEventListener('click', () => {
+    Q = Q0;
+    for (const s of speakers) if (s.world) s.placed = null;
+    draw();
+  });
+  for (const id of ['fov', 'base', 'tolMs', 'tolDb']) $(id).addEventListener('input', () => draw());
+  for (const id of ['inclDelay', 'inclLevel', 'inclCuts']) $(id).addEventListener('change', () => draw());
+
+  /*  Every speaker as it goes to the decoder, with what was measured of it. */
+  function rows() {
+    //  measured, then evened: delays and levels this close count as equal; then what was typed in, if anything
+    const ms = speakers.map((s) => measured?.speakers.find((x) => x.channel === s.channel));
+    const delays = evened(ms.map((m) => m?.delayMs), Math.max(0, Number($('tolMs').value) || 0));
+    const levels = evened(ms.map((m) => m?.levelDb), Math.max(0, Number($('tolDb').value) || 0));
+    const known = levels.filter((v) => v !== undefined), quietest = known.length ? Math.min(...known) : 0;
+    const base = Number($('base').value);
+    return speakers.map((s, i) => {
+      const m = ms[i], useDelay = delays[i] !== undefined && $('inclDelay').checked;
+      const radius = base + (useDelay ? (delays[i] / 1000) * 343 : 0), gainDb = levels[i] !== undefined ? quietest - levels[i] : 0;
+      return {
+        speaker: s,
+        ...finalOf(s),
+        delayMs: m?.delayMs,
+        levelDb: m?.levelDb,
+        measuredRadius: base + (useDelay ? (m.delayMs / 1000) * 343 : 0),
+        measuredGainDb: m?.levelDb !== undefined ? Math.min(...ms.filter(Boolean).map((x) => x.levelDb)) - m.levelDb : 0,
+        radius: s.edit?.radius ?? radius,
+        gainDb: s.edit?.gainDb ?? gainDb,
+        cuts: m?.cuts?.filter((c) => c.db <= -1).map((c) => ({ f: c.f, db: Number(c.db.toFixed(1)) })),
+        response: m?.response,
+      };
+    });
+  }
+
+  function line(x0, y0, x1, y1) { g.beginPath(); g.moveTo(x0, y0); g.lineTo(x1, y1); g.stroke(); }
+  let u = 1; // canvas pixels to a pixel on screen: text, lines and markers keep their size however wide it is shown
+  function ring(x, y, r) { g.beginPath(); g.arc(x, y, r, 0, Math.PI * 2); g.stroke(); }
+
+  let queued = false;
+  function draw() {
+    if (queued) return;
+    queued = true;
+    requestAnimationFrame(() => { queued = false; drawNow(); });
+  }
+  function drawNow() {
+    const list = rows();
+    if (!over.clientWidth) return; // the result is not shown: drawn when it is
+    paint(before ? Q0 : Q);
+    g.clearRect(0, 0, W, H);
+    u = W / Math.max(1, over.clientWidth);
+    g.font = `${11 * u}px Helvetica Neue, Helvetica, Arial, sans-serif`;
+    //  the grid, fixed: the room is fitted to it
+    const every = step || 30;
+    for (let a = -180; a < 180; a += every) {
+      const strong = a === 0, label = a % 30 === 0;
+      g.strokeStyle = strong ? tint(0.9) : label ? tint(0.35) : tint(0.15);
+      g.lineWidth = (strong ? 1.5 : 0.6) * u;
+      line(xOf(a), 0, xOf(a), H);
+      if (label) { g.fillStyle = INK; g.fillText(a === 0 ? 'front' : `${a}°`, xOf(a) + 3 * u, 13 * u); }
+    }
+    for (let e = -90 + every; e < 90; e += every) {
+      g.strokeStyle = e === 0 ? tint(0.9) : e % 30 === 0 ? tint(0.35) : tint(0.15);
+      g.lineWidth = (e === 0 ? 1.5 : 0.6) * u;
+      line(0, yOf(e), W, yOf(e));
+      if (e % 30 === 0 && e) { g.fillStyle = INK; g.fillText(`${e}°`, 4 * u, yOf(e) - 4 * u); }
+    }
+    //  the chosen layout's places
+    if (target && !before) {
+      g.strokeStyle = tint(0.7);
+      g.setLineDash([4, 4]);
+      g.lineWidth = 1 * u;
+      for (const [a, e] of layouts[target]) ring(xOf(a), yOf(e), 10 * u);
+      g.setLineDash([]);
+    }
+    for (const r of list) {
+      const x = xOf(r.azimuth), y = yOf(r.elevation);
+      //  where it was pointed, if it has moved from there: a faint ring, and an arrow to where it is now
+      const ghost = before ? null : pointedIn(Q, r.speaker);
+      if (ghost && Math.hypot(xOf(ghost.azimuth) - x, yOf(ghost.elevation) - y) > 2 * u) {
+        const gx = xOf(ghost.azimuth), gy = yOf(ghost.elevation);
+        g.strokeStyle = tint(0.45);
+        g.lineWidth = 1.3 * u;
+        ring(gx, gy, 6 * u);
+        if (Math.abs(gx - x) < W / 2) {
+          const t = Math.atan2(y - gy, x - gx), ex = x - 9 * u * Math.cos(t), ey = y - 9 * u * Math.sin(t);
+          g.lineWidth = 1 * u;
+          line(gx + 6 * u * Math.cos(t), gy + 6 * u * Math.sin(t), ex, ey);
+          g.fillStyle = tint(0.7);
+          g.beginPath();
+          g.moveTo(ex, ey);
+          g.lineTo(ex - 5 * u * Math.cos(t - 0.45), ey - 5 * u * Math.sin(t - 0.45));
+          g.lineTo(ex - 5 * u * Math.cos(t + 0.45), ey - 5 * u * Math.sin(t + 0.45));
+          g.fill();
+        }
+      }
+      g.strokeStyle = dragging?.speaker === r.speaker ? HELD : INK;
+      g.lineWidth = 2 * u;
+      ring(x, y, 7 * u);
+      g.strokeStyle = GROUND;
+      g.lineWidth = 0.8 * u;
+      ring(x, y, 8.5 * u);
+      g.fillStyle = INK;
+      g.fillText(nameOf(r.speaker.channel), x + 10 * u, y - 8 * u);
+    }
+    if (before) { g.fillStyle = INK; g.fillText('as pointed', W - 70 * u, H - 8 * u); }
+    table(list);
+    curves(list.filter((r) => r.response));
+    $('json').textContent = JSON.stringify(layout(list), null, 2);
+  }
+
+  function table(list) {
+    if ($('speakers').contains(document.activeElement)) return; // being typed in: not rebuilt under the cursor
+    const or = (v, f) => (v === undefined ? '' : f(v));
+    //  a value that goes into the file, edited in place; beside it the measured one, when the two differ
+    const value = (i, key, v, digits, unit, was, edited, why = '') =>
+      `<input class="v${edited ? ' edited' : ''}" type="number" step="${10 ** -digits}" data-i="${i}" data-k="${key}" value="${v.toFixed(digits)}" title="${why}" /> ${unit}` +
+      (edited ? `<button class="reset" data-reset="${key}" data-i="${i}">reset</button>` : was !== undefined && Math.abs(was - v) >= 0.5 * 10 ** -digits ? `<span class="was" title="${why}">measured ${was.toFixed(digits)}</span>` : '');
+    $('speakers').innerHTML = list.map((r, i) => `<tr><td><input type="number" min="1" data-i="${i}" data-k="channel" value="${r.speaker.channel}" /> ${nameOf(r.speaker.channel)}</td>` +
+      `<td>${value(i, 'azimuth', r.azimuth, 1, '°')}</td><td>${value(i, 'elevation', r.elevation, 1, '°')}</td>` +
+      `<td>${value(i, 'radius', r.radius, 2, 'm', r.delayMs === undefined ? undefined : r.measuredRadius, r.speaker.edit?.radius !== undefined,
+        or(r.delayMs, (v) => `measured delay ${(Math.abs(v) < 0.005 ? 0 : v).toFixed(2)} ms after the first speaker`))}</td>` +
+      `<td>${value(i, 'gainDb', r.gainDb, 1, 'dB', r.levelDb === undefined ? undefined : r.measuredGainDb, r.speaker.edit?.gainDb !== undefined,
+        or(r.levelDb, (v) => `measured level ${v.toFixed(1)} dB against the loudest`))}</td>` +
+      `<td><button data-remove="${i}">remove</button></td></tr>`).join('');
+    $('notes').innerHTML = [
+      frontSet ? '' : 'front is not set: point at it with the phone',
+      measured ? `the clocks drift ${measured.driftPpm.toFixed(1)} ppm · loudest at the phone ${measured.peakDb.toFixed(0)} dBFS` +
+        (measured.peakDb > -3 ? ' <span class="warn">(too loud: it may have clipped)</span>' : measured.peakDb < -45 ? ' <span class="warn">(very quiet: raise the level)</span>' : '') : 'not measured yet',
+    ].filter(Boolean).join(' · ');
+    $('cuts').innerHTML = list.some((r) => r.cuts) ? 'cuts · ' + list.filter((r) => r.cuts).map((r) =>
+      `${nameOf(r.speaker.channel)}: ${r.cuts.map((c) => `${c.f >= 1000 ? c.f / 1000 + 'k' : c.f} ${c.db}`).join(' ') || 'none'}`).join(' · ') : '';
+  }
+  $('speakers').addEventListener('change', (e) => {
+    const { i, k } = e.target.dataset, v = Number(e.target.value);
+    if (i === undefined || !Number.isFinite(v)) return;
+    const s = speakers[+i];
+    if (k === 'channel') s.channel = v;
+    //  an angle typed in places the speaker there, as dragging does
+    if (k === 'azimuth' || k === 'elevation') s.placed = { ...finalOf(s), [k]: k === 'azimuth' ? wrap(v) : Math.max(-90, Math.min(90, v)) };
+    if (k === 'radius' || k === 'gainDb') s.edit = { ...s.edit, [k]: v };
+    e.target.blur();
+    draw();
+  });
+  $('speakers').addEventListener('keydown', (e) => { if (e.key === 'Enter') e.target.blur(); });
+  $('speakers').addEventListener('click', (e) => {
+    const { remove, reset, i } = e.target.dataset;
+    if (remove !== undefined) speakers.splice(+remove, 1);
+    else if (reset) delete speakers[+i].edit[reset];
+    else return;
+    draw();
+  });
+
+  function layout(list) {
+    return {
+      Name: 'bambi speakers',
+      Description: 'pointed at with a phone and measured at the listening position',
+      LoudspeakerLayout: {
+        Name: 'pointed and measured',
+        Loudspeakers: list.map((r) => ({
+          Azimuth: Number(r.azimuth.toFixed(2)),
+          Elevation: Number(r.elevation.toFixed(2)),
+          Radius: Number(r.radius.toFixed(3)),
+          IsImaginary: false,
+          Channel: r.speaker.channel,
+          Gain: $('inclLevel').checked ? Number((10 ** (r.gainDb / 20)).toFixed(4)) : 1,
+          ...(r.cuts && $('inclCuts').checked ? { bambiCuts: r.cuts } : {}),
+        })),
+      },
+    };
+  }
+  $('export').addEventListener('click', () => {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([JSON.stringify(layout(rows()), null, 2)], { type: 'application/json' }));
+    a.download = `bambi-speakers_${speakers.length}.json`;
+    a.click();
+  });
+
+  let drawn = null;
+  function curves(list) {
+    const key = `${measured?.driftPpm}-${measured?.want.smoothing}-${list.map((r) => r.speaker.channel).join()}-${over.clientWidth}-${$('curves').clientWidth}`;
+    if (key === drawn) return;
+    drawn = key;
+    plot($('curves'), over.clientHeight || 300,
+      list.map((r) => ({ freqs: r.response.freqs, db: r.response.db, name: nameOf(r.speaker.channel) })),
+      list.length ? `dB, smoothed over 1/${measured.want.smoothing} octave, the first half second` : 'not measured yet');
+  }
+
+  //  A frequency response plot, as every one on this page is drawn: 50 Hz to 20 kHz on a log axis, IEC 60263's
+  //  aspect (a decade of frequency as long as 25 dB, so the range follows from the plot's shape and a curve looks as
+  //  steep as it is), centred on the curves' mean over 100 Hz..10 kHz. Each curve is { freqs, db, name, colour,
+  //  dashed }, named at its end so it is told apart by its name, not by its colour alone. From 50 Hz: a phone's
+  //  microphone says little below. `fixed` ({ top, range } in dB) holds the axis still instead, for a live curve.
+  function plot(c, tall, list, title, fixed = null) {
+    const k = c.getContext('2d'), v = devicePixelRatio, small = parseFloat(tone('--size-small')) * v, font = tone('--font');
+    c.style.height = `${tall}px`;
+    c.width = Math.round(c.clientWidth * v);
+    c.height = Math.round(tall * v);
+    const CW = c.width, CH = c.height, pad = 34 * v, right = 50 * v; // room for the names
+    k.clearRect(0, 0, CW, CH);
+    k.font = `${small}px ${font}`;
+    k.fillStyle = LABEL;
+    k.fillText(title, pad, pad - 10 * v);
+    if (!list.length && !fixed) return;
+    const LO = 50, HI = 20000, plotW = CW - pad - right, plotH = CH - 2 * pad;
+    const x = (f) => pad + (Math.log10(f / LO) / Math.log10(HI / LO)) * plotW;
+    const range = fixed?.range ?? (plotH / (plotW / Math.log10(HI / LO))) * 25;
+    const mid = list.flatMap((r) => r.db.filter((_, i) => r.freqs[i] >= 100 && r.freqs[i] <= 10000));
+    const top = fixed?.top ?? mid.reduce((a, b) => a + b, 0) / Math.max(1, mid.length) + range / 2;
+    const y = (db) => pad + ((top - db) / range) * plotH;
+    const every = range > 48 ? 10 : 6;
+    k.strokeStyle = RULE; k.lineWidth = 0.6 * v;
+    for (const f of [50, 100, 200, 500, 1000, 2000, 5000, 10000]) {
+      k.beginPath(); k.moveTo(x(f), pad); k.lineTo(x(f), CH - pad); k.stroke();
+      k.fillText(f >= 1000 ? `${f / 1000}k` : `${f}`, x(f) - 6 * v, CH - pad + 14 * v);
+    }
+    for (let db = Math.ceil((top - range) / every) * every; db <= top; db += every) {
+      k.beginPath(); k.moveTo(pad, y(db)); k.lineTo(CW - right, y(db)); k.stroke();
+      k.fillText(`${Math.round(db)}`.replace('-', '−'), 4 * v, y(db) + 4 * v);
+    }
+    const ends = [];
+    for (const r of list) {
+      k.strokeStyle = k.fillStyle = r.colour ?? INK; k.lineWidth = 1.5 * v;
+      k.setLineDash(r.dashed ? [4 * v, 4 * v] : []);
+      k.save();
+      k.beginPath();
+      k.rect(pad, pad, plotW, plotH); // the plot's area: a curve below its range is cut there
+      k.clip();
+      k.beginPath();
+      let started = false, last = 0;
+      r.freqs.forEach((f, i) => { if (f < LO) return; started ? k.lineTo(x(f), y(r.db[i])) : k.moveTo(x(f), y(r.db[i])); started = true; last = y(r.db[i]); });
+      k.stroke();
+      k.restore();
+      k.setLineDash([]);
+      if (!r.name) continue;
+      last = Math.min(CH - pad, Math.max(pad, last));
+      let at = last + 4 * v;
+      while (ends.some((e) => Math.abs(e - at) < 13 * v)) at += 13 * v; // names that would overlap step down
+      ends.push(at);
+      k.fillText(r.name, CW - right + 6 * v, at);
+    }
+  }
+
+
+  //  drawn again at a new size, so their text and lines keep theirs
+  new ResizeObserver(() => { drawn = null; draw(); }).observe(document.querySelector('.result'));
+  progress();
+</script>
+
+<style is:global>
+/*  controls */
+.speakers .segments { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); }
+.speakers .segments button, .speakers .segments label {
+  font: inherit;
+  font-size: var(--size-label);
+  letter-spacing: var(--tracking-label);
+  text-align: center;
+  color: var(--text);
+  background: none;
+  border: 0;
+  padding: 8px 6px;
+  cursor: pointer;
+}
+.speakers .segments button:hover, .speakers .segments label:hover { background: var(--panel); }
+.speakers .segments button.on, .speakers .segments label:has(input:checked) { background: var(--chosen); color: var(--text-inverse); }
+.speakers .segments input { position: absolute; opacity: 0; pointer-events: none; }
+.speakers select {
+  font: inherit;
+  font-size: 15px;
+  min-width: 0;
+  padding: 5px 6px;
+  color: var(--text);
+  background: var(--panel);
+  border: var(--stroke-rule) solid var(--rule);
+  border-radius: 0;
+}
+.speakers .values { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 12px; }
+.speakers .value { display: grid; gap: 3px; }
+.speakers .field { display: flex; align-items: baseline; gap: 6px; }
+.speakers .field input, .speakers .field select {
+  font: inherit;
+  font-size: 16px;
+  width: 100%;
+  min-width: 0;
+  padding: 4px 6px;
+  background: var(--panel);
+  color: var(--text);
+  border: var(--stroke-rule) solid var(--rule);
+  border-radius: 0;
+}
+.speakers .field input:focus, .speakers select:focus { outline: none; border-color: var(--rule-strong); }
+.speakers .unit, .speakers .hint { color: var(--label); font-size: var(--size-small); }
+.speakers .hint { margin: 6px 0 0; }
+.speakers .hint[data-hint-line] { min-height: 1.5em; margin: 4px 0; }
+.speakers .buttons { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.speakers .warn { color: var(--text); font-weight: 500; }
+
+
+.speakers table { border-collapse: collapse; width: 100%; }
+.speakers th, .speakers td { text-align: left; padding: 6px 12px 6px 0; border-bottom: var(--stroke-rule) solid var(--sand-light); vertical-align: baseline; white-space: nowrap; font-weight: 400; }
+.speakers th { font-weight: 500; font-size: var(--size-label); letter-spacing: var(--tracking-label); color: var(--label); border-bottom-color: var(--rule-strong); }
+.speakers .scroll { overflow-x: auto; }
+
+
+  
+  /*  the steps: one line, the current one in ink, the ones not reached yet faint */
+  .speakers .steps { display: flex; gap: 28px; border-bottom: var(--stroke-rule) solid var(--rule); margin-bottom: 28px; }
+  .speakers .steps button { font: inherit; font-size: var(--size-label); letter-spacing: var(--tracking-label); color: var(--label); background: none;
+    border: 0; border-bottom: 2px solid transparent; padding: 0 0 8px; margin-bottom: -1px; cursor: pointer; }
+  .speakers .steps button b { font-weight: 500; margin-right: 6px; }
+  .speakers .steps button.current { color: var(--text); border-bottom-color: var(--rule-strong); }
+  .speakers .steps button:disabled { color: var(--rule); cursor: default; }
+  .speakers .step { max-width: 720px; }
+  .speakers .step.wide { max-width: none; }
+  .speakers .step .title { font-size: 21px; font-weight: 500; margin: 0 0 6px; }
+  .speakers .step .intro { color: var(--label); margin-bottom: 18px; max-width: 60ch; }
+  /*  compact controls: toolbars, not a form to fill */
+  .speakers .bar { display: flex; flex-wrap: wrap; gap: 8px 10px; align-items: center; margin-bottom: 12px; }
+  .speakers .bar .label { margin-right: 2px; }
+  .speakers .small, .speakers .segments.small button { font-size: var(--size-label); letter-spacing: 0.04em; padding: 5px 10px; }
+  .speakers .segments.small { display: inline-flex; border: var(--stroke-rule) solid var(--rule); }
+  .speakers .segments.small button { padding: 4px 9px; }
+  .speakers .field.small { width: auto; }
+  .speakers .field.small input { width: 4.5em; font-size: 14px; padding: 3px 6px; }
+  .speakers select { font-size: 14px; padding: 4px 6px; }
+  .speakers .next { margin-top: 22px; }
+  .speakers .sep { width: 1px; align-self: stretch; background: var(--rule); margin: 0 4px; }
+  .speakers .pair { display: inline-flex; align-items: baseline; gap: 6px; white-space: nowrap; }
+  .speakers input[type='number'] { -moz-appearance: textfield; appearance: textfield; }
+  .speakers input[type='number']::-webkit-inner-spin-button, .speakers input[type='number']::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+  .speakers .field.small input { width: 3.6em; }
+  /*  a value that goes into the file: edited in place, plain until touched */
+  .speakers td input.v { width: 4.2em; text-align: right; background: none; border-color: transparent; }
+  .speakers td input.v:hover, .speakers td input.v:focus { background: var(--panel); border-color: var(--rule); outline: none; }
+  .speakers td input.v.edited { border-bottom-color: var(--rule-strong); }
+  .speakers td .was { color: var(--label); font-size: var(--size-small); margin-left: 4px; }
+  .speakers td .reset { margin-left: 4px; }
+  /*  step 1: the outputs as tiles, one clicked plays */
+  .speakers .outputs { display: grid; grid-template-columns: repeat(auto-fill, minmax(64px, 1fr)); gap: 6px; margin: 14px 0; }
+  .speakers .outputs button { font: inherit; font-size: var(--size-label); padding: 10px 4px; background: none; border: var(--stroke-rule) solid var(--rule); cursor: pointer; }
+  .speakers .outputs button:hover { border-color: var(--rule-strong); }
+  .speakers .outputs button.on { background: var(--chosen); color: var(--text-inverse); border-color: var(--chosen); }
+  /*  step 2 */
+  .speakers .join { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 20px; align-items: center; }
+  .speakers .join svg { display: block; width: 150px; height: 150px; }
+  .speakers .join .address { font-size: var(--size-small); color: var(--label); word-break: break-all; }
+  .speakers .verdict { font-size: 15px; margin: 18px 0 8px; }
+  /*  step 3: what the phone has done */
+  .speakers .progress { list-style: none; padding: 0; margin: 0; }
+  .speakers .progress li { display: grid; grid-template-columns: 44px 120px minmax(0, 1fr); gap: 12px; align-items: center; padding: 6px 0; border-bottom: var(--stroke-rule) solid var(--sand-light); font-size: 14px; }
+  .speakers .progress img, .speakers .progress .none { width: 44px; height: 44px; object-fit: cover; background: var(--panel); display: block; }
+  .speakers .progress .state { color: var(--label); font-size: var(--size-label); letter-spacing: 0.04em; }
+  .speakers .progress li.now .state { color: var(--orange); }
+  .speakers .meter { height: 4px; background: var(--panel); margin-top: 10px; }
+  .speakers .meter div { height: 100%; width: 0; background: var(--chosen); transition: width 0.25s linear; }
+  .speakers .meter.live { width: 24ch; margin-top: 0; }
+  /*  The first step as the result's cells: the sound's settings, a row each under labels of one width, beside the
+      microphone's check, whose spectrum is drawn as the result's responses; its findings as the progress list
+      without pictures. */
+  .speakers .result.setup { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .speakers .rows .bar > .label:first-child { flex: none; width: 11ch; }
+  .speakers .rows .outputs { flex: 1; margin: 0; }
+  .speakers .rows .outputs .hint { grid-column: 1 / -1; margin: 0; } /* before the test, in the outputs' place */
+  .speakers .level { display: inline-flex; align-items: center; gap: 10px; }
+  .speakers input[type='range'].dbfs { width: 18ch; accent-color: var(--chosen); }
+  .speakers #spectrum { display: block; width: 100%; }
+  .speakers .progress.plain li { grid-template-columns: 120px minmax(0, 1fr); }
+  .speakers .progress li.bad .state { color: var(--text); font-weight: 500; } /* as the tool's warnings are */
+  .speakers .meter.live div { transition: none; background: var(--orange); } /* what comes in */
+  /*  step 4: the room beside the numbers */
+  /*  two rows on one grid: the room and the response, the same height, then the table under the room and the
+      export under the response; the page scrolls as a whole */
+  .speakers .result { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: 8px 32px; align-items: start; }
+  .speakers .result .cell { margin-bottom: 26px; min-width: 0; }
+  .speakers .result h2 { margin-bottom: 10px; }
+  .speakers .result .bar { min-height: 30px; }
+  .speakers .result .pano + .bar { margin-top: 10px; }
+  .speakers .plot { border: var(--stroke-rule) solid var(--rule); }
+  .speakers .pano { position: relative; border: var(--stroke-rule) solid var(--rule); background: var(--panel); }
+  .speakers .pano canvas { display: block; width: 100%; height: auto; touch-action: none; }
+  .speakers .pano canvas#over { position: absolute; inset: 0; height: 100%; cursor: move; }
+  .speakers #curves { display: block; width: 100%; }
+  .speakers table { font-size: 14px; }
+  .speakers td input { font: inherit; width: 3em; padding: 1px 4px; background: var(--panel); border: var(--stroke-rule) solid var(--rule); border-radius: 0; }
+  .speakers td button { font: inherit; font-size: var(--size-small); letter-spacing: var(--tracking-label); color: var(--label); background: none; border: 0; padding: 0; cursor: pointer; }
+  .speakers td button:hover { color: var(--text); }
+  .speakers .muted { color: var(--label); }
+  .speakers .checks { display: flex; gap: 16px; font-size: 14px; margin: 4px 0 12px; }
+  .speakers .checks label { display: inline-flex; gap: 6px; align-items: center; }
+  .speakers details summary { cursor: pointer; font-size: var(--size-label); letter-spacing: var(--tracking-label); color: var(--label); margin-top: 10px; }
+  .speakers pre { background: var(--panel); padding: 12px 14px; overflow: auto; max-height: 240px; font-size: 12px; font-family: ui-monospace, "SF Mono", Menlo, monospace; }
+  .speakers .support { padding-left: 1.1em; font-size: var(--size-small); color: var(--label); margin: 6px 0 0; }
+  .speakers .support li { margin-bottom: 2px; }
+  @media (max-width: 1100px) { .speakers .result, .speakers .result.setup { grid-template-columns: 1fr; } }
+
+</style>

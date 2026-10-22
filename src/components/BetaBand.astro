@@ -1,0 +1,51 @@
+---
+/*  Until bambi is stable, a band across the bottom-right corner of every page says so, in the black block the
+    site chooses with, and leads to status. It is fixed, so it never moves the header or a screen; the footer
+    keeps its links clear of it. */
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<div class="beta-corner">
+  <a class="beta-band" href={`${base}/status`} title="bambi is in open beta: what works and what does not yet is on status">open beta</a>
+</div>
+
+<style>
+  /*  The band is the corner's diagonal: its centre 46 % of the corner in from each edge, long enough that both
+      ends run past the window's right and bottom edges, so the window is all that cuts it. */
+  .beta-corner {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    width: var(--corner);
+    height: var(--corner);
+    pointer-events: none;
+    z-index: 20;
+  }
+  .beta-band {
+    --long: calc(var(--corner) * 2.4);
+    --thick: calc(var(--corner) * 0.23);
+    position: absolute;
+    right: calc(var(--corner) * 0.46 - var(--long) / 2);
+    bottom: calc(var(--corner) * 0.46 - var(--thick) / 2);
+    width: var(--long);
+    height: var(--thick);
+    line-height: var(--thick);
+    transform: rotate(-45deg);
+    background: var(--chosen);
+    color: var(--text-inverse);
+    font-size: var(--size-label);
+    letter-spacing: var(--tracking-label);
+    text-align: center;
+    text-transform: lowercase;
+    pointer-events: auto;
+  }
+  .beta-band:hover {
+    text-decoration: none;
+    background: var(--text);
+  }
+  @media (max-width: 760px) {
+    .beta-band {
+      font-size: var(--size-small);
+    }
+  }
+</style>

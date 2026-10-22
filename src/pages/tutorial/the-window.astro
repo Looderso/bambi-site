@@ -1,18 +1,14 @@
 ---
 /*  The parts every bambi window has, and the gestures each takes. The pictures are the plugins' own,
     drawn by their picture tools; the text names colours by what they mean, not by their hue. */
-import Page from '../../layouts/Page.astro';
-import PrevNext from '../../components/PrevNext.astro';
-import { neighbours } from '../../lib/tutorials';
+import TutorialPage from '../../layouts/TutorialPage.astro';
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
-const { previous, next } = neighbours('the-window');
-const link = (t?: { id: string; title: string }) => t && { href: `${base}/tutorial/${t.id}`, title: t.title };
 const img = (name: string) => `${base}/tutorial/${name}.webp`;
 
-const parts = [
+const parts: [string, string][] = [
   ['header', 'the header'],
-  ['scene', 'the scene'],
+  ['scene', 'the 3D view'],
   ['matrix', 'the modulation matrix'],
   ['source', "a source's page"],
   ['panel', 'the panel and a value'],
@@ -24,35 +20,26 @@ const parts = [
 ];
 ---
 
-<Page title="the window" description="The parts of a bambi window, and how to use them.">
-  <p class="label"><a href={`${base}/tutorial`}>tutorial</a></p>
-  <h1>the window</h1>
-  <p class="sub label">the parts of a bambi window, and how to use them</p>
-
-  <div class="prose">
+<TutorialPage
+  id="the-window"
+  sub="the parts of a bambi window, and how to use them"
+  description="The parts of a bambi window, and how to use them."
+  parts={parts}
+  window={{ src: img('window'), alt: 'An echo window: header, 3D view, matrix, the taps tab and the level column.', caption: 'an echo window' }}
+>
+  <div class="prose" slot="intro">
     <p class="lede">Every bambi plugin is laid out the same way, so what you learn in one works in the others.</p>
     <p>
-      At the top is the header. Below it on the left is the scene, a picture of the sphere around you, and
+      At the top is the header. Below it on the left is the 3D view, a picture of the sphere around you, and
       under that the modulation matrix. On the right are the plugin's own tabs, and at the far right its
       levels. This page walks through each part: what it is for, and what you can do with it.
     </p>
   </div>
 
-  <figure>
-    <img src={img('window')} alt="An echo window: header, scene, matrix, the taps tab and the level column." width="2040" height="1200" />
-    <figcaption><span class="label">an echo window</span><span class="label">drawn by the plugin</span></figcaption>
-  </figure>
-
-  <nav class="contents" aria-label="on this page" data-contents>
-    <ol>
-      {parts.map(([id, name]) => <li><a href={`#${id}`} data-part={id}>{name}</a></li>)}
-    </ol>
-  </nav>
-
   <section id="header">
     <h2>the header</h2>
     <figure>
-      <img src={img('header')} alt="The header of an encoder window with five instance tabs." width="2040" height="88" />
+      <img src={img('header')} alt="The header of a path encoder window with five instance tabs." width="2040" height="88" />
     </figure>
     <div class="prose">
       <p>From left to right:</p>
@@ -63,7 +50,7 @@ const parts = [
         </li>
         <li>
           <strong>Undo and redo</strong>, the two arrows. Every edit can be undone, including a preset load and a
-          drag in the scene.
+          drag in the 3D view.
         </li>
         <li>
           <strong>The instances, as tabs.</strong> Every instance of this plugin in your project has a tab, named
@@ -83,13 +70,13 @@ const parts = [
   </section>
 
   <section id="scene">
-    <h2>the scene</h2>
+    <h2>the 3D view</h2>
     <figure>
       <img src={img('scene')} alt="The globe and the equirect side by side, with the energy picture on and the probe placed." width="1236" height="602" />
     </figure>
     <div class="prose">
       <p>
-        The scene shows the sphere around the listener twice. On the left is the <strong>globe</strong>, a ball
+        The 3D view shows the sphere around the listener twice. On the left is the <strong>globe</strong>, a ball
         you look at from outside. On the right is the <strong>equirect</strong>, the whole sphere unrolled flat:
         left to right is all the way round, bottom to top is floor to ceiling. The letters along the top mark
         back, left, front and right.
@@ -123,7 +110,7 @@ const parts = [
     </figure>
     <div class="prose">
       <p>
-        The matrix is how something moves by itself. Its <strong>columns are sources</strong>, things that change
+        The matrix is where you set up modulation. Its <strong>columns are sources</strong>, things that change
         over time. Its <strong>rows are targets</strong>, the parameters they move. A cell is how much one source
         moves one target.
       </p>
@@ -137,7 +124,7 @@ const parts = [
         </li>
         <li><strong>sidechain</strong> has the same six, measured on the sidechain input instead.</li>
         <li><strong>generators</strong> are three LFOs and three envelopes.</li>
-        <li><strong>region</strong>, in the encoder only, is how far the source is inside its region.</li>
+        <li><strong>region</strong>, in the path encoder only, is how far the source is inside its region.</li>
       </ul>
       <p>
         Under each source's name, the thin bar shows what it is sending right now, so you can see what a depth
@@ -148,7 +135,7 @@ const parts = [
       <p>
         There is always at least one row. To add another, <strong>click any value</strong> on the plugin's tabs.
         Its row appears with a dashed outline, as a <em>provisional row</em>. Clicking another value replaces it,
-        and giving it any depth keeps it. Two clicks and a drag is the whole vocabulary:
+        and giving it any depth keeps it. Two clicks and a drag are all it takes:
       </p>
       <ol>
         <li>Click the value you want to move, say <code>width</code>. A row appears.</li>
@@ -208,7 +195,7 @@ const parts = [
 
   <section id="panel" class="split">
     <figure class="panel">
-      <img src={img('values')} alt="The encoder's source tab: boxes for trim, displace, speed, direction, mode, width and width range." width="696" height="1116" />
+      <img src={img('values')} alt="The path encoder's source tab: boxes for trim, displace, speed, direction, mode, width and width range." width="696" height="1116" />
     </figure>
     <div class="prose">
       <h2>the panel and a value</h2>
@@ -250,13 +237,13 @@ const parts = [
   <section id="regions">
     <h2>regions</h2>
     <figure>
-      <img src={img('regions')} alt="Echo's send tab: a spot region drawn in the scene with its handles, the kind row and its settings." width="2040" height="1200" />
+      <img src={img('regions')} alt="Echo's send tab: a spot region drawn in the 3D view with its handles, the kind row and its settings." width="2040" height="1200" />
     </figure>
     <div class="prose">
       <p>
-        A region says <strong>where on the sphere</strong> something happens: which part of the field the echo
-        hears, or where the reverb's room comes back. Each plugin has a fixed set, each on a tab of its own: the
-        echo has a <code>send</code>, the reverb a <code>send</code> and a <code>return</code>. In the encoder the
+        A region says <strong>where on the sphere</strong> something happens: which part of the sound scene feeds the
+        echo, or where the reverb's room comes back. Each plugin has a fixed set, each on a tab of its own: the
+        echo has a <code>send</code>, the reverb a <code>send</code> and a <code>return</code>. In the path encoder the
         region is a source in the matrix instead (below).
       </p>
       <p>
@@ -274,8 +261,8 @@ const parts = [
           is <code>inside</code> or what is <code>outside</code>, and how much.
         </li>
         <li>
-          <strong>In the scene</strong>, a region is drawn in ink: its edge where it is half open, and a light wash
-          where it fades. While its tab is open it has handles, in ink. Drag the one at its centre to aim it and the
+          <strong>In the 3D view</strong>, a region is drawn as an outline where it is half open, and lightly shaded
+          where it fades. While its tab is open it has handles. Drag the one at its centre to aim it and the
           others to roll it or move its edge; the one you hold turns orange. Double-click a handle to reset it.
         </li>
         <li>
@@ -291,12 +278,12 @@ const parts = [
       </ul>
     </div>
     <figure>
-      <img src={img('region-source')} alt="The encoder with its region page open from the matrix's region tab." width="2040" height="1200" />
-      <figcaption><span class="label">in the encoder the region is a source: here, a spot the path passes through</span><span class="label">drawn by the plugin</span></figcaption>
+      <img src={img('region-source')} alt="The path encoder with its region page open from the matrix's region tab." width="2040" height="1200" />
+      <figcaption><span class="label">in the path encoder the region is a source: here, a spot the path passes through</span><span class="label">drawn by the plugin</span></figcaption>
     </figure>
     <div class="prose">
       <p>
-        In the encoder, the region's value is how far the source is inside it: 1 inside, 0 outside, and in between
+        In the path encoder, the region's value is how far the source is inside it: 1 inside, 0 outside, and in between
         across the soft edge. Route it like any source to make a sound slow down, widen or fall quiet as it
         passes through part of the room.
       </p>
@@ -314,7 +301,7 @@ const parts = [
         plugin's own settings. It does not include the instance's name or its place in the session.
       </p>
       <p>
-        Click the preset name in the header and the browser opens over the panel, so the scene and the matrix
+        Click the preset name in the header and the browser opens over the panel, so the 3D view and the matrix
         stay in sight while you try things.
       </p>
       <ul>
@@ -351,7 +338,7 @@ const parts = [
           the whole window turns to it; undo acts on the instance shown.
         </li>
         <li>
-          <strong>Other instances appear in the scene</strong> in grey: in the encoder, every source and its path;
+          <strong>Other instances appear in the 3D view</strong> in grey: in the path encoder, every source and its path;
           in every plugin, other instances' regions as dotted outlines. They are only drawn; nothing about them
           reaches the sound.
         </li>
@@ -387,7 +374,7 @@ const parts = [
       <h2>levels and the footer</h2>
       <p>
         The column at the far right holds the plugin's <strong>levels</strong>, in decibels: <code>dry</code> and
-        <code>wet</code> in the echo and the reverb, <code>gain</code> in the encoder. They are values like any
+        <code>wet</code> in the echo and the reverb, <code>gain</code> in the path encoder. They are values like any
         other: drag them, double-click for the default, click to give them a row in the matrix. Under them is the
         <strong>output meter</strong>, marked <code>out</code>, which always shows this window's own instance.
       </p>
@@ -396,144 +383,12 @@ const parts = [
         instance's name, its order, and the share of one processor core it is using. With
         <code>rates continue</code> off, as it starts, everything that turns at a rate (a path, a rotating
         region) holds while the transport is stopped and starts from the same place every time you press play,
-        so a bounce sounds like what you heard. Switched on, they run all the time, and a bounce no longer
-        repeats what you heard.
+        so a bounce matches playback. Switched on, they run all the time, and a bounce no longer
+        matches playback.
       </p>
     </div>
   </section>
   <figure>
     <img src={img('footer')} alt="The bottom edge of the window: global amount, has depth on another tab, rates continue, and the readout." width="2040" height="72" />
   </figure>
-  <PrevNext previous={link(previous)} next={link(next)} />
-</Page>
-
-<script>
-  /*  The part being read is marked in the contents, as the open tab is in the plugins. */
-  const links = new Map(
-    [...document.querySelectorAll<HTMLAnchorElement>('[data-contents] a')].map((a) => [a.dataset.part, a]),
-  );
-  const mark = (id?: string) => {
-    if (!id) return; // between two parts: the last one stays marked
-    for (const [part, a] of links) a.classList.toggle('here', part === id);
-    //  on a narrow screen the row scrolls sideways: keep the marked part in it
-    const a = links.get(id)!;
-    const row = a.closest('ol')!;
-    if (a.offsetLeft < row.scrollLeft || a.offsetLeft + a.offsetWidth > row.scrollLeft + row.clientWidth)
-      row.scrollLeft = a.offsetLeft - 8;
-  };
-  const seen = new Set<string>();
-  const observer = new IntersectionObserver(
-    (entries) => {
-      for (const e of entries) e.isIntersecting ? seen.add(e.target.id) : seen.delete(e.target.id);
-      mark([...links.keys()].find((id) => id && seen.has(id)));
-    },
-    { rootMargin: '-45% 0px -50% 0px' },
-  );
-  for (const id of links.keys()) {
-    const section = id && document.getElementById(id);
-    if (section) observer.observe(section);
-  }
-</script>
-
-
-<style>
-  .sub {
-    margin: 12px 0 var(--section);
-  }
-  section {
-    margin-top: var(--section);
-    scroll-margin-top: 40px; /* below the contents row, as well as the header */
-  }
-  figure {
-    margin: 0 0 24px;
-  }
-  figure img {
-    display: block;
-    width: 100%;
-    height: auto;
-    border: var(--stroke-rule) solid var(--rule);
-  }
-  figcaption {
-    display: flex;
-    justify-content: space-between;
-    gap: var(--gap);
-    margin-top: 8px;
-    text-transform: none;
-  }
-  /*  the contents stay under the header, a second row of tabs: one line, scrolling sideways when narrow */
-  .contents {
-    position: sticky;
-    top: calc(var(--header) + var(--stroke-identity));
-    z-index: 5;
-    background: var(--ground);
-    border-bottom: var(--stroke-rule) solid var(--rule);
-    margin-bottom: 8px;
-  }
-  .contents ol {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    gap: 2px;
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
-  .contents ol::-webkit-scrollbar {
-    display: none;
-  }
-  .contents a {
-    display: block;
-    white-space: nowrap;
-    color: var(--text);
-    font-size: var(--size-label);
-    letter-spacing: var(--tracking-label);
-    padding: 7px 10px;
-  }
-  .contents a:hover {
-    background: var(--panel);
-    text-decoration: none;
-  }
-  .contents a.here {
-    background: var(--chosen);
-    color: var(--text-inverse);
-  }
-  kbd {
-    font-family: inherit;
-    font-size: 0.9em;
-    padding: 0 0.3em;
-    border: var(--stroke-rule) solid var(--rule);
-  }
-
-  /*  a panel picture beside its text, one above the other on a phone */
-  .split {
-    display: grid;
-    grid-template-columns: minmax(0, 348px) minmax(0, 1fr);
-    gap: 40px;
-    align-items: start;
-  }
-  .split.levels {
-    grid-template-columns: 52px minmax(0, 1fr);
-  }
-  .split > figure {
-    margin: 0;
-  }
-  .split .prose h2 {
-    margin-top: 0;
-  }
-  @media (max-width: 760px) {
-    .split,
-    .split.levels {
-      grid-template-columns: 1fr;
-      gap: 16px;
-    }
-    .split > figure {
-      order: 1; /* the heading and the text first, the picture after them */
-    }
-    .split > .panel {
-      max-width: 348px;
-    }
-    .split > .column {
-      width: 52px;
-    }
-  }
-</style>
+</TutorialPage>

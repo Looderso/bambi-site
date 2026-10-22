@@ -45,6 +45,11 @@
   --page: 1040px;
   --page-wide: 1360px; /* a tool's page, where a picture works beside a form */
   --header: 44px; /* the header's and the footer's height; the header stays on screen */
+  --corner: 104px; /* the square the beta band crosses, bottom right */
+  --top: 32px; /* where every page's first line starts under the header */
+  --header-pad: 16px; /* the room a link to a heading keeps below the header */
+  --size-card-title: 18px;
+  --size-card-text: 14px;
   --gap: 24px;
   --section: 64px;
 
@@ -55,17 +60,53 @@
   color-scheme: light;
 }
 
+/*  On a phone the beta band's corner is smaller. */
+@media (max-width: 760px) {
+  :root {
+    --corner: 76px;
+  }
+}
+
 * {
   box-sizing: border-box;
+}
+/*  what is hidden stays hidden, whatever display its class gives it */
+[hidden] {
+  display: none !important;
 }
 
 html {
   -webkit-text-size-adjust: 100%;
   /* a link to a heading lands below the header, not under it */
-  scroll-padding-top: calc(var(--header) + 16px);
+  scroll-padding-top: calc(var(--header) + var(--header-pad));
 }
 
+/*  A page of screens: every `.screen` fills the screen under the header and the page settles on each, as if
+    swiped. A page opts in by holding a `.snap`; its footer is the last stop, so the end can be reached. */
+/*  a page of screens starts flush under the header: each screen keeps the page's top room itself */
+.snap {
+  margin-top: calc(-1 * var(--top));
+}
+html:has(.snap) {
+  scroll-snap-type: y mandatory;
+}
+html:has(.snap) footer {
+  scroll-snap-align: end;
+}
+.screen {
+  --screen: calc(100svh - var(--header) - var(--stroke-identity));
+  min-height: var(--screen);
+  padding-top: var(--top);
+  scroll-snap-align: start;
+  scroll-snap-stop: always; /* one flick moves one screen, never past it */
+  scroll-margin-top: calc(var(--stroke-identity) - var(--header-pad)); /* flush under the header */
+}
+
+/*  The page is a column at least the screen's height, so on a short page the footer stays at the bottom. */
 body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
   margin: 0;
   background: var(--ground);
   color: var(--text);
@@ -132,6 +173,11 @@ p {
   color: var(--label);
 }
 
+/*  A page opens with its title and one grey line under it saying what the page is. */
+.sub {
+  margin: 12px 0 var(--section);
+}
+
 .lede {
   font-size: var(--size-lede);
   line-height: 1.4;
@@ -144,7 +190,7 @@ p {
   padding-inline: var(--gutter);
 }
 
-/*  Prose written in Markdown: guidelines and a plugin's page. */
+/*  Prose: a plugin's page, a tutorial, a research page. */
 .prose {
   max-width: var(--measure);
 }
@@ -216,4 +262,103 @@ p {
   letter-spacing: var(--tracking-label);
   color: var(--label);
   border-bottom-color: var(--rule-strong);
+}
+
+/*  The way to act on a page — download, for one: the black block the site chooses with. `quiet` is the
+    same button in outline, for an action beside the main one. A link or a button. */
+.button {
+  display: inline-block;
+  padding: 12px var(--gap);
+  border: var(--stroke-rule) solid var(--chosen);
+  background: var(--chosen);
+  color: var(--text-inverse);
+  font: inherit;
+  cursor: pointer;
+}
+.button:hover {
+  text-decoration: none;
+  background: var(--text);
+}
+.button.quiet {
+  background: var(--ground);
+  color: var(--text);
+}
+.button.quiet:hover {
+  background: var(--panel);
+}
+/*  `small`, for a button among a tool's controls; a button that cannot be pressed yet is drawn in grey */
+.button.small {
+  padding: 5px 10px;
+  font-size: var(--size-label);
+  letter-spacing: 0.04em;
+}
+.button:disabled {
+  background: var(--ground);
+  color: var(--label);
+  border-color: var(--rule);
+  cursor: default;
+}
+
+/*  Steps read in order, an `ol`, numbered by the list itself in a square; a `ul` of the same is parts, unnumbered. Down the page, each a row beside its number,
+    with room for a table or a code block; `across`, side by side, each a title and a line under an ink rule. */
+.steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  counter-reset: step;
+  border-top: var(--stroke-rule) solid var(--rule-strong);
+}
+.steps > li {
+  counter-increment: step;
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  gap: 16px;
+  margin: 0;
+  padding: 14px 0;
+  border-bottom: var(--stroke-rule) solid var(--sand-light);
+}
+ul.steps > li {
+  grid-template-columns: minmax(0, 1fr); /* parts, not steps: no number */
+}
+ol.steps > li::before {
+  content: counter(step);
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: var(--stroke-rule) solid var(--rule-strong);
+  font-size: var(--size-label);
+}
+.steps .title {
+  font-size: var(--size-card-title);
+}
+.steps .text {
+  color: var(--label);
+  font-size: var(--size-card-text);
+}
+.steps.across {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+  gap: var(--gap);
+  border-top: 0;
+}
+.steps.across > li {
+  grid-template-columns: none;
+  align-content: start;
+  gap: 8px;
+  padding: 12px 0 0;
+  border-bottom: 0;
+  border-top: var(--stroke-identity) solid var(--rule-strong);
+}
+@media (max-width: 760px) {
+  .steps.across {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+}
+
+/*  A product's mark: a faint shadow that follows its own shape stands it off the ground, the one shadow on the
+    site. */
+.mark {
+  filter: drop-shadow(0 1px 2px color-mix(in srgb, var(--text) 30%, transparent));
 }

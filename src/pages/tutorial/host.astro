@@ -1,0 +1,204 @@
+---
+/*  How to play a Live set through the host, step by step: Live's side first, then the host's pages in the order
+    they are used. The pictures are the host's own, drawn by its picture tool; the plugins' windows are their own
+    tutorials. */
+import TutorialPage from '../../layouts/TutorialPage.astro';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const img = (name: string) => `${base}/tutorial/${name}.webp`;
+
+const parts: [string, string][] = [
+  ['live', 'in Live'],
+  ['tracks', 'the tracks'],
+  ['returns', 'returns and main'],
+  ['wires', 'sends'],
+  ['decoders', 'decoders'],
+  ['audio', 'audio settings'],
+  ['timeline', 'the timeline'],
+  ['try', 'things to try'],
+];
+---
+
+<TutorialPage
+  id="host"
+  sub="setting up a set to play through bambi"
+  parts={parts}
+  window={{ src: img('host-window'), alt: 'The host’s window on its routing page: Live’s tracks, the returns and main, and two decoders, joined by sends.', caption: 'the host’s window', width: 2184, height: 1200 }}
+>
+  <div class="prose" slot="intro">
+    <p class="lede">
+      The host plays a Live set’s tracks through bambi’s plugins and decoders, routed as ambisonics rather than as
+      stereo, while Live keeps the arrangement and the transport.
+    </p>
+    <p>
+      It runs on macOS, with Ableton Live. This page walks through setting a set up, in the order you need each
+      part. The plugins’ own windows, which the host opens from its sidebar, are explained in
+      <a href={`${base}/tutorial`}>their tutorials</a>.
+    </p>
+  </div>
+
+  <section id="live">
+    <h2>in Live</h2>
+    <div class="prose">
+      <p>Live plays into the host through bambi’s virtual audio driver, and a device on Live’s main track connects the two.</p>
+      <ol>
+        <li>
+          In Live’s audio settings, choose <strong>bambi</strong> as the output. In <strong>Output Config</strong>,
+          enable its channels as stereo pairs; in <strong>Input Config</strong>, 1/2.
+        </li>
+        <li>
+          Put the <strong>bambi device</strong> on Live’s main track. It is a Max for Live device, so it needs Live
+          12 Suite.
+        </li>
+        <li>
+          Press <strong>open host</strong>. The light beside the status turns green once the host is connected, and
+          the device lists every track and what bambi does with it.
+        </li>
+      </ol>
+      <p>
+        Nothing in the set changes on its own. The device keeps a snapshot of the set’s routing, saved when the set
+        opens or by hand with <strong>save routing</strong>, and <strong>restore saved</strong>, pressed twice, puts it
+        back.
+      </p>
+    </div>
+  </section>
+
+  <section id="tracks">
+    <h2>the tracks</h2>
+    <figure>
+      <img src={img('host-tracks')} alt="Live’s tracks on the routing page: a drum group split into its tracks, a bass, keys left in Live, a vocal through an echo, and a microphone input." width="760" height="620" />
+    </figure>
+    <div class="prose">
+      <p>
+        The routing page lists Live’s tracks and groups as Live files them, and the host’s own inputs under them. A
+        set opens with everything left in Live; <strong>route all</strong> takes every track into the ambisonics bus at once,
+        and <strong>all to Live</strong> gives them all back. Each track’s marker says where it plays:
+      </p>
+      <ul>
+        <li><code>live</code>: left in Live, mixed there as before.</li>
+        <li><code>bambi</code>: played by bambi, through an encoder.</li>
+        <li><code>bus</code>: a group split into its tracks, each encoded; <strong>encode whole</strong> makes it one source again.</li>
+        <li><code>in group</code>: a track its group plays.</li>
+        <li><code>no pair</code>: taken into bambi, but no stereo pair of bambi’s virtual audio driver is free, so it is silent.</li>
+      </ul>
+      <p>
+        <strong>+ encoder</strong> takes a track into bambi. After the encoder come its inserts: <strong>+</strong>
+        adds one, a click opens it, and a drag moves it along the chain.
+      </p>
+    </div>
+  </section>
+
+  <section id="returns">
+    <h2>returns and main</h2>
+    <figure>
+      <img src={img('host-returns')} alt="The returns and main: a plate taken into bambi through a reverb, a slap left in Live, and main." width="640" height="290" />
+    </figure>
+    <div class="prose">
+      <p>
+        Live’s returns and its main stand in the middle. A return left in Live has <strong>+ to bambi</strong>, which
+        takes it into the ambisonics bus with insert effects of its own, such as a reverb on a plate; its cross gives it back to Live.
+      </p>
+    </div>
+  </section>
+
+  <section id="wires">
+    <h2>sends</h2>
+    <figure>
+      <img src={img('host-wires')} alt="The vocal selected: its sends to main and to the plate open under it, each with its level." width="1520" height="540" />
+    </figure>
+    <div class="prose">
+      <p>A track reaches a return, main or a decoder through a send:</p>
+      <ul>
+        <li><strong>Press send</strong> on a track, and what it can reach lights up. Click one to make the send, at 0 dB.</li>
+        <li>
+          <strong>Click a track’s name</strong> to select it: what it reaches lights up, and its sends open under it as
+          chips. Drag a chip to set its level; its cross removes it.
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="decoders">
+    <h2>decoders</h2>
+    <figure>
+      <img src={img('host-decoders')} alt="Two decoders: one to headphones, one to a 0+5+0 layout, each fed from main." width="424" height="360" />
+    </figure>
+    <div class="prose">
+      <p>
+        On the right are the decoders, where the ambisonic signal leaves the host. <strong>+ decoder</strong> adds one, and
+        each gets its own mix through its sends. A decoder’s box shows its output, and what it receives at
+        which level; a click on its name opens its own window, which sets its headphones and its loudspeakers.
+      </p>
+    </div>
+  </section>
+
+  <section id="audio">
+    <h2>audio settings</h2>
+    <figure>
+      <img src={img('host-outputs')} alt="Audio settings on the outputs tab: Live’s main, the first decoder’s headphones with a copy back to Live, and the second decoder’s speakers." width="1760" height="1060" />
+    </figure>
+    <div class="prose">
+      <p><strong>audio</strong>, at the foot of the sidebar, opens the audio settings for everything going in and out, in four tabs:</p>
+      <ul>
+        <li>
+          <strong>interface</strong>: the devices the host plays out of, the first of them the clock source; the host’s buffer size;
+          and the ambisonic order, with the CPU load it costs. The rate is Live’s.
+        </li>
+        <li>
+          <strong>outputs</strong>: Live’s main and every decoder’s outputs, each on its channels. <strong>+ copy</strong>
+          sends the same signal to other channels, or a pair back to Live’s bambi track for recording; Live renders
+          nothing that does not come back to it.
+        </li>
+        <li><strong>inputs</strong>: the host’s own inputs, as the microphone on the routing page.</li>
+        <li><strong>midi</strong>: every MIDI input the system has. Every instance receives all of it.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="timeline">
+    <h2>the timeline</h2>
+    <figure>
+      <img src={img('host-timeline')} alt="The timeline: the transport, Live’s arrangement as coloured blocks, and two automation lanes over it." width="2184" height="1200" />
+    </figure>
+    <div class="prose">
+      <p>
+        The timeline shows Live’s set as the host plays it. <strong>play</strong> and <strong>stop</strong> drive
+        Live’s transport, a click on the ruler locates, and the playhead stays in sync with what you hear.
+      </p>
+      <ul>
+        <li>
+          <strong>arrangement</strong>: Live’s clips, a row per track. Choose a track: the panel on the right lists
+          its automation lanes and adds one with <strong>+ lane</strong>, each lane one parameter of anything the host plays, drawn
+          under its row. A click puts a point, a drag moves it, shift without snapping, and a double-click removes it.
+        </li>
+        <li>
+          <strong>session</strong>: Live’s grid, a column per track and a row per scene. Choose a clip, and its own
+          automation lanes open at the foot, following the clip as it loops.
+        </li>
+      </ul>
+    </div>
+    <figure>
+      <img src={img('host-session')} alt="The session view: a clip grid with the clips in their tracks’ colours." width="2184" height="1200" />
+    </figure>
+  </section>
+
+  <section id="try">
+    <h2>things to try</h2>
+    <div class="prose">
+      <ol>
+        <li>
+          <strong>One track into ambisonics.</strong> Press <strong>+ encoder</strong> on a track, open the path
+          encoder from the sidebar, and draw it a path.
+        </li>
+        <li>
+          <strong>A room for everything.</strong> Take a return into bambi with a reverb on it, then send each track
+          to it.
+        </li>
+        <li>
+          <strong>Headphones and loudspeakers at once.</strong> Add a second decoder, give one headphones and the
+          other a loudspeaker layout, and set their channels in audio settings.
+        </li>
+      </ol>
+    </div>
+  </section>
+</TutorialPage>

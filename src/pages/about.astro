@@ -1,28 +1,76 @@
 ---
+/*  About, as a page of screens: the people bambi thanks and who supports it; its licence and its notices.
+    What bambi is stays on the front page, and the work it builds on on foundations. */
 import Page from '../layouts/Page.astro';
+import { sonible } from '../lib/links';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const thanks = ['Daniel Rudrich', 'Alexander Mülleder', 'Fabian Hummel', 'Jonathan Wögerbauer', 'DI Ollinger'];
+
 ---
 
-<Page title="about">
-  <h1>about</h1>
-  <p class="sub label">free and open source</p>
-  <div class="prose">
-    <p>
-      bambi is an ambisonics plugin suite: plugins that share a core, a look, a modulation matrix and a link
-      between instances. It works in AmbiX (ACN ordering, SN3D normalisation) at
-      any order the host carries.
-    </p>
-    <p>
-      bambi's own code is GPL-3.0-or-later; plugin builds, which include JUCE, are distributed under AGPLv3.
-      The source is on <a href="https://github.com/Looderso/bambi">GitHub</a>, and every release carries its
-      complete source and the notices of the third-party components it contains.
-    </p>
-    <p class="fine">VST is a registered trademark of Steinberg Media Technologies GmbH.
-    </p>
+<Page title="about" description="Who bambi thanks, who supports it, and its licence." wide>
+  <div class="about-page snap">
+    <section class="screen">
+      <h1>about</h1>
+      <p class="sub label">the people bambi thanks, who supports it, and its licence</p>
+      <h2 id="thanks" class="first">special thanks</h2>
+      <ul class="names">{thanks.map((name) => <li>{name}</li>)}</ul>
+
+      <h2 class="later">supported by</h2>
+      <a class="sonible" href={sonible} aria-label="sonible">
+        <img src={`${base}/credits/sonible.png`} alt="sonible" width="900" height="416" />
+      </a>
+    </section>
+
+    <section class="screen" aria-labelledby="licence">
+      <h2 id="licence">licence</h2>
+      <p class="about">
+        bambi’s own code is GPL-3.0-or-later; the plugin builds, which include JUCE, are distributed under AGPLv3.
+        The source is on <a href="https://github.com/Looderso/bambi">GitHub</a>, and every release carries its
+        complete source and the notices of the third-party components it contains.
+      </p>
+      <p class="fine notices">VST is a registered trademark of Steinberg Media Technologies GmbH.</p>
+    </section>
   </div>
 </Page>
 
 <style>
-  .sub {
-    margin: 12px 0 var(--section);
+  .screen {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap);
+  }
+  h2,
+  .sub,
+  .about,
+  .fine {
+    margin: 0;
+  }
+  .about {
+    max-width: var(--measure);
+  }
+  .first,
+  .later {
+    margin-top: var(--gap);
+  }
+  /*  The names, one to a line. */
+  .names {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    max-width: var(--measure);
+  }
+  .names li {
+    padding: 4px 0;
+  }
+  /*  sonible's own logo, in its one-colour version, small. */
+  .sonible {
+    align-self: start;
+  }
+  .sonible img {
+    display: block;
+    width: 140px;
+    height: auto;
   }
 </style>

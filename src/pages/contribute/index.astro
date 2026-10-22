@@ -1,52 +1,195 @@
 ---
-import { getCollection } from 'astro:content';
+/*  Contribute: what a contributor can expect, on one page of screens. The rules themselves live in the bambi
+    repository, where an agent reads them; this page says what is there and links to it, so they are written once. */
 import Page from '../../layouts/Page.astro';
 import Cards from '../../components/Cards.astro';
+import { discord } from '../../lib/links';
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
-const guidelines = (await getCollection('guidelines')).sort((a, b) => a.data.order - b.data.order);
-const groups = [
-  { id: 'working', title: 'working on bambi' },
-  { id: 'design', title: 'how bambi is designed' },
-].map((group) => ({
-  ...group,
-  items: guidelines
-    .filter((g) => g.data.group === group.id)
-    .map((g) => ({ href: `${base}/contribute/${g.id}`, title: g.data.title, text: g.data.summary })),
-}));
+const repo = 'https://github.com/Looderso/bambi';
+const file = (path: string) => `${repo}/blob/main/${path}`;
+const tree = (path: string) => `${repo}/tree/main/${path}`;
+
+const context = [
+  { href: file('AGENTS.md'), kind: 'AGENTS.md', title: 'the rules', text: 'How to build, where things live and the rules every change keeps. Some directories have their own for what holds there.' },
+  { href: tree('docs'), kind: 'docs/', title: 'what is true, and why', text: 'A page per concept, and the decisions behind them, with the routes already tried and rejected.' },
+  { href: tree('.claude/skills'), kind: 'skills', title: 'the procedures', text: 'Step by step for the recurring tasks: adding a parameter or a plugin, writing a doc, a comment pass, a prototype, issues and pull requests.' },
+  { href: tree('.claude/agents'), kind: 'reviewers', title: 'the checks', text: 'Five reviewers to run over finished work: architecture, real-time safety, DSP cost, UI uniformity and wording.' },
+];
+
+const steps = [
+  { title: 'an issue', text: 'What is wrong or missing, and how to change it, agreed before the code. Only a typo or a one-line fix can go straight to a pull request.' },
+  { title: 'a branch', text: 'One branch for the issue, named after it.' },
+  { title: 'the checks', text: 'Hooks on every commit, tools/verify.sh before the pull request, and the sanitizers and plugin validators for what the change reaches. CI runs the same.' },
+  { title: 'a pull request', text: 'What is now true, what it did to the golden renders, a picture from the plugin’s picture tool if the window changed, and whether it was tried in a host.' },
+];
+
+const rules = [
+  ['Design each thing once.', 'A shared component grows an option; a copy of it is a defect.'],
+  ['The musical logic lives in core/.', 'It has no JUCE and is tested in seconds, without a plugin or a host.'],
+  ['The audio thread only computes.', 'It never allocates, frees or locks, and an offline bounce matches playback, sample for sample.'],
+  ['Tests are mutation-checked.', 'Each names the mistake it catches, and making that mistake makes it fail.'],
+  ['Comments say what the code does.', 'Units, invariants, threads, a reason true now; never history, names or references.'],
+  ['The look comes from one file.', 'Colours, sizes and strokes live in the theme and nowhere else.'],
+  ['Say it the way the audio world says it.', 'Automation lane, send, delay tap, HRTF: the words a musician would search for.'],
+];
 ---
 
-<Page title="contribute" description="How to build bambi, the rules its code is written by, and how it is designed.">
-  <h1>contribute</h1>
-  <p class="sub label">how to build bambi, the rules its code is written by, and the guidelines a change is held to</p>
+<Page title="contribute" description="How to work on bambi, with or without a coding agent, and what every change is held to." wide>
+  <div class="contribute snap">
+    <section class="screen intro">
+      <h1>contribute</h1>
+      <p class="sub label">everybody is welcome, whether you write the code yourself or with a coding agent</p>
+      <p class="about">
+        The rules are plain files in the repository, for you to read or for an agent to follow, so every change stays
+        as neat as the rest.
+      </p>
+      <div class="prose">
+        <pre><code>git clone --recurse-submodules {repo}</code></pre>
+      </div>
+      <p class="fine">What you need on each system is in <a href={file('docs/BUILDING.md')}>docs/BUILDING.md</a>.</p>
+    </section>
 
-  <div class="prose intro">
-    <p>
-      bambi is free and open source, and <a href="https://github.com/Looderso/bambi">its code is on GitHub</a>.
-      The first list is how to work on it: how to build and check a change, and the rules the code is written by.
-      The second is how bambi is designed, one concept to a page, so a change fits what is already there. Each
-      page leads to the next, so either list can be read in order.
-    </p>
+    <section class="screen" aria-labelledby="change">
+      <h2 id="change">how a change goes</h2>
+      <ol class="steps across">
+        {
+          steps.map((step) => (
+            <li>
+              <span class="title">{step.title}</span>
+              <span class="text">{step.text}</span>
+            </li>
+          ))
+        }
+      </ol>
+      <p class="fine">
+        Pull requests merge into main with a merge commit. The checks, and how to set them up, are in
+        <a href={file('AGENTS.md#before-a-pull-request')}>AGENTS.md</a>; more in <a href={file('CONTRIBUTING.md')}>CONTRIBUTING.md</a>.
+      </p>
+    </section>
+
+    <section class="screen" aria-labelledby="agent">
+      <h2 id="agent">working with an agent</h2>
+      <p class="about">
+        Open the repository in your agent and give it the issue. Most agents read <code>AGENTS.md</code> on their own,
+        Claude Code through <code>CLAUDE.md</code>. The agent follows the task’s procedure and runs the matching reviewer; its
+        commits carry its <code>Co-Authored-By</code> line. Trying a change in a host stays a person’s job:
+        <a href={file('docs/HOST-CHECKS.md')}>docs/HOST-CHECKS.md</a>.
+      </p>
+      <Cards items={context} pairs />
+    </section>
+
+    <section class="screen" aria-labelledby="rules">
+      <h2 id="rules">what every change keeps</h2>
+      <dl class="rules">
+        {
+          rules.map(([rule, why]) => (
+            <div>
+              <dt>{rule}</dt>
+              <dd>{why}</dd>
+            </div>
+          ))
+        }
+      </dl>
+      <p class="fine">The rest, and why, is in <a href={file('AGENTS.md')}>AGENTS.md</a>.</p>
+    </section>
+
+    <section class="screen" aria-labelledby="other">
+      <h2 id="other">other ways to help</h2>
+      <div class="other">
+        <div>
+          <h3>report a problem</h3>
+          <p>
+            Open an <a href={`${repo}/issues`}>issue</a> with the plugin, its release and format, your system and
+            host, and what you did, expected and heard. A short session or audio file helps most.
+          </p>
+        </div>
+        <div>
+          <h3>try it in your host</h3>
+          <p>
+            Where bambi has been tried, and what does not work yet, is on <a href={`${base}/status`}>status</a>.
+            A host or a system not listed there is worth an issue.
+          </p>
+        </div>
+        <div>
+          <h3>talk to us</h3>
+          <p>
+            Questions, ideas and what you made with bambi: the community is on <a href={discord}>Discord</a>.
+          </p>
+        </div>
+      </div>
+      <p class="fine">
+        bambi's own code is GPL-3.0-or-later and its plugin builds are AGPLv3. A contribution is licensed the same way.
+      </p>
+    </section>
   </div>
-
-  {
-    groups.map((group) => (
-      <section>
-        <h2>{group.title}</h2>
-        <Cards items={group.items} style="row" />
-      </section>
-    ))
-  }
 </Page>
 
 <style>
-  .sub {
-    margin: 12px 0 var(--section);
+  .screen {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap);
   }
-  .intro {
-    margin-bottom: var(--section);
+  h2 {
+    margin: 0;
   }
-  section {
-    margin-bottom: var(--section);
+  .sub,
+  .about,
+  .fine {
+    margin: 0; /* the screen's gap spaces them */
+  }
+  .about {
+    max-width: 38ch;
+  }
+  .prose {
+    max-width: 100%; /* the clone line is as wide as it is, never cut under its copy button */
+    align-self: start;
+  }
+  .prose pre {
+    margin: 0;
+  }
+
+  /*  The rules: the rule in ink, its one line in grey, under a hairline each. */
+  .rules {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 var(--gap);
+    margin: 0;
+  }
+  .rules div {
+    padding: 12px 0;
+    border-top: var(--stroke-rule) solid var(--rule);
+  }
+  .rules dt {
+    font-size: var(--size-card-title);
+  }
+  .rules dd {
+    margin: 4px 0 0;
+    color: var(--label);
+    font-size: var(--size-card-text);
+  }
+
+  .other {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--gap);
+  }
+  .other h3 {
+    margin-bottom: 8px;
+  }
+  .other p {
+    margin: 0;
+    max-width: 38ch;
+  }
+
+  @media (max-width: 760px) {
+    .rules,
+    .other {
+      grid-template-columns: 1fr;
+    }
+    .rules div {
+      padding: 8px 0;
+    }
   }
 </style>

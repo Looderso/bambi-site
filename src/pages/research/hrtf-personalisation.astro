@@ -1,0 +1,485 @@
+---
+/*  The personalisation model, written up as a short paper: the aim, the data, how the databases are made
+    comparable, the parts of a head, nobody's head, the two sliders, how a head is rendered, and its limits.
+    A figure that is not drawn yet holds its place with what it will show; the figures are drawn from the
+    model's own files. */
+import Page from '../../layouts/Page.astro';
+import Tex from '../../components/Tex.astro';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const foundations = `${base}/research/foundations`;
+
+/*  The formulas, in the order they are read. Directions are θ, frequencies f, ERB numbers e; dB throughout. */
+const F = {
+  erb: String.raw`e(f) = 21.4\,\log_{10}\!\left(1 + 0.00437\,f\right)`,
+  cll: String.raw`\mathrm{CLL}(\theta, e) = 10\log_{10}\!\left(|H_L(\theta, e)|^2 + |H_R(\theta, e)|^2\right)`,
+  ild: String.raw`\mathrm{ILD}(\theta, e) = 10\log_{10}\frac{|H_L(\theta, e)|^2}{|H_R(\theta, e)|^2}`,
+  ears: String.raw`\begin{aligned} 20\log_{10}|H_L| &= \mathrm{CLL} + \mathrm{ILD} - 10\log_{10}\!\left(1 + 10^{\mathrm{ILD}/10}\right) \\ 20\log_{10}|H_R| &= \mathrm{CLL} - 10\log_{10}\!\left(1 + 10^{\mathrm{ILD}/10}\right) \end{aligned}`,
+  itd: String.raw`\mathrm{ITD}(\theta) = \tau_L(\theta) - \tau_R(\theta), \qquad \tau = \arg\max_n \, \mathcal{F}^{-1}\!\left\{ H \, H_{\min}^{*} \right\}(n)`,
+  mirror: String.raw`H'_L(\varphi, \vartheta) = H_R(-\varphi, \vartheta), \qquad H'_R(\varphi, \vartheta) = H'_L(-\varphi, \vartheta)`,
+  ctf: String.raw`\begin{aligned} \mathrm{CTF}(e) &= \frac{\sum_d \alpha_d \, G(\theta_d, e)}{\sum_d \alpha_d} \\ \tilde G(\theta, e) &= G(\theta, e) - \mathrm{CTF}(e) + \mathrm{CTF}_{\mathrm{KU100}}(e) \end{aligned}`,
+  fit: String.raw`\begin{aligned} \hat{\mathbf c} &= \arg\min_{\mathbf c} \; \left\lVert \mathbf Y \mathbf c - (\mathbf x - \bar{\mathbf x}_D) \right\rVert^2 + \lambda \sum_{n=0}^{20} \sum_{m=-n}^{n} n(n+1)\, c_{nm}^2 \\ &= \left(\mathbf Y^{\mathsf T}\mathbf Y + \lambda \mathbf R\right)^{-1} \mathbf Y^{\mathsf T} (\mathbf x - \bar{\mathbf x}_D) \end{aligned}`,
+  normalise: String.raw`\tilde x_h = x_h - \mu_{D(h)} + \frac{1}{|\mathcal D|} \sum_{D \in \mathcal D} \mu_D, \qquad \mu_D = \frac{1}{|D|} \sum_{h \in D} x_h`,
+  sh: String.raw`Y_{nm}(\varphi, \vartheta) = \sqrt{(2 - \delta_{m0}) \frac{(n-|m|)!}{(n+|m|)!}} \; P_n^{|m|}(\sin\vartheta) \begin{cases} \cos(m\varphi) & m \ge 0 \\ \sin(|m|\varphi) & m < 0 \end{cases}`,
+  parts: String.raw`\mathrm{CLL}(\theta, e) = T(e) + \sum_{n=1}^{4} \sum_{m=-n}^{n} s_{nm}(e)\, Y_{nm}(\theta) + \sum_{i=1}^{3} N_i(\theta, e)`,
+  cues: String.raw`\mathrm{ILD}(\theta, e) = \sum_{n \le 10} \sum_{m} \ell_{nm}(e)\, Y_{nm}(\theta), \qquad \mathrm{ITD}(\theta) = \sum_{n \le 8} \sum_{m} t_{nm}\, Y_{nm}(\theta)`,
+  nobody: String.raw`\bar p = \frac{1}{|\mathcal D|} \sum_{D \in \mathcal D} \frac{1}{|D|} \sum_{h \in D} p_h, \qquad T = T_{\mathrm{KU100}}`,
+  notch: String.raw`\begin{gathered} N_i(\theta, e) = \gamma \, \phi\!\left(\pi_i(\theta)\right) \frac{a_i(\theta)}{1 + \left( \dfrac{e - c_i(\theta) - \Delta}{w_i(\theta)} \right)^2} \\ \gamma = 1.5, \qquad \Delta \in [-2, 2]\ \mathrm{ERB} \end{gathered}`,
+  fade: String.raw`\phi(\pi) = t^2 (3 - 2t), \qquad t = \operatorname{clamp}\!\left( \frac{\pi - 0.25}{0.55 - 0.25}, 0, 1 \right)`,
+  shift: String.raw`\delta_h = \operatorname{median}_{k} \left( e_k - c_{i(k)}(\theta_k) \right), \qquad |e_k - c_{i(k)}(\theta_k) - \delta_h| < 0.75\ \mathrm{ERB}`,
+  head: String.raw`\begin{gathered} \mathrm{ITD}_s(\theta) = s \, \overline{\mathrm{ITD}}(\theta), \qquad s \in [0.75, 1.3] \\ \mathrm{ILD}_s(\theta, e) = \overline{\mathrm{ILD}}(\theta, e) + (s - 1)\, G(\theta, e) \end{gathered}`,
+  learn: String.raw`\begin{gathered} s_h = \frac{\langle \mathrm{ITD}_h, \overline{\mathrm{ITD}} \rangle}{\langle \overline{\mathrm{ITD}}, \overline{\mathrm{ITD}} \rangle} \\ G = \arg\min_G \sum_h \left\lVert \mathrm{ILD}_h - \overline{\mathrm{ILD}} - (s_h - 1)\, G \right\rVert^2 \end{gathered}`,
+  minphase: String.raw`\begin{gathered} \hat r(n) = \mathcal F^{-1}\!\left\{ \ln |H(k)| \right\}, \qquad h_{\min} = \mathcal F^{-1}\!\left\{ \exp \mathcal F\!\left\{ u_+(n)\, \hat r(n) \right\} \right\} \\ u_+(n) = \begin{cases} 1 & n = 0 \\ 2 & n > 0 \\ 0 & n < 0 \end{cases} \end{gathered}`,
+};
+---
+
+<Page title="HRTF personalisation with two sliders" description="Personal binaural from the average of measured heads and two sliders." wide>
+  <h1>HRTF personalisation with two sliders</h1>
+  <p class="sub label">an HRTF model learned from measured heads, fitted to a listener with a head-size slider and an ear slider</p>
+
+  <div class="layout">
+  <div class="prose paper">
+    <section id="abstract">
+      <h2>abstract</h2>
+      <p>
+        Most people hear binaural audio through one dummy head, the Neumann KU100. bambi’s decoder offers a head of
+        your own for almost no effort: two sliders, one for the size of the head and one for the ears, over a head
+        made from the average of 268 measured heads. The timbre stays the KU100’s; what changes is where sounds seem
+        to come from. The aim is a quick gain over the dummy, not the reconstruction of anyone’s measured head.
+      </p>
+    </section>
+
+    <section id="aim">
+      <h2>the aim</h2>
+      <p>
+        A measured head — in a loudspeaker array, or from a scan — is the most accurate, and out of reach for most
+        listeners. The dummy head is the opposite: one head for everyone, and for many people sounds that sit inside
+        the head or flip from front to back. The decoder aims between the two: a head that beats the dummy after a
+        few minutes of listening, found by ear, with nothing to measure and no file to load.
+      </p>
+      <p>
+        Heads are taken as <strong>symmetric</strong>: one ear over the whole sphere is a head, and the other ear its
+        mirror. This halves what the model has to describe and makes every measured head two: its left ear mirrored,
+        and its right. A head’s two ears differ by two thirds of what two different heads differ by, so the two are
+        distinct heads rather than copies.
+      </p>
+    </section>
+
+    <section id="cues">
+      <h2>the cues</h2>
+      <p>
+        A head is described by what its two ears hear from a direction θ, on an auditory frequency axis: the ERB
+        number, which spaces frequencies as the ear resolves them,
+      </p>
+      <Tex tex={F.erb} display n={1} />
+      <p>
+        From the two ears’ transfer functions H<sub>L</sub> and H<sub>R</sub> come three cues. The <strong>summed
+        level</strong> (the composite loudness level, CLL) carries what the two ears share, among it the outer ear’s
+        cues for height; the <strong>level difference</strong> (ILD) and the <strong>time difference</strong> (ITD)
+        carry left from right:
+      </p>
+      <Tex tex={F.cll} display n={2} />
+      <Tex tex={F.ild} display n={3} />
+      <p>Together the first two give back the ears, so a head can be built from its cues (figure 1):</p>
+      <Tex tex={F.ears} display n={4} />
+      <figure class="chart" data-n="1" data-figure="parts">
+        <div class="controls"><label><span class="label">azimuth</span><input type="range" data-k="az" min="-180" max="180" step="5" value="30" data-unit="°" /><output></output></label><label><span class="label">elevation</span><input type="range" data-k="el" min="-45" max="90" step="5" value="0" data-unit="°" /><output></output></label></div>
+        <div class="plot"><canvas aria-label="figure 1: The parts of nobody’s head at one direction: the summed level of the two ears, its smooth pattern with the timbre, the notches cut into it, and the level difference between the ears. Move the direction."></canvas></div>
+        <figcaption><span class="label">figure 1</span> The parts of nobody’s head at one direction: the summed level of the two ears, its smooth pattern with the timbre, the notches cut into it, and the level difference between the ears. Move the direction.</figcaption>
+      </figure>
+      <p>
+        Each ear’s arrival time τ is where its response best matches its own minimum-phase version
+        H<sub>min</sub> (made as in <a href="#eq-19">(19)</a>), and the time difference is the difference between the
+        two:
+      </p>
+      <Tex tex={F.itd} display n={5} />
+      <p>
+        A symmetric head is one ear mirrored: for azimuth φ and elevation ϑ, a head made from a measured right ear is
+      </p>
+      <Tex tex={F.mirror} display n={6} />
+      <p>so every measured person gives two heads, one from each ear.</p>
+    </section>
+
+    <section id="data">
+      <h2>the data</h2>
+      <p>
+        The model is learned from two public databases, both under CC BY 4.0: <strong>HUTUBS</strong>, 96 people
+        measured over the whole sphere, and <strong>3D3A</strong>, 38 people. Mirrored, they give 192 and 76
+        symmetric heads. The <strong>KU100</strong> comes from SADIE II, measured on 8802 directions. A third, larger
+        database, SONICOM, is not learned from: its heads serve only to check the model on people it has never seen.
+      </p>
+      <p>Databases differ in how they measure more than in whom they measure, so they are made comparable first:</p>
+      <ol>
+        <li>
+          <strong>One grid.</strong> Every head is fitted with spherical harmonics up to order 20, with a penalty on
+          roughness, so that a database without measurements below the listener fills that gap from the population’s
+          average rather than from any one head. What is fitted is the head’s deviation from its database’s average
+          x̄<sub>D</sub>, with <strong>Y</strong> the harmonics at the measured directions and <strong>R</strong> the
+          diagonal of n(n+1):
+          <Tex tex={F.fit} display n={7} />
+        </li>
+        <li>
+          <strong>One level.</strong> Every head is equalised onto the KU100’s transfer function, ear by ear. An
+          ear’s common transfer function is its level G = 20 log<sub>10</sub>|H| averaged over the directions, each
+          weighted by the share α<sub>d</sub> of the sphere it covers; it is taken out, and the KU100’s, averaged over its two ears, put in:
+          <Tex tex={F.ctf} display n={8} />
+          The databases’ average levels, up to 17.6 dB apart before, end 2.1 to 2.5 dB apart: less than heads differ
+          within one database.
+        </li>
+        <li>
+          <strong>One average.</strong> Each database’s mean is moved onto the mean of all of them, each database
+          weighted equally, with the spread between its heads kept:
+          <Tex tex={F.normalise} display n={9} /> After that, a linear classifier names a head’s
+          database only at chance. Two random halves of one database differ by under 1.1 dB, a third of the gap
+          between databases, so what is removed is measurement, not people.
+        </li>
+      </ol>
+    </section>
+
+    <section id="parts">
+      <h2>a head in parts</h2>
+      <p>A symmetric head is stored as the parts of what the two ears hear:</p>
+      <ul>
+        <li>
+          <strong>the timbre</strong>: the summed level of the two ears, averaged over every direction. It is the
+          head’s colour, not a cue for where a sound is.
+        </li>
+        <li>
+          <strong>the smooth pattern</strong>: how the summed level changes over the sphere, as spherical harmonics up
+          to order 4 — the head and the torso.
+        </li>
+        <li>
+          <strong>the notches</strong>: three dips the outer ear cuts into the high frequencies, each a centre, a
+          depth, a width and a presence over the sphere. They carry most of what tells above from below.
+        </li>
+        <li>
+          <strong>the level difference</strong> between the ears (order 10) and <strong>the time difference</strong>
+          (order 8), which carry left from right.
+        </li>
+      </ul>
+      <p>
+        Every part is a pattern over the sphere: an expansion in real spherical harmonics, normalised as SN3D and
+        ordered as ACN, the convention ambisonics uses,
+      </p>
+      <Tex tex={F.sh} display n={10} />
+      <p>so that the summed level of a head is its timbre T, a smooth pattern of order 4, and its notches — figure 2 shows the three on a measured head —</p>
+      <Tex tex={F.parts} display n={11} />
+      <figure class="chart" data-n="2" data-heat="parts">
+        <div class="quad">
+          <div><span class="label">measured</span><canvas data-field="0" aria-label="the measured summed level"></canvas></div>
+          <div><span class="label">smooth pattern</span><canvas data-field="1" aria-label="the smooth pattern"></canvas></div>
+          <div><span class="label">notches</span><canvas data-field="2" aria-label="the notches rebuilt from the surfaces"></canvas></div>
+          <div><span class="label">smooth pattern and notches</span><canvas data-field="3" aria-label="the smooth pattern and the notches together"></canvas></div>
+        </div>
+        <figcaption><span class="label">figure 2</span> The same head in its parts: the measured level, the smooth pattern of order 4, the notches rebuilt from the surfaces’ few numbers, and the two together. Measured against the head, blurred to one ERB, they miss by <span data-heat-cost></span>.</figcaption>
+      </figure>
+      <p>and the two differences are patterns of their own:</p>
+      <Tex tex={F.cues} display n={12} />
+      <p>
+        A direction is evaluated rather than looked up, and no measured grid is shipped. Along frequency, the
+        coefficients are sampled every tenth of an ERB.
+      </p>
+    </section>
+
+    <section id="nobodys-head">
+      <h2>nobody’s head</h2>
+      <p>
+        Every part but the notches is the population’s mean: <strong>nobody’s head</strong>, the average of the 268
+        heads, each database’s mean taken first and then the mean of those, for every part p:
+      </p>
+      <Tex tex={F.nobody} display n={13} />
+      <p>It is no one’s, and closer to anyone’s than the dummy is (figure 4).</p>
+      <p>
+        Its <strong>timbre is the KU100’s</strong>. The dummy’s is flat within 3.4 dB from 0.3 to 16 kHz; the
+        population’s spans 12.9 dB, up at 4 kHz and down at 16 kHz — the ear’s own resonance, which every measured
+        head carries and the dummy’s equalisation takes out. In the perceptual study this model starts from [1], an
+        individualised head won on externalisation and lost on timbre; keeping the dummy’s timbre keeps the colour a mix is judged on, and personalises only the
+        cues for direction (figure 3).
+      </p>
+      <figure class="chart" data-n="3" data-figure="timbre">
+        <div class="plot"><canvas aria-label="figure 3: The timbre — the summed level averaged over every direction — of the KU100, which the model keeps, and of the measured heads, which it does not."></canvas></div>
+        <figcaption><span class="label">figure 3</span> The timbre — the summed level averaged over every direction — of the KU100, which the model keeps, and of the measured heads, which it does not.</figcaption>
+      </figure>
+      <figure class="chart" data-n="4" data-figure="ku100">
+        <div class="controls"><label><span class="label">azimuth</span><input type="range" data-k="az" min="-180" max="180" step="5" value="135" data-unit="°" /><output></output></label><label><span class="label">elevation</span><input type="range" data-k="el" min="-45" max="90" step="5" value="30" data-unit="°" /><output></output></label></div>
+        <div class="plot"><canvas aria-label="figure 4: Nobody’s head beside the KU100, both through the decoder’s chain, at one direction. Move the direction."></canvas></div>
+        <figcaption><span class="label">figure 4</span> Nobody’s head beside the KU100, both through the decoder’s chain, at one direction. Move the direction.</figcaption>
+      </figure>
+    </section>
+
+    <section id="ear-slider">
+      <h2>the ear slider</h2>
+      <p>
+        The notches are a <strong>template</strong> of three notch surfaces over the sphere — centre, depth, width
+        and presence, each as spherical harmonics of order 6 — learned from half of the heads and scored on the
+        other half. A larger ear cuts its notches lower, a smaller one higher, so the slider shifts all three
+        centres together along frequency, by −2 to +2 ERB. A measured head’s own shift spreads by 0.58 ERB. Around the median plane the notches are valleys that
+        climb in frequency as the source rises (figure 5).
+      </p>
+      <figure class="chart" data-n="5" data-solid="surface">
+        <div class="controls"><label><span class="label">ears</span><input type="range" data-k="shift" min="-2" max="2" step="0.1" value="0" data-unit=" ERB" /><output></output></label><span class="label hint">drag to turn</span></div>
+        <div class="plot solid"><canvas aria-label="figure 5: The summed level of nobody’s head around the median plane, as a surface: across, from below in front, over the top, to below behind; along, the frequency; up, the level. The notches are the valleys, climbing in frequency as the source rises. Turn it, and move the ears."></canvas></div>
+        <figcaption><span class="label">figure 5</span> The summed level of nobody’s head around the median plane, as a surface: across, from below in front, over the top, to below behind; along, the frequency; up, the level. The notches are the valleys, climbing in frequency as the source rises. Turn it, and move the ears.</figcaption>
+      </figure>
+      <p>
+        A notch fades in with its presence, so nothing switches as a source moves; in front, the template plays its
+        notches at about 7.0, 9.2 and 13.7 kHz. Each notch i is a peaking filter’s dip with depth a<sub>i</sub>,
+        centre c<sub>i</sub> and width w<sub>i</sub>, all patterns over the sphere, moved by the slider’s Δ:
+      </p>
+      <Tex tex={F.notch} display n={14} />
+      <p>
+        faded in with its presence π<sub>i</sub> by a smoothstep, so that a notch never switches on as a source
+        moves:
+      </p>
+      <Tex tex={F.fade} display n={15} />
+      <p>
+        A shifted centre stays within 4 to 18 kHz, a width within 0.1 to 1.5 ERB, and a depth above −60 dB. The
+        factor γ plays the notches at 1.5 times the depth the heads measure: deep enough to be heard as height,
+        without the darkening a deeper template brings. Figure 6 moves the ears.
+      </p>
+      <figure class="chart" data-n="6" data-figure="ears">
+        <div class="controls"><label><span class="label">ears</span><input type="range" data-k="shift" min="-2" max="2" step="0.1" value="0.8" data-unit=" ERB" /><output></output></label><label><span class="label">elevation</span><input type="range" data-k="el" min="-45" max="90" step="5" value="0" data-unit="°" /><output></output></label></div>
+        <div class="plot"><canvas aria-label="figure 6: The ear slider at work: the summed level in front, at an elevation, as learned and with the notches shifted. Move the ears, and the height."></canvas></div>
+        <figcaption><span class="label">figure 6</span> The ear slider at work: the summed level in front, at an elevation, as learned and with the notches shifted. Move the ears, and the height.</figcaption>
+      </figure>
+      <p>
+        The template is learned by alignment. Each head’s dips k, found on its measured summed level, are given to the
+        template notch they lie nearest, and the head’s own shift is the median of how far they sit, a shallow dip
+        counting for less:
+      </p>
+      <Tex tex={F.shift} display n={16} />
+      <p>
+        With the shifts taken out, each notch’s centre and width are fitted to the dips given to it, its depth to
+        those dips alone, and its presence to every direction; four turns of this settle the template. Figure 7 shows the notches found on one measured head. The template fits SONICOM’s heads, which
+        it never saw, as well as its own held-out ones.
+      </p>
+      <figure class="chart" data-n="7" data-heat="found">
+        <div class="plot heat"><canvas aria-label="figure 7: notches found on a measured head"></canvas></div>
+        <figcaption><span class="label">figure 7</span> The notches found on one measured head, <span data-heat-head></span>, along the median plane: its summed level less its average, ink where it dips and orange where it rises, and each notch surface the fit found drawn over it as a numbered line, thicker where deeper.</figcaption>
+      </figure>
+    </section>
+
+    <section id="head-slider">
+      <h2>the head slider</h2>
+      <p>
+        A larger head puts the ears further apart. The head slider, from 0.75 to 1.3, <strong>scales the time
+        difference</strong> between the ears, and the level difference below 1.5 kHz goes with it, as it does across
+        the measured heads; above, it is left alone. A measured head’s own scale spreads by about 9 %.
+      </p>
+      <Tex tex={F.head} display n={17} />
+      <p>
+        Both are learned over the heads: a head’s scale s<sub>h</sub> is the least-squares fit of its time difference
+        to the population’s, and the level difference’s change G a unit of scale the least-squares line through
+        all of them, each database weighing the same, kept below 1.5 kHz and faded out by 3 kHz:
+      </p>
+      <Tex tex={F.learn} display n={18} />
+      <p>
+        Each slider moves its own cues. At 60° to the left, the ears ±10 % move the level difference by 1.6 dB at
+        most, while the head ±10 % moves the time difference by ±70 µs and the summed level by 0.05 dB at most. Figure 8 moves the head.
+      </p>
+      <figure class="chart" data-n="8" data-figure="head">
+        <div class="controls"><label><span class="label">head</span><input type="range" data-k="size" min="0.75" max="1.3" step="0.01" value="1.15" data-unit=" ×" /><output></output></label></div>
+        <div class="plot"><canvas aria-label="figure 8: The head slider at work: the time difference between the ears around the horizon, for the population’s head and a head of the slider’s size."></canvas></div>
+        <figcaption><span class="label">figure 8</span> The head slider at work: the time difference between the ears around the horizon, for the population’s head and a head of the slider’s size.</figcaption>
+      </figure>
+    </section>
+
+    <section id="rendering">
+      <h2>rendering a direction</h2>
+      <p>
+        To play a direction, the decoder evaluates every part there: the summed level from the timbre, the smooth
+        pattern and the shifted notches <a href="#eq-11">(11)</a>; the two ears from it and the level difference
+        <a href="#eq-4">(4)</a>; both made minimum-phase through the real cepstrum,
+      </p>
+      <Tex tex={F.minphase} display n={19} />
+      <p>
+        and the pair delayed by the time difference, less what the minimum-phase pair already carries. Rendering the
+        KU100 through the same chain, at its own size, comes within 0.60 dB (median) of its measured magnitudes and
+        3 µs of its measured time difference, over 300 directions.
+      </p>
+      <p>
+        A slider move rebuilds the filters off the audio thread: 240 directions at 513 frequencies take 1.28 ms on
+        one core. The model ships as one file of about 0.36 MB.
+      </p>
+    </section>
+
+    <section id="limits">
+      <h2>limits</h2>
+      <ul>
+        <li>
+          A head’s own smooth pattern, the detail of its level difference, and the paths its notches take over
+          direction are not in the model: no slider reaches them.
+        </li>
+        <li>
+          The time difference’s shape — how it rises from the front to the side, any asymmetry between front and back —
+          is not personalised; the head slider only scales it.
+        </li>
+        <li>
+          The sliders are found by ear. A page for doing that against a real loudspeaker is still to be built, and
+          the model is still to be heard by a round of listeners.
+        </li>
+        <li>
+          Earbuds in transparency mode change the very cues the sliders move, so personalising a head is done on open
+          headphones.
+        </li>
+      </ul>
+    </section>
+
+    <section id="references">
+      <h2>references</h2>
+      <ol class="references">
+        <li>L. Häusler, <em>Data-Driven HRTF Individualization: Towards Enhanced Elevation Perception Using Interactive User Optimization</em>, master’s thesis, University of Music and Performing Arts Graz, 2024.</li>
+        <li>F. Brinkmann et al., “A Cross-Evaluated Database of Measured and Simulated HRTFs Including 3D Head Meshes, Anthropometric Features, and Headphone Impulse Responses”, <em>Journal of the Audio Engineering Society</em> 67(9), 2019. <a href="https://doi.org/10.17743/jaes.2019.0024">doi</a></li>
+        <li>R. Sridhar, J. G. Tylka and E. Choueiri, “A Database of Head-Related Transfer Functions and Morphological Measurements”, AES 143rd Convention, New York, 2017.</li>
+        <li>C. Armstrong, L. Thresh, D. Murphy and G. Kearney, “A Perceptual Evaluation of Individual and Non-Individual HRTFs: A Case Study of the SADIE II Database”, <em>Applied Sciences</em> 8(11), 2018. <a href="https://doi.org/10.3390/app8112029">doi</a></li>
+        <li>S. A. Ausili et al., “Sound Localization with Hearables in Transparency Mode”, <em>Audiology Research</em> 15(3), 2025. <a href="https://doi.org/10.3390/audiolres15030048">doi</a></li>
+      </ol>
+      <p class="fine">Everything the decoder builds on is credited on <a href={foundations}>foundations</a>.</p>
+    </section>
+  </div>
+  <aside class="held" aria-label="figures"></aside>
+  </div>
+</Page>
+
+<script>
+  import { figures } from '../../lib/hrtf/figures.js';
+  import { held } from '../../lib/hrtf/held.js';
+  held(document.querySelector('.paper'), document.querySelector('.held'));
+  figures(import.meta.env.BASE_URL.replace(/\/$/, ''));
+</script>
+
+<style>
+  /*  On a wide screen the text on the left and the figure it is reading on the right, held on screen; on a narrow one,
+      the figures inline. */
+  .layout {
+    display: block;
+  }
+  .held {
+    display: none;
+  }
+  @media (min-width: 1100px) {
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, var(--measure)) minmax(0, 1fr);
+      gap: 48px;
+      align-items: start;
+    }
+    .held {
+      display: block;
+      position: sticky;
+      top: calc(var(--header) + var(--stroke-identity) + 24px);
+      --room: calc(100svh - var(--header) - 48px); /* the screen below the header: a held figure never needs to scroll */
+    }
+    /*  a held figure fits the screen: its picture gets what its sliders and caption leave */
+    .held :global(.plot) {
+      height: min(360px, calc(var(--room) - 170px));
+    }
+    .held :global(.plot.heat),
+    .held :global(.plot.solid) {
+      height: min(440px, calc(var(--room) - 170px));
+    }
+    .held :global(.quad > div) {
+      grid-template-rows: auto min(240px, calc((var(--room) - 230px) / 2));
+    }
+    .held :global(figure) {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      margin: 0;
+      visibility: hidden;
+    }
+    .held :global(figure.shown) {
+      visibility: visible;
+    }
+  }
+  .paper section + section {
+    margin-top: var(--section);
+  }
+  /*  A figure: its sliders above, the chart, then its number and what it shows. */
+  .chart {
+    margin: 24px 0 0;
+    padding: 14px 16px 16px;
+    border: var(--stroke-rule) solid var(--rule);
+  }
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px var(--gap);
+    margin-bottom: 10px;
+  }
+  .controls label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .controls input {
+    width: 160px;
+    accent-color: var(--text);
+  }
+  .controls output {
+    width: 8ch; /* the widest value, "−2.0 ERB", so a value never moves what follows it */
+    font-size: var(--size-card-text);
+    font-variant-numeric: tabular-nums;
+  }
+  .plot {
+    position: relative;
+    height: 320px;
+  }
+  .plot.heat {
+    height: 420px;
+  }
+  .plot.heat canvas,
+  .quad canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+  /*  four heatmaps two by two, each with its name above it */
+  .quad {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+  .quad > div {
+    display: grid;
+    grid-template-rows: auto 260px;
+    gap: 4px;
+  }
+  @media (max-width: 760px) {
+    .quad {
+      grid-template-columns: 1fr;
+    }
+  }
+  .plot.solid {
+    height: 420px;
+    cursor: grab;
+  }
+  .plot.solid canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+  /*  a label kept over a point of a figure in three dimensions */
+  .plot :global(.tag3d) {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    white-space: nowrap;
+  }
+  .hint {
+    margin-left: auto;
+  }
+  figcaption {
+    margin-top: 12px;
+    color: var(--label);
+    font-size: var(--size-card-text);
+  }
+  .references {
+    padding-left: 1.4em;
+    font-size: var(--size-card-text);
+  }
+  .references li + li {
+    margin-top: 8px;
+  }
+</style>

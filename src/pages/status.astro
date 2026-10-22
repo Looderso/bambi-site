@@ -32,7 +32,7 @@ const tested: Row[] = [
   {
     what: 'Ableton Live',
     cells: [
-      { mark: 'none', text: 'not yet' },
+      { mark: 'heard', text: 'through the host' },
       { mark: 'none', text: 'not yet' },
       { mark: 'never', text: 'no Linux version' },
     ],
@@ -49,12 +49,24 @@ const tested: Row[] = [
 
 const gaps = [
   {
+    what: 'the host',
+    text: 'The host runs on macOS, where Live sends its tracks through bambi’s virtual audio driver, built on BlackHole. Its device in Live is a Max for Live device, so it needs Live Suite, or Live Standard with Max for Live. Windows, and DAWs other than Live, are open: say on GitHub which one you work in.',
+  },
+  {
     what: 'signing',
     text: 'The builds are not signed yet. macOS needs one extra step before a host will load them, and Windows may warn when the zip is unpacked; the download page has both.',
   },
   {
+    what: 'HRTF personalisation',
+    text: 'The decoder’s personalise page gives its instructions only: finding the head and ears sliders by ear, against a real loudspeaker, is not built yet. The sliders themselves work.',
+  },
+  {
     what: 'Logic Pro',
     text: 'bambi is VST3 and CLAP. Logic only loads Audio Units, so it cannot load bambi yet.',
+  },
+  {
+    what: 'speaker layouts',
+    text: 'A layout file the speakers tool exports carries each speaker’s direction, distance, gain and cuts. bambi’s decoder uses the directions and distances, with distance compensation on the distances; it keeps the gains but does not apply them yet, and has no equaliser for the cuts yet.',
   },
   {
     what: 'names over CLAP',
@@ -93,7 +105,7 @@ const gaps = [
       </table>
     </div>
     <p class="legend">
-      <span><span class="mark heard"></span>used and listened to in the host</span>
+      <span><span class="mark heard"></span>used and listened to in the DAW</span>
       <span><span class="mark checked"></span>built and checked automatically on every change, not listened to</span>
       <span><span class="mark none"></span>not tried yet</span>
     </p>
@@ -112,16 +124,13 @@ const gaps = [
     <h2>ask for something</h2>
     <p>Found a problem, or missing something? Both go to GitHub, where what comes next is planned in the open.</p>
     <div class="ask">
-      <a class="button main" href={`${issues}/new?template=report.yml`}>report a problem</a>
-      <a class="button" href={`${issues}/new?template=feature.yml`}>suggest a feature</a>
+      <a class="button" href={`${issues}/new?template=report.yml`}>report a problem</a>
+      <a class="button quiet" href={`${issues}/new?template=feature.yml`}>suggest a feature</a>
     </div>
   </section>
 </Page>
 
 <style>
-  .sub {
-    margin: 12px 0 var(--section);
-  }
   section + section {
     margin-top: 48px;
   }
@@ -211,20 +220,6 @@ const gaps = [
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
-  }
-  .button {
-    display: inline-block;
-    padding: 10px 16px;
-    border: var(--stroke-rule) solid var(--rule-strong);
-    color: var(--text);
-  }
-  .button:hover {
-    background: var(--panel);
-    text-decoration: none;
-  }
-  .button.main {
-    background: var(--chosen);
-    color: var(--text-inverse);
   }
   @media (max-width: 640px) {
     .rows li {

@@ -1,0 +1,179 @@
+---
+/*  What Echo adds to the window every plugin shares: its taps, their timing, axis and every pass, its send,
+    and the spirals it draws for the probe. The pictures are Echo's own, drawn by its picture tool. */
+import TutorialPage from '../../layouts/TutorialPage.astro';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const img = (name: string) => `${base}/tutorial/${name}.webp`;
+const window = `${base}/tutorial/the-window`;
+
+const parts: [string, string][] = [
+  ['taps', 'the taps'],
+  ['timing', 'timing'],
+  ['axis', 'axis'],
+  ['every-pass', 'every pass'],
+  ['send', 'send'],
+  ['scene', 'the 3D view'],
+  ['try', 'things to try'],
+];
+---
+
+<TutorialPage
+  id="echo"
+  sub="four delay taps whose repeats rotate around the listener"
+  parts={parts}
+  window={{ src: img('window'), alt: 'An echo window: the 3D view with the probe placed, the matrix, and the taps tab.', caption: 'an echo window' }}
+>
+  <div class="prose" slot="intro">
+    <p class="lede">
+      Echo is an ambisonic delay with four delay taps, each with its own feedback: every repeat comes back a little
+      later, rotated further around an axis, and a little quieter and blurrier than the one before.
+    </p>
+    <p>
+      Its window is the one every bambi plugin has; the 3D view, the matrix, presets and the link are explained in
+      <a href={window}>the window</a>. This page covers what is Echo's own: its two tabs, <code>taps</code> and
+      <code>send</code>, and what it shows in the 3D view.
+    </p>
+  </div>
+
+  <section id="taps" class="split">
+    <figure class="panel">
+      <img src={img('echo-taps')} alt="The taps tab: the row of patterns, spiral chosen, and the strip of four taps, the first two on." width="696" height="440" />
+    </figure>
+    <div class="prose">
+      <h2>the taps</h2>
+      <p>
+        The row at the top is a set of <strong>starting points</strong> for all four taps:
+        <code>even</code>, <code>ping-pong</code>, <code>spiral</code>, <code>cascade</code> and
+        <code>single</code>. Choosing one sets the taps; the pattern stays highlighted while you edit them,
+        and a <strong>double-click</strong> brings its values back.
+      </p>
+      <p>Under it, the <strong>strip</strong> shows the four taps on one timeline. Each row is one tap:</p>
+      <ul>
+        <li><strong>Click a row</strong> to select that tap. The pages below edit the selected one, marked by a bar at its left.</li>
+        <li>
+          <strong>The numbered box</strong> switches the tap on and off without selecting it, so you can mute a
+          tap while editing another.
+        </li>
+        <li><strong>The level</strong> at the right; drag it to change it. It is greyed while the tap is off.</li>
+        <li>
+          <strong>Every pass</strong> is a mark on the row, at the time it plays. A mark fades as the repeats get
+          quieter, spans the tap's band from high at the top to low at the bottom, and softens as the repeats get
+          blurrier.
+        </li>
+      </ul>
+      <p>The ticks under the strip are beats, so you can read an offset against them.</p>
+    </div>
+  </section>
+
+  <section id="timing" class="split">
+    <figure class="panel">
+      <img src={img('echo-timing')} alt="The timing page: free and sync, time and steps, offset and offset steps, swing." width="696" height="580" />
+    </figure>
+    <div class="prose">
+      <h2>timing</h2>
+      <p>
+        Under the strip, the selected tap's settings come in three pages: <code>timing</code>, <code>axis</code>
+        and <code>every pass</code>.
+      </p>
+      <p>
+        <code>free</code> and <code>sync</code> choose how the delay time is set. In free, each repeat comes after
+        <code>time</code> milliseconds; in sync, after <code>steps</code> sixteenth notes. Both rows
+        stay on screen, and the one not in use is greyed.
+      </p>
+      <ul>
+        <li><strong><code>offset</code></strong> or <strong><code>offset steps</code></strong> starts the tap late.</li>
+        <li><strong><code>swing</code></strong> delays a synced tap by a fraction of a step, off the grid of the others. It is greyed when the tap is free.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="axis" class="split">
+    <figure class="panel">
+      <img src={img('echo-axis')} alt="The axis page: azimuth 0 degrees, elevation 90 degrees." width="696" height="240" />
+    </figure>
+    <div class="prose">
+      <h2>axis</h2>
+      <p>
+        The axis the tap's repeats rotate around, as an <code>azimuth</code> and an <code>elevation</code>. Straight up,
+        at an elevation of 90°, the repeats circle around the listener; tilted on its side, they roll over their head.
+        How far each repeat rotates is on the next page.
+      </p>
+    </div>
+  </section>
+
+  <section id="every-pass" class="split">
+    <figure class="panel">
+      <img src={img('echo-every-pass')} alt="The every pass page: spin, skew, feedback, blur, and the band's low and high cut." width="696" height="540" />
+    </figure>
+    <div class="prose">
+      <h2>every pass</h2>
+      <p>What happens on each repeat, in two pairs and a band:</p>
+      <ul>
+        <li>
+          <strong><code>spin</code></strong>, how far each repeat rotates around the axis, and <strong><code>skew</code></strong>,
+          how far it shifts along it. A spin of 180° is a ping-pong: every second repeat is back where it started.
+        </li>
+        <li>
+          <strong><code>feedback</code></strong>, how much quieter each repeat is, and <strong><code>blur</code></strong>,
+          how much blurrier.
+        </li>
+        <li>
+          <strong>band</strong>: a <code>low cut</code> and a <code>high cut</code>, applied on every repeat, so the
+          repeats get thinner as they go.
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="send" class="split">
+    <figure class="panel">
+      <img src={img('echo-send')} alt="The send tab: shape chosen, the spot region, its size and softness." width="696" height="700" />
+    </figure>
+    <div class="prose">
+      <h2>send</h2>
+      <p>
+        The part of the sound scene that goes into the delay. By default it is <code>everywhere</code>; choose another
+        shape and only sound arriving from there is delayed. The dry signal still carries the whole sound scene.
+        Shaping and moving a region works the same in every plugin: see
+        <a href={`${window}#regions`}>regions</a>.
+      </p>
+    </div>
+  </section>
+
+  <section id="scene">
+    <h2>the 3D view</h2>
+    <figure>
+      <img src={img('scene')} alt="The 3D view with the probe placed: dots in Echo's colour along the taps' spirals, around the probe's direction." width="1236" height="602" />
+    </figure>
+    <div class="prose">
+      <p>
+        Place the <a href={`${window}#scene`}>probe</a> in the 3D view and Echo shows where its repeats arrive from:
+        for each tap, a spiral that rotates the probe's direction around the tap's axis one repeat at a time,
+        climbing as the skew adds up and fading with the feedback. Each repeat is a dot as wide as its blur. The
+        selected tap is drawn in full and the others fainter, and the display follows the taps as they play,
+        modulation included.
+      </p>
+    </div>
+  </section>
+
+  <section id="try">
+    <h2>things to try</h2>
+    <div class="prose">
+      <ol>
+        <li>
+          <strong>A ping-pong that fades into the room.</strong> Choose <code>ping-pong</code>, open
+          <code>every pass</code>, and raise <code>blur</code>: each repeat is blurrier than the last.
+        </li>
+        <li>
+          <strong>Echoes that climb.</strong> Choose <code>spiral</code> and give <code>skew</code> a value: each
+          repeat rotates and rises a little more. Place the probe to see the spiral.
+        </li>
+        <li>
+          <strong>Only one direction repeats.</strong> In <code>send</code>, choose a spot and put it over one
+          source. Only that source is delayed; the rest of the mix stays dry.
+        </li>
+      </ol>
+    </div>
+  </section>
+</TutorialPage>

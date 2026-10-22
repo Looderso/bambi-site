@@ -2,26 +2,32 @@
 /*  A list of pages to go to, drawn as the plugins draw their controls. `tile` is a value box: a rule
     outline, a small label above, the title and a grey summary; for a few entries that each deserve weight.
     `row` is a strip row: title and summary on one line, a bar down the left edge where the pointer is; for a
-    longer list read in order. A `colour` is a plugin's own, worn on a tile's top rule and a row's bar. */
+    longer list read in order. A `colour` is a plugin's own, worn on a tile's top rule and a row's bar. `pairs` keeps tiles two to a row
+    on a phone, for a list that must fit one screen there. */
 interface Item {
   href: string;
   title: string;
   text: string;
   kind?: string;
+  picture?: string; // a tile's picture: an inline style that sets its background
+  mark?: string; // a tile's product mark, above its title
   colour?: string;
 }
 interface Props {
   items: Item[];
   style?: 'tile' | 'row';
+  pairs?: boolean;
 }
-const { items, style = 'tile' } = Astro.props;
+const { items, style = 'tile', pairs = false } = Astro.props;
 ---
 
-<ul class:list={['cards', style]}>
+<ul class:list={['cards', style, { pairs }]}>
   {
     items.map((item) => (
       <li style={item.colour ? `--card: ${item.colour}` : undefined} class:list={{ coloured: !!item.colour }}>
         <a href={item.href}>
+          {item.picture && <span class="picture" style={item.picture} aria-hidden="true" />}
+          {item.mark && <img class="mark" src={item.mark} alt="" width="48" height="48" />}
           {item.kind && <span class="kind">{item.kind}</span>}
           <span class="title">{item.title}</span>
           <span class="text">{item.text}</span>
@@ -85,12 +91,24 @@ const { items, style = 'tile' } = Astro.props;
     color: var(--label);
     padding-right: 20px;
   }
+  /*  a picture across the top of a tile, edge to edge, one height for every tile so the titles line up */
+  .tile .picture {
+    display: block;
+    aspect-ratio: 2 / 1;
+    margin: -11px -14px 6px;
+    background-color: var(--panel);
+    background-repeat: no-repeat;
+    border-bottom: var(--stroke-rule) solid var(--rule);
+  }
+  .tile .mark {
+    margin: -4px 0 0 -6px; /* a mark's sphere sits inside its frame; this lines it up with the title */
+  }
   .tile .title {
-    font-size: 18px;
+    font-size: var(--size-card-title);
     line-height: 1.25;
   }
   .tile .text {
-    font-size: 14px;
+    font-size: var(--size-card-text);
     line-height: 1.45;
   }
   .tile .go {
@@ -145,6 +163,12 @@ const { items, style = 'tile' } = Astro.props;
     }
     .row .text {
       grid-column: 1;
+    }
+  }
+  @media (max-width: 760px) {
+    .tile.pairs {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
     }
   }
 </style>

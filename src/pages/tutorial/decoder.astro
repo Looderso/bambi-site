@@ -1,0 +1,219 @@
+---
+/*  What the decoder adds to the window every plugin shares: its outputs in the header, the headphones' and the
+    speakers' pages, the loudspeaker table, the orientation strip where the effects have their matrix, and its
+    scene. The pictures are the decoder's own, drawn by its picture tool. */
+import TutorialPage from '../../layouts/TutorialPage.astro';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const img = (name: string) => `${base}/tutorial/${name}.webp`;
+const window = `${base}/tutorial/the-window`;
+
+const parts: [string, string][] = [
+  ['outputs', 'outputs'],
+  ['headphones', 'headphones'],
+  ['speakers', 'speakers'],
+  ['loudspeakers', 'loudspeakers'],
+  ['orientation', 'orientation'],
+  ['scene', 'the 3D view'],
+  ['try', 'things to try'],
+];
+---
+
+<TutorialPage
+  id="decoder"
+  sub="ambisonics out to loudspeakers or headphones, with head tracking"
+  parts={parts}
+  window={{ src: img('decoder-window'), alt: 'A decoder window: headphones and speakers in the header, the 3D view with the head and the loudspeakers, the orientation strip, and the headphones page.', caption: 'a decoder window' }}
+>
+  <div class="prose" slot="intro">
+    <p class="lede">
+      The decoder plays ambisonics on headphones as binaural, on loudspeakers, or on both at once, with head
+      tracking.
+    </p>
+    <p>
+      Its window is the one every bambi plugin has, with more of it its own than in any other plugin: outputs in
+      the header, and head tracking where the others have their matrix. The 3D view, presets and the link are explained
+      in <a href={window}>the window</a>.
+    </p>
+  </div>
+
+  <section id="outputs">
+    <h2>outputs</h2>
+    <figure>
+      <img src={img('decoder-outputs')} alt="The header's outputs: headphones open, speakers beside it, each with its box." width="640" height="88" />
+    </figure>
+    <div class="prose">
+      <p>
+        Where the other plugins have their instances, the decoder's header has its two outputs,
+        <code>headphones</code> and <code>speakers</code>; with another decoder in the session, a switch beside them
+        shows and edits that one. <strong>The box</strong> switches an output on; <strong>the name</strong> opens its
+        page in the panel. Both can play at once, each on channels of its own. If both are set to the same channels,
+        the page warns you and says what would happen on playback.
+      </p>
+    </div>
+  </section>
+
+  <section id="headphones" class="split">
+    <figure class="panel">
+      <img src={img('decoder-headphones')} alt="The headphones page: model, ku100 or sofa file; head and ears; the channel pair; through the layout; personalise." width="696" height="720" />
+    </figure>
+    <div class="prose">
+      <h2>headphones</h2>
+      <p>The HRTF used for binaural playback:</p>
+      <ul>
+        <li>
+          <strong><code>model</code></strong> is an HRTF learned from measured heads, and two sliders personalise it:
+          <code>head</code>, 0.75 to 1.3 ×, scales the time and low-frequency level difference between the ears, and
+          <code>ears</code>, ±2 erb, shifts the spectral notches of the ears.
+        </li>
+        <li>
+          <strong><code>ku100</code></strong> is a measured dummy-head HRTF, and <strong><code>sofa file</code></strong>
+          loads any measured HRTF. With a measured HRTF the ears stay as measured, and <code>head</code> scales only
+          the time difference.
+        </li>
+        <li><strong>channels</strong>: the pair of host channels the headphones play on.</li>
+        <li>
+          <strong><code>through the layout</code></strong> plays the speaker layout virtually on the headphones, so you
+          can hear the loudspeakers without them.
+        </li>
+        <li>
+          <strong><code>personalise…</code></strong> opens a page for setting the two sliders by ear, compared against a
+          real loudspeaker.
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="speakers" class="split">
+    <figure class="panel">
+      <img src={img('decoder-speakers')} alt="The speakers page: itu, file or typed; ten layouts with 4+7+0 chosen; from channel; the channel map; one listener or audience; distance compensation; loudspeakers." width="696" height="860" />
+    </figure>
+    <div class="prose">
+      <h2>speakers</h2>
+      <p>The loudspeaker layout, set in one of three ways:</p>
+      <ul>
+        <li><strong><code>itu</code></strong>: ten layouts built in, from <code>0+2+0</code> to <code>9+10+3</code>.</li>
+        <li>
+          <strong><code>file</code></strong>: an IEM AllRADecoder or AmbDec layout, decoded by bambi, or a complete
+          decoder as SOFA filters, used as is.
+        </li>
+        <li>
+          <strong><code>typed</code></strong>: the <a href="#loudspeakers">table</a> is the layout. A loaded one
+          becomes typed the moment you edit it there; a new one starts empty.
+        </li>
+      </ul>
+      <p>
+        <strong>channels</strong>: <code>from channel</code> is the first host channel of the layout; its
+        channels move as a block, so a headphone pair or an interface's own outputs can come before them. Under it,
+        every channel shows which output uses it.
+      </p>
+      <p>
+        <strong>options</strong>: whether the decoding is weighted for <code>one listener</code> or an
+        <code>audience</code>, and <code>distance compensation</code>, which gives every loudspeaker the gain and
+        delay that bring it to the farthest one's distance. A layout of two loudspeakers has its own choice instead of the weighting:
+        <code>fold</code> puts the whole sound scene on the pair, and <code>slice</code> plays only what the listener
+        faces, between them.
+      </p>
+    </div>
+  </section>
+
+  <section id="loudspeakers" class="split">
+    <figure class="panel">
+      <img src={img('decoder-loudspeakers')} alt="The loudspeakers table: a row each with its azimuth, elevation, distance, gain, delay and a test button." width="696" height="820" />
+    </figure>
+    <div class="prose">
+      <h2>loudspeakers</h2>
+      <p><code>loudspeakers…</code> opens the table, one loudspeaker to a row:</p>
+      <ul>
+        <li>
+          <strong>Drag a number</strong> as you drag a tile: its channel, azimuth, elevation and distance. Gain and
+          delay are what distance compensation gives it, and are read only.
+        </li>
+        <li>
+          <strong>The box at the left</strong> makes a loudspeaker imaginary: it shapes the layout but is never fed.
+        </li>
+        <li><strong><code>test</code></strong> sends a burst on that loudspeaker's channel alone, so you can check each by ear.</li>
+        <li><strong>The cross</strong> removes the row.</li>
+        <li><strong><code>add a loudspeaker</code></strong> adds one ahead, at the farthest distance, on the next free channel.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="orientation">
+    <h2>orientation</h2>
+    <figure>
+      <img src={img('decoder-orientation')} alt="The orientation strip: none, osc, airpods and phone; head or scene, recentre, setup and static; yaw, pitch and roll with their rates." width="1236" height="420" />
+    </figure>
+    <div class="prose">
+      <p>
+        Where the effects have their matrix, the decoder has head tracking, always on screen. The sliders and rates
+        rotate the sound scene for every output; a tracker set to <code>head</code> rotates the headphones, and a two-loudspeaker layout set to <code>slice</code>.
+      </p>
+      <ul>
+        <li>
+          <strong>The head tracker</strong>: <code>none</code>, <code>osc</code>, <code>airpods</code> or a
+          <code>phone</code>. AirPods and a phone connect through a helper app that comes with the decoder, on macOS.
+          Beside the tabs, the tracker shows whether it is sending data, and at what rate.
+        </li>
+        <li>
+          <strong><code>head</code></strong> or <strong><code>scene</code></strong>: whether the tracker compensates
+          your head movement, so the sound stays put in the room while you turn, or adds one more rotation to the sound scene.
+        </li>
+        <li>
+          <strong><code>recentre</code></strong> makes the direction you face now the front, and <strong><code>setup…</code></strong>
+          opens the tracker's own page: the OSC port and message, the AirPods' look-and-nod, or the code a phone
+          scans.
+        </li>
+        <li>
+          <strong><code>yaw</code></strong>, <strong><code>pitch</code></strong> and <strong><code>roll</code></strong>
+          rotate the sound scene manually, each with a rate under it. <code>flip</code> beside an angle inverts the
+          tracker on that axis.
+        </li>
+        <li>
+          <strong><code>static</code></strong> holds the sound scene still whatever the sliders and rates say, so
+          you can hear a mix without the rotation its automation adds.
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="scene">
+    <h2>the 3D view</h2>
+    <figure>
+      <img src={img('decoder-scene')} alt="The 3D view on the speakers page: the head at the centre, the numbered loudspeakers, and the convex hull between them." width="1236" height="602" />
+    </figure>
+    <div class="prose">
+      <p>
+        The decoder draws the listener's head at the centre — on the globe with its eyes on either side of the look
+        direction, on the equirect as a cross at the look direction — and the numbered loudspeakers around it. While
+        the speakers page is open, the convex hull between them is drawn too. An output that is not playing is drawn
+        faint, and an imaginary loudspeaker dashed. The energy display shows the signal every output receives. Two
+        switches are the decoder's own:
+      </p>
+      <ul>
+        <li><strong><code>head frame</code></strong> draws the 3D view from the head's point of view: the equirect's front follows the look direction.</li>
+        <li><strong><code>sources</code></strong> shows where the session's sources are, rotated with the sound scene.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="try">
+    <h2>things to try</h2>
+    <div class="prose">
+      <ol>
+        <li>
+          <strong>A stereo pair that follows your head.</strong> On the speakers page choose <code>0+2+0</code> and
+          <code>slice</code>, then a tracker set to <code>head</code>: the pair plays only what you face.
+        </li>
+        <li>
+          <strong>Loudspeakers on headphones.</strong> Choose a layout on the speakers page, then switch on
+          <code>through the layout</code> on the headphones page to hear it before you set it up.
+        </li>
+        <li>
+          <strong>Rotate the sound scene, not the head.</strong> Give <code>yaw rate</code> a value and press play: the
+          whole sound scene rotates around you, on every output.
+        </li>
+      </ol>
+    </div>
+  </section>
+</TutorialPage>

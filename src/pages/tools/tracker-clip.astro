@@ -20,9 +20,8 @@ const printHints = {
 <Page title="tracker clip" description="A printable clip that holds a head tracker on your headphones." wide>
   <div class="tool">
     <div class="look">
-      <p class="label"><a href={`${base}/tools`}>tools</a></p>
       <h1>tracker clip</h1>
-      <p class="lede summary">A clip that holds a head tracker on the headphones you listen on, an AirPod included.</p>
+      <p class="sub label">a clip that holds a head tracker on the headphones you listen on, an AirPod included</p>
       <div class="preview" data-preview>
         <p class="label status" data-status>loading the model…</p>
       </div>
@@ -100,12 +99,12 @@ const printHints = {
       <section class="export">
         <div class="grips">
           {ends.map((end) => (
-            <button type="button" class="button" data-export={end.id}>
+            <button type="button" class="button quiet" data-export={end.id}>
               {end.id === 'tracker' ? 'tracker grip' : 'headphone grip'} · stl
             </button>
           ))}
         </div>
-        <button type="button" class="button main" data-export="clip">export clip · stl</button>
+        <button type="button" class="button" data-export="clip">export clip · stl</button>
         <p class="hint">
           Print flat as exported, with no supports; check a fit with one end's grip first. The file's name and the page's
           address keep the settings. Models are <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>, with
@@ -359,12 +358,6 @@ const printHints = {
 </script>
 
 <style>
-  h1 {
-    margin: 8px 0 16px;
-  }
-  .summary {
-    margin-bottom: 24px;
-  }
   .tool {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 720px);
@@ -509,20 +502,8 @@ const printHints = {
     }
   }
   .button {
-    font: inherit;
-    font-size: 14px;
+    font-size: var(--size-card-text); /* smaller, among the tool's controls */
     padding: 9px 10px;
-    background: none;
-    color: var(--text);
-    border: var(--stroke-rule) solid var(--rule-strong);
-    cursor: pointer;
-  }
-  .button:hover {
-    background: var(--panel);
-  }
-  .button.main {
-    background: var(--chosen);
-    color: var(--text-inverse);
   }
   .export p {
     margin: 0;

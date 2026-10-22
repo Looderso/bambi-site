@@ -1,34 +1,48 @@
 ---
 name: echo
-summary: "Four echoes that turn through the field as they repeat."
+summary: "An ambisonic delay with four taps that rotate around the listener as they repeat."
 colour: "#7cb27b"
 order: 2
+parts:
+  - shot: window
+    crop: [625, 75, 340, 185]
+    label: taps
+    title: four delay taps
+    text: "Presets for all four taps at once — even, ping-pong, spiral, cascade, single; double-click one to reset its values. Below, the four taps on a timeline: click a row to edit that tap."
+  - shot: window
+    crop: [620, 265, 348, 280]
+    label: taps · timing
+    title: delay time
+    text: "In milliseconds, or synced to the tempo in sixteenth notes."
+    points:
+      - "<b>time · steps</b> · the delay time"
+      - "<b>offset · offset steps</b> · when the tap starts"
+      - "<b>swing</b> · shifts a synced tap off the grid"
+  - shot: axis
+    crop: [620, 265, 348, 120]
+    label: taps · axis
+    title: rotation axis
+    text: "Each tap rotates around its own axis, set by azimuth and elevation. Pointing straight up, the tap circles the listener."
+  - shot: every-pass
+    crop: [620, 265, 348, 280]
+    label: taps · every pass
+    title: what changes with each repeat
+    text: "Applied again on every repeat, so the echoes move, fade and blur."
+    points:
+      - "<b>spin</b> · rotation per repeat; 180° is a ping-pong"
+      - "<b>skew</b> · how far each repeat slides along the axis"
+      - "<b>feedback · blur</b> · how quickly the repeats fade, and how diffuse they get"
+      - "<b>band</b> · low-cut and high-cut filters in the feedback path"
+  - shot: regions
+    crop: [620, 42, 348, 350]
+    label: send
+    title: which directions go into the delay
+    text: "The send region picks the directions that feed the delay: all of them by default, or a spot, a band, sectors, dots or clouds."
+  - shot: skew
+    crop: [0, 44, 618, 301]
+    label: the scene
+    title: where each echo comes from
+    text: "Point the probe at a direction, and the 3D view shows where each echo of a sound from there arrives, as dots along a spiral around the tap's axis, over the incoming signal's energy."
 ---
 
-Echo repeats an ambisonic field. Each of its four taps is a loop: every pass comes back a little later, turned
-further round an axis, and a little quieter and vaguer than the one before. A single sound walks round the
-room; a whole mix rotates, gathers or spreads as it repeats.
-
-Its window is the one every bambi plugin has, described in the [tutorial](/tutorial/the-window). What is Echo's own
-is its two tabs.
-
-## taps
-
-The row at the top chooses a starting point for all four taps; double-click it to bring its values back. Under it, a strip shows the four taps on one time line, each with its on/off at the left and its
-level at the right. Click a row to choose a tap. Its settings come in three groups:
-
-- **timing**: how long a pass lasts, `free` in milliseconds or `sync`ed in sixteenths of the bar, and how late
-  the tap starts. `swing` shuffles a tap against the others.
-- **axis**: the direction the tap turns about.
-- **every pass**: how far it turns (`spin`), how far it slides along its axis (`skew`), how much quieter it gets
-  (`feedback`) and how much vaguer (`blur`), and a `low cut` and `high cut` applied every pass.
-
-A spin of 180° is a ping-pong: twice round is back where it started.
-
-## send
-
-The region of the field the taps hear. By default it is `everywhere`; see [regions](/tutorial/the-window#regions).
-
-## what it builds on
-
-The slide along an axis is the warp of Pomberger and Zotter, on the [foundations](/foundations) page.
+The slide along an axis is the warp of Pomberger and Zotter, on the [foundations](/research/foundations) page.

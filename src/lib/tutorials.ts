@@ -8,16 +8,29 @@ export interface Tutorial {
   group: 'every plugin' | 'one plugin or setup';
   kind: string; // the small label on its card
   plugin?: string;
+  outline?: { id: string; title: string; text: string }[]; // its parts, until the text exists
 }
 
 export const tutorials: Tutorial[] = [
   {
     id: 'the-window',
     title: 'the window',
-    summary: 'The parts every bambi plugin shares, and the gestures each takes.',
+    summary: 'The parts every bambi plugin shares, and how to use them.',
     group: 'every plugin',
     kind: 'start here',
   },
+  { id: 'path-encoder', title: 'path encoder', summary: 'Encoding a source, and moving it with automation and the audio itself.', group: 'one plugin or setup', kind: 'plugin', plugin: 'path-encoder' },
+  {
+    id: 'echo',
+    title: 'echo',
+    summary: 'Delay taps that rotate around the listener as they repeat.',
+    group: 'one plugin or setup',
+    kind: 'plugin',
+    plugin: 'echo',
+  },
+  { id: 'reverb', title: 'reverb', summary: 'An ambisonic room reverb, and where its reflections come from.', group: 'one plugin or setup', kind: 'plugin', plugin: 'reverb' },
+  { id: 'decoder', title: 'decoder', summary: 'Decoding to loudspeakers or binaural headphones.', group: 'one plugin or setup', kind: 'plugin', plugin: 'decoder' },
+  { id: 'host', title: 'the host', summary: 'Setting up Ableton Live to play through bambi.', group: 'one plugin or setup', kind: 'setup' },
 ];
 
 /** The tutorials either side of one, in reading order. */

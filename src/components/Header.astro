@@ -6,9 +6,10 @@ const here = Astro.url.pathname.replace(base, '') || '/';
 
 const sections = [
   { href: '/plugins', name: 'plugins' },
+  { href: '/host', name: 'host' },
   { href: '/tutorial', name: 'tutorial' },
+  { href: '/research', name: 'research' },
   { href: '/tools', name: 'tools' },
-  { href: '/foundations', name: 'foundations' },
   { href: '/contribute', name: 'contribute' },
   { href: '/download', name: 'download' },
   { href: '/about', name: 'about' },
@@ -53,7 +54,10 @@ const open = (href: string) => here === href || here.startsWith(href + '/');
     background: var(--ground);
     border-bottom: var(--stroke-identity) solid var(--identity);
   }
+  /*  The bar spans the window, not the page's measure, so the wordmark and the sections stand still from page
+      to page: the wordmark at the left edge, the sections at the right. */
   .bar {
+    max-width: none;
     display: flex;
     align-items: stretch;
     justify-content: space-between;
