@@ -19,10 +19,11 @@ function inOrder() {
 }
 
 const CHUNK = 16 * 1024; // the largest message every browser's data channel takes
+const REACH = 12000; // ms the two may take to reach each other directly once both are there, before it counts as failed
 
 function direct(session, me, signal) {
   const handler = inOrder(), offers = me === 'computer';
-  let ws = null, pc = null, channel = null, closed = false, pending = [], incoming = null;
+  let ws = null, pc = null, channel = null, closed = false, pending = [], incoming = null, reaching = 0;
   const outbox = []; // what was sent while no channel was open, in order
   let state = () => {};
 
@@ -54,8 +55,18 @@ function direct(session, me, signal) {
     channel = null;
     pending = [];
     pc = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.cloudflare.com:3478' }] });
+    const mine = pc;
+    let opened = false;
     pc.onicecandidate = (e) => e.candidate && tell({ type: 'candidate', candidate: e.candidate });
-    pc.onconnectionstatechange = () => pc && ['failed', 'disconnected'].includes(pc.connectionState) && state('lost');
+    //  'failed': the two found each other at the meeting point but cannot reach each other directly (a VPN, or a
+    //  network that keeps its devices apart); 'lost': a connection that was open has gone
+    pc.onconnectionstatechange = () => {
+      if (pc !== mine) return;
+      if (pc.connectionState === 'connected') opened = true;
+      if (['failed', 'disconnected'].includes(pc.connectionState)) state(opened ? 'lost' : 'failed');
+    };
+    clearTimeout(reaching);
+    reaching = setTimeout(() => pc === mine && !opened && !channel && state('failed'), REACH);
     if (offer) {
       pc.ondatachannel = (e) => open(e.channel);
       await pc.setRemoteDescription(offer);
@@ -71,6 +82,7 @@ function direct(session, me, signal) {
     c.binaryType = 'arraybuffer';
     c.bufferedAmountLowThreshold = 1 << 20;
     c.onopen = async () => {
+      clearTimeout(reaching);
       channel = c;
       state('open');
       while (outbox.length && channel === c) await outbox.shift()();
@@ -114,7 +126,8 @@ function direct(session, me, signal) {
       }
     }),
     onMessage: handler.set,
-    /** How the connection stands: 'connecting', 'open', 'away' (the other side left) or 'lost'. */
+    /** How the connection stands: 'connecting', 'open', 'away' (the other side left), 'failed' (the two cannot reach
+     *  each other directly) or 'lost' (an open connection went). */
     onState: (f) => { state = f; },
     close: () => { closed = true; ws?.close(); pc?.close(); },
   };

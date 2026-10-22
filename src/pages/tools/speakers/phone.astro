@@ -45,7 +45,11 @@ import Page from '../../../layouts/Page.astro';
   $('secure').textContent = !session ? 'Open this page from the code the speakers tool shows on your computer.' : window.isSecureContext ? '' : 'This page is not secure: open it over https.';
   const params = new URLSearchParams(location.search);
   const link = session && openLink(session, 'phone', params.get('signal') ?? MEETING_POINT);
-  link?.onState((s) => s !== 'open' && step !== 'start' && ($('small').textContent = { connecting: 'connecting to the computer…', away: 'the computer left', lost: 'the connection was lost' }[s]));
+  link?.onState((s) => {
+    if (s === 'open' || step === 'start') return;
+    if (s === 'failed') return show('cannot reach the computer', 'it was found, but not directly: on the same Wi-Fi, switch off a VPN on either device, then reload this page', []);
+    $('small').textContent = { connecting: 'connecting to the computer…', away: 'the computer left', lost: 'the connection was lost' }[s];
+  });
 
   let orientation = null, mic = null, audio = null, outputs = null; // outputs: { count, names } from the computer
   let step = 'start';

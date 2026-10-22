@@ -13,7 +13,7 @@ const parts: [string, string][] = [
   ['returns', 'returns and main'],
   ['wires', 'sends'],
   ['decoders', 'decoders'],
-  ['audio', 'audio settings'],
+  ['io', 'I/O'],
   ['timeline', 'the timeline'],
   ['try', 'things to try'],
 ];
@@ -23,7 +23,7 @@ const parts: [string, string][] = [
   id="host"
   sub="setting up a set to play through bambi"
   parts={parts}
-  window={{ src: img('host-window'), alt: 'The host’s window on its routing page: Live’s tracks, the returns and main, and two decoders, joined by sends.', caption: 'the host’s window', width: 2184, height: 1200 }}
+  window={{ src: img('host-window'), alt: 'The host’s window on its routing page: Live’s tracks, the returns and main, and two decoders, joined by sends.', caption: 'the host’s window', width: 2206, height: 1200 }}
 >
   <div class="prose" slot="intro">
     <p class="lede">
@@ -40,25 +40,32 @@ const parts: [string, string][] = [
   <section id="live">
     <h2>in Live</h2>
     <div class="prose">
-      <p>Live plays into the host through bambi’s virtual audio driver, and a device on Live’s main track connects the two.</p>
+      <p>
+        Live plays into the host through bambi’s virtual audio driver, and a Max for Live device on Live’s main track
+        connects the two. The installer puts the host and the driver in place; open <strong>bambi live host</strong>
+        from Applications once, and it puts the device into Live’s browser, under Max for Live › Max Audio Effect ›
+        bambi.
+      </p>
       <ol>
         <li>
-          In Live’s audio settings, choose <strong>bambi</strong> as the output. In <strong>Output Config</strong>,
-          enable its channels as stereo pairs; in <strong>Input Config</strong>, 1/2.
+          In Live’s audio settings, choose <strong>bambi</strong> as the audio device. In <strong>Output Config</strong>,
+          enable its channels as stereo pairs; in <strong>Input Config</strong>, 1/2, which carries the binaural mix back
+          for recording.
         </li>
         <li>
-          Put the <strong>bambi device</strong> on Live’s main track. It is a Max for Live device, so it needs Live
-          12 Suite.
+          Put the <strong>bambi</strong> device on Live’s main track. It needs Live Suite, or Live Standard with Max for
+          Live. It starts the host if it is not running, or <strong>open host</strong> does by hand; the square beside its
+          status fills once the two are connected, and <strong>show host</strong> brings the host to the front.
         </li>
         <li>
-          Press <strong>open host</strong>. The light beside the status turns green once the host is connected, and
-          the device lists every track and what bambi does with it.
+          Choose on the host’s routing page, below, which tracks play through bambi. The device routes them in Live and
+          lists the set’s tracks, in their colours while bambi plays them; when bambi stops, every track’s routing goes
+          back to what it was.
         </li>
       </ol>
       <p>
-        Nothing in the set changes on its own. The device keeps a snapshot of the set’s routing, saved when the set
-        opens or by hand with <strong>save routing</strong>, and <strong>restore saved</strong>, pressed twice, puts it
-        back.
+        While bambi plays, the device keeps a <strong>bambi</strong> track that records the binaural mix. A track that
+        already played to bambi’s channels before is shown, never moved.
       </p>
     </div>
   </section>
@@ -132,20 +139,21 @@ const parts: [string, string][] = [
     </div>
   </section>
 
-  <section id="audio">
-    <h2>audio settings</h2>
+  <section id="io">
+    <h2>I/O</h2>
     <figure>
-      <img src={img('host-outputs')} alt="Audio settings on the outputs tab: Live’s main, the first decoder’s headphones with a copy back to Live, and the second decoder’s speakers." width="1760" height="1060" />
+      <img src={img('host-outputs')} alt="The I/O page on its outputs tab: Live’s main, the first decoder’s headphones with a copy back to Live, the second decoder’s speakers, and the interface’s channels." width="2046" height="760" />
     </figure>
     <div class="prose">
-      <p><strong>audio</strong>, at the foot of the sidebar, opens the audio settings for everything going in and out, in four tabs:</p>
+      <p><strong>I/O</strong>, in the sidebar, opens the page for everything going in and out, in four tabs:</p>
       <ul>
         <li>
           <strong>interface</strong>: the devices the host plays out of, the first of them the clock source; the host’s buffer size;
           and the ambisonic order, with the CPU load it costs. The rate is Live’s.
         </li>
         <li>
-          <strong>outputs</strong>: Live’s main and every decoder’s outputs, each on its channels. <strong>+ copy</strong>
+          <strong>outputs</strong>: Live’s main and every decoder’s outputs, each on its channels; choose one, and a click on a
+          channel of the interface puts it there. <strong>+ copy</strong>
           sends the same signal to other channels, or a pair back to Live’s bambi track for recording; Live renders
           nothing that does not come back to it.
         </li>
@@ -158,12 +166,13 @@ const parts: [string, string][] = [
   <section id="timeline">
     <h2>the timeline</h2>
     <figure>
-      <img src={img('host-timeline')} alt="The timeline: the transport, Live’s arrangement as coloured blocks, and two automation lanes over it." width="2184" height="1200" />
+      <img src={img('host-timeline')} alt="The timeline: the song position and tempo, Live’s arrangement as coloured blocks, and two automation lanes over it." width="2206" height="1200" />
     </figure>
     <div class="prose">
       <p>
-        The timeline shows Live’s set as the host plays it. <strong>play</strong> and <strong>stop</strong> drive
-        Live’s transport, a click on the ruler locates, and the playhead stays in sync with what you hear.
+        The timeline shows Live’s set as the host plays it. <strong>play</strong> and <strong>stop</strong>, at the top of
+        the sidebar on every page, drive Live’s transport; a click on the ruler locates, and the playhead stays in sync
+        with what you hear.
       </p>
       <ul>
         <li>
@@ -178,7 +187,7 @@ const parts: [string, string][] = [
       </ul>
     </div>
     <figure>
-      <img src={img('host-session')} alt="The session view: a clip grid with the clips in their tracks’ colours." width="2184" height="1200" />
+      <img src={img('host-session')} alt="The session view: a clip grid with the clips in their tracks’ colours." width="2206" height="1200" />
     </figure>
   </section>
 

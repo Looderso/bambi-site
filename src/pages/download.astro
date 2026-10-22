@@ -18,7 +18,7 @@ interface System {
   machines: string;
   folders: { vst3: string; clap: string };
   admin?: boolean;
-  quarantine?: string; // the step a build that is not signed needs, where the system asks for one
+  installer?: boolean; // a signed installer beside the zip, which is the way in; the zip is for copying by hand
   note?: string;
 }
 const systems: System[] = [
@@ -27,8 +27,8 @@ const systems: System[] = [
     name: 'macOS',
     machines: 'apple silicon and intel',
     folders: { vst3: '~/Library/Audio/Plug-Ins/VST3/', clap: '~/Library/Audio/Plug-Ins/CLAP/' },
-    quarantine:
-      'xattr -dr com.apple.quarantine ~/Library/Audio/Plug-Ins/VST3/bambi*.vst3 ~/Library/Audio/Plug-Ins/CLAP/bambi*.clap',
+    installer: true,
+    note: 'The installer and the plugins are signed and notarised by Apple, so macOS opens them without asking. Keep one copy of each plugin: one in ~/Library and one in /Library show up twice in your DAW.',
   },
   {
     id: 'windows',
@@ -45,7 +45,7 @@ const systems: System[] = [
     folders: { vst3: '~/.vst3/', clap: '~/.clap/' },
   },
 ];
-const zip = (id: string) => `${releases}/latest/download/bambi-${id}.zip`;
+const asset = (name: string) => `${releases}/latest/download/${name}`;
 
 const plugins = (await getCollection('plugins')).sort((a, b) => a.data.order - b.data.order);
 const tiles = plugins.map((p) => ({
@@ -88,48 +88,75 @@ const tiles = plugins.map((p) => ({
           systems.map((s) => (
             <section class="system" data-system={s.id}>
               <h2 class="title">{s.name}</h2>
-              <div class="get">
-                <a class="button" href={zip(s.id)} data-zip={`bambi-${s.id}.zip`}>
-                  download for {s.name}
-                </a>
-                <span class="label">{s.machines} · vst3 and clap</span>
-              </div>
-              <ol class="steps prose">
-                <li>
-                  <div>
-                    <p>
-                      Unpack the zip and copy the plugins into your plugin folders
-                      {s.admin ? ' (this needs administrator rights)' : ''}:
-                    </p>
-                    <table>
-                      <tbody>
-                        <tr>
-                          <td><code>VST3/*.vst3</code></td>
-                          <td><code>{s.folders.vst3}</code></td>
-                        </tr>
-                        <tr>
-                          <td><code>CLAP/*.clap</code></td>
-                          <td><code>{s.folders.clap}</code></td>
-                        </tr>
-                      </tbody>
-                    </table>
-                    {s.id === 'macos' && <p class="fine">~/Library is hidden in Finder: choose Go › Go to Folder…, then type the path.</p>}
+              {s.installer ? (
+                <>
+                  <div class="get">
+                    <a class="button" href={asset(`bambi-${s.id}.pkg`)} data-zip={`bambi-${s.id}.pkg`}>
+                      installer for {s.name}
+                    </a>
+                    <a class="button quiet" href={asset(`bambi-${s.id}.zip`)} data-zip={`bambi-${s.id}.zip`}>
+                      or the zip, to copy by hand
+                    </a>
+                    <span class="label">{s.machines} · vst3 and clap</span>
                   </div>
-                </li>
-                {s.quarantine && (
-                  <li>
-                    <div>
-                      <p>These builds are not signed, so macOS blocks them once. Clear that in Terminal:</p>
-                      <pre><code>{s.quarantine}</code></pre>
-                    </div>
-                  </li>
-                )}
-                <li>
-                  <div>
-                    <p>Restart your host and let it rescan its plugins.</p>
+                  <ol class="steps prose">
+                    <li>
+                      <div>
+                        <p>
+                          Open the installer and choose what it puts on this Mac: the plugins, for every user, and, if
+                          you play with Ableton Live, the live host.
+                        </p>
+                      </div>
+                    </li>
+                    <li>
+                      <div>
+                        <p>Restart your DAW and let it rescan its plugins.</p>
+                      </div>
+                    </li>
+                  </ol>
+                  <p class="fine">
+                    The zip holds the plugins alone: copy <code>VST3/*.vst3</code> to <code>{s.folders.vst3}</code> and{' '}
+                    <code>CLAP/*.clap</code> to <code>{s.folders.clap}</code>. ~/Library is hidden in Finder: choose Go › Go
+                    to Folder…, then type the path.
+                  </p>
+                </>
+              ) : (
+                <>
+                  <div class="get">
+                    <a class="button" href={asset(`bambi-${s.id}.zip`)} data-zip={`bambi-${s.id}.zip`}>
+                      download for {s.name}
+                    </a>
+                    <span class="label">{s.machines} · vst3 and clap</span>
                   </div>
-                </li>
-              </ol>
+                  <ol class="steps prose">
+                    <li>
+                      <div>
+                        <p>
+                          Unpack the zip and copy the plugins into your plugin folders
+                          {s.admin ? ' (this needs administrator rights)' : ''}:
+                        </p>
+                        <table>
+                          <tbody>
+                            <tr>
+                              <td><code>VST3/*.vst3</code></td>
+                              <td><code>{s.folders.vst3}</code></td>
+                            </tr>
+                            <tr>
+                              <td><code>CLAP/*.clap</code></td>
+                              <td><code>{s.folders.clap}</code></td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </li>
+                    <li>
+                      <div>
+                        <p>Restart your DAW and let it rescan its plugins.</p>
+                      </div>
+                    </li>
+                  </ol>
+                </>
+              )}
               {s.note && <p class="fine">{s.note}</p>}
             </section>
           ))
@@ -138,11 +165,11 @@ const tiles = plugins.map((p) => ({
     </section>
 
     <section class="screen" aria-labelledby="zip">
-      <h2 id="zip">in the zip</h2>
+      <h2 id="zip">what you get</h2>
       <Cards items={tiles} pairs />
       <p class="about">
           Every build is on GitHub, with its notes and the complete source of that release. The plugins are licensed under the GNU AGPLv3 and bambi's own code under the GPLv3; the notices of
-          every third-party component are in the zip.
+          every third-party component come with every download.
       </p>
     </section>
 
@@ -152,16 +179,17 @@ const tiles = plugins.map((p) => ({
         <img class="mark" src={`${base}/marks/host.svg`} alt="" width="72" height="72" />
         <div>
           <p class="about">
-            The host runs bambi's plugins beside Ableton Live, on macOS. It comes in three parts:
+            The host runs bambi's plugins beside Ableton Live, on macOS. Choose it in the installer, and it comes in
+            three parts:
           </p>
           <ul class="steps across">
             <li>
               <span class="title">the app</span>
-              <span class="text">Goes into Applications.</span>
+              <span class="text">In Applications. Open it once: it puts the Max for Live device into Live's browser.</span>
             </li>
             <li>
               <span class="title">the virtual audio driver</span>
-              <span class="text">A loopback driver that carries Live's tracks to the host. Installing it asks for your password and restarts the Mac's audio for a moment.</span>
+              <span class="text">A loopback driver that carries Live's tracks to the host. macOS asks once for the microphone: that is how the host receives them.</span>
             </li>
             <li>
               <span class="title">the Max for Live device</span>
@@ -169,8 +197,9 @@ const tiles = plugins.map((p) => ({
             </li>
           </ul>
           <p class="fine">
-            Its build follows in a later release. What it does is on <a href={`${base}/host`}>its page</a>, and how to
-            use it in <a href={`${base}/tutorial/host`}>its tutorial</a>.
+            What it does is on <a href={`${base}/host`}>its page</a>, and how to set it up in
+            <a href={`${base}/tutorial/host`}>its tutorial</a>. To remove everything the installer put on the Mac, run
+            <code>sudo "/Library/Application Support/bambi/uninstall.sh"</code> in Terminal.
           </p>
         </div>
       </div>
@@ -338,8 +367,9 @@ const tiles = plugins.map((p) => ({
     .steps pre {
       padding-block: 10px;
     }
-    .steps .fine {
-      display: none; /* a hint for Finder, of no use on the phone itself */
+    .steps .fine,
+    .system > .fine {
+      display: none; /* how to copy and what is signed: of use at the computer, not on the phone itself */
     }
     .tabs button {
       flex: 1;
