@@ -57,6 +57,8 @@ trap 'rm -rf "$shots"' EXIT
 "$decoder" "$shots/decoder.png"                                     > /dev/null
 "$decoder" "$shots/decoder-speakers.png" --speakers                > /dev/null
 "$decoder" "$shots/decoder-loudspeakers.png" --loudspeakers        > /dev/null
+"$decoder" "$shots/decoder-decoding.png" --decoding                > /dev/null
+"$decoder" "$shots/decoder-fill.png" --fill                        > /dev/null
 
 #  picture: shot, then cwebp's crop as x y width height, or nothing for the whole window
 picture() {
@@ -107,8 +109,10 @@ picture encoder-scene      encoder.png              0   88 1236  602
 picture decoder-window       decoder.png
 picture decoder-outputs      decoder.png                 520    0  640   88
 picture decoder-headphones   decoder.png                1240   84  696  720
-picture decoder-speakers     decoder-speakers.png       1240   84  696  860
+picture decoder-speakers     decoder-speakers.png       1240   84  696  720
 picture decoder-loudspeakers decoder-loudspeakers.png   1240   84  696  820
+picture decoder-decoding     decoder-decoding.png       1240   84  696  280
+picture decoder-fill         decoder-fill.png           1240   84  696 1000
 picture decoder-orientation  decoder.png                   0  690 1236  420
 picture decoder-scene        decoder-speakers.png          0   88 1236  602
 
@@ -135,6 +139,9 @@ whole reverb send         "$reverb"
 whole decoder headphones   "$decoder"
 whole decoder speakers     "$decoder" --speakers
 whole decoder loudspeakers "$decoder" --loudspeakers
+whole decoder decoding     "$decoder" --decoding
+whole decoder fill         "$decoder" --fill
+whole decoder tracking     "$decoder" --tracking
 
 #  The host: its window is wider than a plugin's, 1103 x 600 points. Its tool is built with the host
 #  (cmake -DBAMBI_BUILD_HOST=ON); without it these are left as they are.

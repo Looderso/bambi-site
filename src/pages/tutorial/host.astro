@@ -73,7 +73,7 @@ const parts: [string, string][] = [
   <section id="tracks">
     <h2>the tracks</h2>
     <figure>
-      <img src={img('host-tracks')} alt="Live’s tracks on the routing page: a drum group split into its tracks, a bass, keys left in Live, a vocal through an echo, and a microphone input." width="760" height="620" />
+      <img src={img('host-tracks')} alt="Live’s tracks on the routing page: a drum group split into its tracks, a bass, keys left in Live, a vocal through an echo, and a microphone input." width="750" height="620" />
     </figure>
     <div class="prose">
       <p>
@@ -87,9 +87,12 @@ const parts: [string, string][] = [
         <li><code>bus</code>: a group split into its tracks, each encoded; <strong>encode whole</strong> makes it one source again.</li>
         <li><code>in group</code>: a track its group plays.</li>
         <li><code>no pair</code>: taken into bambi, but no stereo pair of bambi’s virtual audio driver is free, so it is silent.</li>
+        <li><code>no audio</code>: a track with no audio to route, such as a MIDI track without an instrument.</li>
+        <li><code>not to Main</code>: a track whose output in Live is not Main; route it to Main to take it into bambi.</li>
       </ul>
       <p>
-        <strong>+ encoder</strong> takes a track into bambi. After the encoder come its inserts: <strong>+</strong>
+        <strong>+ encoder</strong> takes a track into bambi; a track tagged <code>no audio</code> or <code>not to Main</code>
+        has none, since it cannot be encoded. After the encoder come its inserts: <strong>+</strong>
         adds one, a click opens it, and a drag moves it along the chain.
       </p>
     </div>
@@ -98,7 +101,7 @@ const parts: [string, string][] = [
   <section id="returns">
     <h2>returns and main</h2>
     <figure>
-      <img src={img('host-returns')} alt="The returns and main: a plate taken into bambi through a reverb, a slap left in Live, and main." width="640" height="290" />
+      <img src={img('host-returns')} alt="The returns and main: a plate taken into bambi through a reverb, a slap left in Live, and main." width="636" height="280" />
     </figure>
     <div class="prose">
       <p>
@@ -111,7 +114,7 @@ const parts: [string, string][] = [
   <section id="wires">
     <h2>sends</h2>
     <figure>
-      <img src={img('host-wires')} alt="The vocal selected: its sends to main and to the plate open under it, each with its level." width="1520" height="540" />
+      <img src={img('host-wires')} alt="The vocal selected: its sends to main and to the plate open under it, each with its level." width="1464" height="620" />
     </figure>
     <div class="prose">
       <p>A track reaches a return, main or a decoder through a send:</p>
@@ -128,7 +131,7 @@ const parts: [string, string][] = [
   <section id="decoders">
     <h2>decoders</h2>
     <figure>
-      <img src={img('host-decoders')} alt="Two decoders: one to headphones, one to a 0+5+0 layout, each fed from main." width="424" height="360" />
+      <img src={img('host-decoders')} alt="Two decoders: one to headphones, one to a 0+5+0 layout, each fed from main." width="470" height="360" />
     </figure>
     <div class="prose">
       <p>

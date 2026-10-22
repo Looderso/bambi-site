@@ -25,7 +25,7 @@ const systems: System[] = [
   {
     id: 'macos',
     name: 'macOS',
-    machines: 'apple silicon and intel',
+    machines: 'macos 14 and later · apple silicon and intel',
     folders: { vst3: '~/Library/Audio/Plug-Ins/VST3/', clap: '~/Library/Audio/Plug-Ins/CLAP/' },
     installer: true,
     note: 'The installer and the plugins are signed and notarised by Apple, so macOS opens them without asking. Keep one copy of each plugin: one in ~/Library and one in /Library show up twice in your DAW.',
@@ -179,23 +179,24 @@ const tiles = plugins.map((p) => ({
         <img class="mark" src={`${base}/marks/host.svg`} alt="" width="72" height="72" />
         <div>
           <p class="about">
-            The host runs bambi's plugins beside Ableton Live, on macOS. Choose it in the installer, and it comes in
-            three parts:
+            The host runs bambi's plugins beside Ableton Live, on macOS. It comes with its virtual audio driver, which
+            carries Live's tracks to it, and a Max for Live device, which needs Live Suite, or Live Standard with Max for
+            Live.
           </p>
-          <ul class="steps across">
+          <ol class="steps across">
             <li>
-              <span class="title">the app</span>
-              <span class="text">In Applications. Open it once: it puts the Max for Live device into Live's browser.</span>
+              <span class="title">install it</span>
+              <span class="text">In the macOS installer, choose the live host as well as the plugins.</span>
             </li>
             <li>
-              <span class="title">the virtual audio driver</span>
-              <span class="text">A loopback driver that carries Live's tracks to the host. macOS asks once for the microphone: that is how the host receives them.</span>
+              <span class="title">open it once</span>
+              <span class="text">Open bambi live host from Applications: it puts the Max for Live device into Live's browser. Allow the microphone when macOS asks: it is how the host hears Live.</span>
             </li>
             <li>
-              <span class="title">the Max for Live device</span>
-              <span class="text">Goes on Live's Main track. It needs Live Suite, or Live Standard with Max for Live.</span>
+              <span class="title">set up Live</span>
+              <span class="text">Choose bambi as Live's audio device, and put the bambi device, under Max for Live › Max Audio Effect, on the Main track.</span>
             </li>
-          </ul>
+          </ol>
           <p class="fine">
             What it does is on <a href={`${base}/host`}>its page</a>, and how to set it up in
             <a href={`${base}/tutorial/host`}>its tutorial</a>. To remove everything the installer put on the Mac, run
@@ -368,7 +369,8 @@ const tiles = plugins.map((p) => ({
       padding-block: 10px;
     }
     .steps .fine,
-    .system > .fine {
+    .system > .fine,
+    .host .fine {
       display: none; /* how to copy and what is signed: of use at the computer, not on the phone itself */
     }
     .tabs button {
